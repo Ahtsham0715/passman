@@ -75,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // padding: const EdgeInsets.only(top: 15.0),
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        color: const Color(0xFF0386D0),
+        color: Colors.teal,
         child: //Add this CustomPaint widget to the Widget Tree
 Center(
   child:   CustomPaint(
