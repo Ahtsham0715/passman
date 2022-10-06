@@ -32,6 +32,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
         // padding: const EdgeInsets.only(top: 15.0),
         width: MediaQuery.of(context).size.width,
@@ -43,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             children: [
               SizedBox(
-                height: MediaQuery.of(context).size.height * 0.1,
+                height: MediaQuery.of(context).size.height * 0.06,
               ),
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 10.0),
@@ -188,6 +189,55 @@ class _LoginPageState extends State<LoginPage> {
                       fontFamily: 'majalla'),
                 ),
               ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height * 0.03,
+              ),
+              Expanded(
+                child: Stack(
+                  fit: StackFit.passthrough,
+                  alignment: AlignmentDirectional.center,
+                  children: [
+                    SizedBox(
+                        width: MediaQuery.of(context).size.width * 0.85,
+                        height: MediaQuery.of(context).size.height * 0.35,
+                        child: Image.asset('assets/auth.png')),
+                    CustomPaint(
+                      size: Size(
+                          MediaQuery.of(context).size.width,
+                          (MediaQuery.of(context).size.width *
+                                  0.6352657004830918)
+                              .toDouble()), //You can Replace [WIDTH] with your desired width for Custom Paint and height will be calculated automatically
+                      painter: CustomAuthShape(),
+                    ),
+                    Positioned(
+                      bottom: 50.0,
+                      child: MaterialButton(
+                        onPressed: () {},
+                        color: const Color(0xFF0386D0),
+                        elevation: 0.0,
+                        shape: RoundedRectangleBorder(
+                            side: BorderSide(
+                              width: 2.0,
+                              color: Colors.white.withOpacity(0.8),
+                            ),
+                            borderRadius: BorderRadius.circular(10.0)),
+                        minWidth: 5,
+                        padding: const EdgeInsets.all(1.0),
+                        height: MediaQuery.of(context).size.height * 0.095,
+                        child: const Icon(
+                          Icons.fingerprint,
+                          color: Colors.white,
+                          size: 60.0,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              // SizedBox(
+              //     width: MediaQuery.of(context).size.width * 0.8,
+              //     height: MediaQuery.of(context).size.height * 0.1,
+              //     child: Image.asset('assets/auth.png')),
             ],
           ),
         ),
