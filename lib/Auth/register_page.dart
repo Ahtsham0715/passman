@@ -52,8 +52,7 @@ class _RegisterPageState extends State<RegisterPage> {
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         color: Colors.white,
-        child: //Add this CustomPaint widget to the Widget Tree
-            Form(
+        child: Form(
           key: _formkey,
           child: Column(
             children: [
