@@ -151,8 +151,22 @@ class _LoginPageState extends State<LoginPage> {
                 height: responsiveHW(context, ht: 3),
               ),
               ButtonBar(
-                alignment: MainAxisAlignment.end,
+                alignment: MainAxisAlignment.spaceBetween,
                 children: [
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15.0),
+                    child: TextButton(
+                      onPressed: () {},
+                      child: const Text(
+                        'Register',
+                        style: TextStyle(
+                          fontSize: 21.0,
+                          fontWeight: FontWeight.w500,
+                          fontFamily: 'majalla',
+                        ),
+                      ),
+                    ),
+                  ),
                   Padding(
                     padding: const EdgeInsets.only(right: 15.0),
                     child: TextButton(
@@ -189,6 +203,7 @@ class _LoginPageState extends State<LoginPage> {
                       fontFamily: 'majalla'),
                 ),
               ),
+
               SizedBox(
                 height: MediaQuery.of(context).size.height * 0.03,
               ),
