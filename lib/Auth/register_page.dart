@@ -40,10 +40,11 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white.withOpacity(0.9),
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         foregroundColor: Colors.black,
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white.withOpacity(0.9),
         elevation: 0.0,
         toolbarHeight: 30.0,
       ),
@@ -51,7 +52,7 @@ class _RegisterPageState extends State<RegisterPage> {
         // padding: const EdgeInsets.only(top: 15.0),
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        color: Colors.white,
+        color: Colors.white.withOpacity(0.9),
         child: Form(
           key: _formkey,
           child: Column(

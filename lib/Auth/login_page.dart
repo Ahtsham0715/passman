@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:passman/Auth/register_page.dart';
 import 'package:passman/constants.dart';
 import 'package:passman/custom_formfield.dart';
+import 'package:passman/passwords/passwords_page.dart';
 import 'package:passman/widgets/custom_shape.dart';
 
 class LoginPage extends StatefulWidget {
@@ -34,12 +35,13 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white.withOpacity(0.9),
       resizeToAvoidBottomInset: false,
       body: Container(
         // padding: const EdgeInsets.only(top: 15.0),
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        color: Colors.white,
+        color: Colors.white.withOpacity(0.9),
         child: //Add this CustomPaint widget to the Widget Tree
             Form(
           key: _formkey,
@@ -193,7 +195,11 @@ class _LoginPageState extends State<LoginPage> {
                 height: MediaQuery.of(context).size.height * 0.025,
               ),
               MaterialButton(
-                onPressed: () {},
+                onPressed: () {
+                  Get.to(
+                    () => const PasswordsPage(),
+                  );
+                },
                 color: const Color(0xFF0386D0),
                 elevation: 0.0,
                 shape: RoundedRectangleBorder(
@@ -219,9 +225,12 @@ class _LoginPageState extends State<LoginPage> {
                   alignment: AlignmentDirectional.center,
                   children: [
                     SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.85,
-                        height: MediaQuery.of(context).size.height * 0.35,
-                        child: Image.asset('assets/auth.png')),
+                      width: MediaQuery.of(context).size.width * 0.85,
+                      height: MediaQuery.of(context).size.height * 0.35,
+                      child: Image.asset(
+                        'assets/auth.png',
+                      ),
+                    ),
                     CustomPaint(
                       size: Size(
                           MediaQuery.of(context).size.width,
