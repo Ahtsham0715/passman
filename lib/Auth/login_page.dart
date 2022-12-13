@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:passman/Auth/register_page.dart';
 import 'package:passman/constants.dart';
 import 'package:passman/custom_formfield.dart';
-import 'package:passman/passwords/passwords_page.dart';
+import 'package:passman/records/records_page.dart';
 import 'package:passman/widgets/custom_shape.dart';
 
 class LoginPage extends StatefulWidget {
@@ -76,11 +76,11 @@ class _LoginPageState extends State<LoginPage> {
                       text: 'Term and privacy policy',
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
-                          print('object');
+                          // print('object');
                         },
                       style: const TextStyle(
                         fontSize: 22.0,
-                        color: Color(0xFF036BB9),
+                        color: Colors.green,
                         fontFamily: 'majalla',
                         fontWeight: FontWeight.w500,
                       )),
@@ -200,7 +200,7 @@ class _LoginPageState extends State<LoginPage> {
                     () => const PasswordsPage(),
                   );
                 },
-                color: const Color(0xFF0386D0),
+                color: Colors.green,
                 elevation: 0.0,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0)),
@@ -243,7 +243,7 @@ class _LoginPageState extends State<LoginPage> {
                       bottom: 50.0,
                       child: MaterialButton(
                         onPressed: () {},
-                        color: const Color(0xFF0386D0),
+                        color: Colors.green,
                         elevation: 0.0,
                         shape: RoundedRectangleBorder(
                             side: BorderSide(

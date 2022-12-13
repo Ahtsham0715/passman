@@ -86,11 +86,11 @@ class _RegisterPageState extends State<RegisterPage> {
                       text: 'Term and privacy policy',
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
-                          print('object');
+                          // print('object');
                         },
                       style: const TextStyle(
                         fontSize: 22.0,
-                        color: Color(0xFF036BB9),
+                        color: Colors.green,
                         fontFamily: 'majalla',
                         fontWeight: FontWeight.w500,
                       )),
@@ -203,7 +203,7 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
               MaterialButton(
                 onPressed: () {},
-                color: const Color(0xFF0386D0),
+                color: Colors.green,
                 elevation: 0.0,
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0)),
