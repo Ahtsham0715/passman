@@ -1,8 +1,8 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:passman/constants.dart';
-import 'package:passman/custom_formfield.dart';
-import 'package:passman/widgets/custom_shape.dart';
+import 'package:passman/res/components/custom_formfield.dart';
+import 'package:passman/res/components/custom_shape.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});

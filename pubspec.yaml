@@ -34,6 +34,10 @@ dependencies:
   get: any
   font_awesome_flutter: any
   animations: any
+  hive: any
+  hive_flutter: any
+  path_provider: any
+  local_auth: any
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -43,6 +47,13 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  flutter_launcher_icons: any
+
+flutter_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

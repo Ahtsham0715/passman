@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:passman/Auth/login_page.dart';
-import 'package:passman/widgets/custom_shape.dart';
+import 'package:passman/res/components/custom_shape.dart';
+
+import 'Auth/splash_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,7 +21,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: const LoginPage(),
+      home: const SplashScreen(),
     );
   }
 }
