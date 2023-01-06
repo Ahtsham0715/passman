@@ -1,5 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:passman/Auth/privacy_policy_screen.dart';
 import 'package:passman/constants.dart';
 import 'package:passman/res/components/custom_formfield.dart';
 import 'package:passman/res/components/custom_shape.dart';
@@ -86,6 +88,9 @@ class _RegisterPageState extends State<RegisterPage> {
                       text: 'Term and privacy policy',
                       recognizer: TapGestureRecognizer()
                         ..onTap = () {
+                          Get.to(
+                            () => TermsAndPrivacyPolicyPage(),
+                          );
                           // print('object');
                         },
                       style: const TextStyle(

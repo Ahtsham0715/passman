@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:passman/records/create_new_record_page.dart';
 import 'package:passman/records/record_details_page.dart';
 import 'package:passman/res/components/custom_text.dart';
 import 'package:passman/res/components/onwillpop.dart';
@@ -45,7 +46,11 @@ class _PasswordsPageState extends State<PasswordsPage> {
           ),
         ),
         floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {},
+          onPressed: () {
+            Get.to(
+              () => const CreateRecord(),
+            );
+          },
           elevation: 0.0,
 
           // shape: scrolling ? null : const CircleBorder(),
@@ -88,7 +93,7 @@ class _PasswordsPageState extends State<PasswordsPage> {
                   fontweight: FontWeight.w600,
                   fontsize: 23.0),
               subtitle: const CustomText(
-                  title: 'shami@gamil.com',
+                  title: 'shami@gmail.com',
                   fontweight: FontWeight.w500,
                   fontsize: 20.0),
               trailing: const Icon(
