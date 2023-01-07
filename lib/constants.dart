@@ -1,6 +1,5 @@
-
-
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 double? responsiveHW(ctx, {ht, wd}) {
   return (ht != null)
@@ -10,3 +9,6 @@ double? responsiveHW(ctx, {ht, wd}) {
           : null;
 }
 
+var height = Get.height;
+
+var width = Get.width;
