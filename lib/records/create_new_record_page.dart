@@ -71,13 +71,33 @@ class _CreateRecordState extends State<CreateRecord>
       body: SingleChildScrollView(
         child: Column(
           children: [
-            customTextField('Title', false, null, _title, (val) {}, (val) {},
-                Get.width * 0.5, Get.height * 0.2, UnderlineInputBorder()),
+            customTextField(
+              'Title',
+              false,
+              null,
+              _title,
+              (val) {},
+              (val) {},
+              Get.width * 0.5,
+              Get.height * 0.2,
+              UnderlineInputBorder(),
+              pIcon: Icons.title_sharp,
+            ),
             SizedBox(
               height: 5.0,
             ),
-            customTextField('Login', false, null, _login, (val) {}, (val) {},
-                Get.width * 0.5, Get.height * 0.2, UnderlineInputBorder()),
+            customTextField(
+              'Login',
+              false,
+              null,
+              _login,
+              (val) {},
+              (val) {},
+              Get.width * 0.5,
+              Get.height * 0.2,
+              UnderlineInputBorder(),
+              pIcon: Icons.login_rounded,
+            ),
             SizedBox(
               height: 5.0,
             ),
@@ -87,18 +107,21 @@ class _CreateRecordState extends State<CreateRecord>
                 SizedBox(
                   width: Get.width * 0.9,
                   child: customTextField(
-                      'Password',
-                      false,
-                      null,
-                      _password,
-                      (val) {},
-                      (val) {},
-                      Get.width * 0.5,
-                      Get.height * 0.2,
-                      UnderlineInputBorder(), onchanged: (val) {
-                    recordcontroller.progressBarValue(val);
-                    recordcontroller.update();
-                  }),
+                    'Password',
+                    false,
+                    null,
+                    _password,
+                    (val) {},
+                    (val) {},
+                    Get.width * 0.5,
+                    Get.height * 0.2,
+                    UnderlineInputBorder(),
+                    onchanged: (val) {
+                      recordcontroller.progressBarValue(val);
+                      recordcontroller.update();
+                    },
+                    pIcon: Icons.security,
+                  ),
                 ),
                 Expanded(
                   child: Padding(
@@ -327,6 +350,7 @@ class _CreateRecordState extends State<CreateRecord>
               Get.width * 0.5,
               Get.height * 0.2,
               UnderlineInputBorder(),
+              pIcon: Icons.note_add_rounded,
             ),
           ],
         ),

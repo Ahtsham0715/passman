@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:passman/res/components/custom_text.dart';
 
 class RecordDetails extends StatefulWidget {
   // final Password password;
@@ -45,39 +47,52 @@ class _RecordDetailsState extends State<RecordDetails>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'facebook',
-                style: Theme.of(context).textTheme.headline5,
+              CustomTile(title: 'Facebook', icon: Icons.note_alt_sharp),
+              CustomTile(title: 'https://facebook.com', icon: MdiIcons.web),
+              CustomTile(title: 'shami@gmail.com', icon: MdiIcons.key),
+              ListTile(
+                title: CustomText(
+                    // fontcolor: Colors.white,
+                    title: '1234',
+                    fontweight: FontWeight.w500,
+                    fontsize: 22.0),
+                trailing: InkWell(
+                  onTap: () {},
+                  child: Icon(
+                    Icons.copy_rounded,
+                    size: 25.0,
+                  ),
+                ),
+                //  ),
               ),
-              SizedBox(height: 8),
-              Text(
-                'shami',
-                style: Theme.of(context).textTheme.subtitle1,
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Password',
-                style: Theme.of(context).textTheme.headline6,
-              ),
-              SizedBox(height: 8),
-              Text(
-                'bha*****',
-                style: Theme.of(context).textTheme.bodyText1,
-              ),
-              SizedBox(height: 16),
-              Text(
-                'Notes',
-                style: Theme.of(context).textTheme.headline6,
-              ),
-              SizedBox(height: 8),
-              Text(
-                'my notes',
-                style: Theme.of(context).textTheme.bodyText1,
-              ),
+              CustomTile(
+                  title: 'my facebook password', icon: MdiIcons.noteEdit),
             ],
           ),
         ),
       ),
+    );
+  }
+}
+
+class CustomTile extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  const CustomTile({super.key, required this.title, required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      leading: Icon(
+        icon,
+        size: 25.0,
+      ),
+      title: CustomText(
+          // fontcolor: Colors.white,
+          title: title,
+          fontweight: FontWeight.w500,
+          fontsize: 22.0),
+      //  ),
     );
   }
 }
