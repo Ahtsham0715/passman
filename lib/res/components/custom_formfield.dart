@@ -3,17 +3,18 @@ import 'package:passman/constants.dart';
 
 Widget customTextField(hintTitle, isPassword, sIcon, controllerName,
     validationFunc, onSavedFunc, wSize, hSize, border,
-    {pIcon, filled, fillColor, labeltext}) {
+    {pIcon, filled, fillColor, labeltext, onchanged}) {
   return Padding(
-    padding: EdgeInsets.symmetric(horizontal: wSize * 7 / 100),
+    padding: EdgeInsets.symmetric(horizontal: 15),
     child: TextFormField(
       autovalidateMode: AutovalidateMode.onUserInteraction,
       obscureText: isPassword,
+      onChanged: onchanged,
       decoration: InputDecoration(
           filled: filled,
           fillColor: fillColor,
-          labelText: labeltext,
-          hintText: hintTitle,
+          labelText: hintTitle,
+          // hintText: hintTitle,
           suffixIcon: sIcon,
           prefixIcon: Icon(
             pIcon,

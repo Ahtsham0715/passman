@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:passman/constants.dart';
 import 'package:passman/records/controllers/new_record_controller.dart';
+import 'package:passman/records/models/progressbarmodel.dart';
 import 'package:passman/res/components/custom_formfield.dart';
 import 'package:passman/res/components/custom_text.dart';
 import 'dart:math' as math;
@@ -26,7 +27,7 @@ class _CreateRecordState extends State<CreateRecord>
     super.initState();
     _animationController = AnimationController(
       vsync: this,
-      duration: Duration(milliseconds: 600),
+      duration: Duration(milliseconds: 400),
     );
     _animation = Tween(begin: 0.0, end: 1.0).animate(_animationController);
   }
@@ -71,12 +72,12 @@ class _CreateRecordState extends State<CreateRecord>
         child: Column(
           children: [
             customTextField('Title', false, null, _title, (val) {}, (val) {},
-                Get.width * 0.5, Get.height * 0.9, UnderlineInputBorder()),
+                Get.width * 0.5, Get.height * 0.2, UnderlineInputBorder()),
             SizedBox(
               height: 5.0,
             ),
             customTextField('Login', false, null, _login, (val) {}, (val) {},
-                Get.width * 0.5, Get.height * 0.95, UnderlineInputBorder()),
+                Get.width * 0.5, Get.height * 0.2, UnderlineInputBorder()),
             SizedBox(
               height: 5.0,
             ),
@@ -93,8 +94,11 @@ class _CreateRecordState extends State<CreateRecord>
                       (val) {},
                       (val) {},
                       Get.width * 0.5,
-                      Get.height * 0.95,
-                      UnderlineInputBorder()),
+                      Get.height * 0.2,
+                      UnderlineInputBorder(), onchanged: (val) {
+                    recordcontroller.progressBarValue(val);
+                    recordcontroller.update();
+                  }),
                 ),
                 Expanded(
                   child: Padding(
@@ -103,24 +107,28 @@ class _CreateRecordState extends State<CreateRecord>
                       onTap: _animationController.isAnimating
                           ? null
                           : () {
+                              recordcontroller.alphabets = true;
+                              recordcontroller.numbers = true;
+                              recordcontroller.specialcharacters = true;
+                              recordcontroller.autogenerate = true;
                               if (_animationController.isAnimating) {
-                                _animationController.stop();
+                                _animationController.reset();
                               } else {
                                 _animationController.repeat();
+                                recordcontroller
+                                    .generatePassword(
+                                        length:
+                                            recordcontroller.characters.toInt(),
+                                        alphabets: recordcontroller.alphabets,
+                                        numbers: recordcontroller.numbers,
+                                        specchar:
+                                            recordcontroller.specialcharacters)
+                                    .then((value) {
+                                  _animationController.reset();
+                                  _password.text = value.toString();
+                                  recordcontroller.update();
+                                });
                               }
-                              recordcontroller
-                                  .generatePassword(
-                                      length:
-                                          recordcontroller.characters.toInt(),
-                                      alphabets: recordcontroller.alphabets,
-                                      numbers: recordcontroller.numbers,
-                                      specchar:
-                                          recordcontroller.specialcharacters)
-                                  .then((value) {
-                                _animationController.stop();
-                                _password.text = value.toString();
-                                recordcontroller.update();
-                              });
                             },
                       child: AnimatedBuilder(
                         animation: _animation,
@@ -143,145 +151,151 @@ class _CreateRecordState extends State<CreateRecord>
             SizedBox(
               height: 15.0,
             ),
-            SizedBox(
-              height: height * 0.2,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                child: GetBuilder<NewRecordController>(builder: (controller) {
-                  return Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          CustomText(
-                            title: 'Number of characters',
-                            fontsize: 20.0,
-                            // fontcolor: Colors.white,
-                            fontweight: FontWeight.w500,
-                          ),
-                          CustomText(
-                            title: controller.characters.toInt().toString(),
-                            fontsize: 20.0,
-                            // fontcolor: Colors.white,
-                            fontweight: FontWeight.w500,
-                          ),
-                        ],
-                      ),
-                      SliderTheme(
-                        data: SliderTheme.of(context).copyWith(
-                          activeTrackColor: Colors.white,
-                          thumbShape:
-                              RoundSliderThumbShape(enabledThumbRadius: 8.0),
-                          overlayShape:
-                              RoundSliderOverlayShape(overlayRadius: 24.0),
+            GetBuilder<NewRecordController>(builder: (controller) {
+              return !controller.autogenerate
+                  ? Center()
+                  : SizedBox(
+                      height: height * 0.2,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                CustomText(
+                                  title: 'Number of characters',
+                                  fontsize: 20.0,
+                                  // fontcolor: Colors.white,
+                                  fontweight: FontWeight.w500,
+                                ),
+                                CustomText(
+                                  title:
+                                      controller.characters.toInt().toString(),
+                                  fontsize: 20.0,
+                                  // fontcolor: Colors.white,
+                                  fontweight: FontWeight.w500,
+                                ),
+                              ],
+                            ),
+                            SliderTheme(
+                              data: SliderTheme.of(context).copyWith(
+                                activeTrackColor: Colors.white,
+                                thumbShape: RoundSliderThumbShape(
+                                    enabledThumbRadius: 8.0),
+                                overlayShape: RoundSliderOverlayShape(
+                                    overlayRadius: 24.0),
+                              ),
+                              child: Slider(
+                                value: controller.characters,
+                                onChanged: (val) {
+                                  // print(controller.characters.toInt());
+                                  if (val > 8) {
+                                    // print(val);
+                                    controller.characters = val;
+                                    controller
+                                        .generatePassword(
+                                            length: val.toInt(),
+                                            alphabets: controller.alphabets,
+                                            numbers: controller.numbers,
+                                            specchar:
+                                                controller.specialcharacters)
+                                        .then((value) {
+                                      // _animationController.stop();
+                                      _password.text = value.toString();
+                                      controller.update();
+                                    });
+                                    // controller.update();
+                                  }
+                                },
+                                min: 1,
+                                max: 99,
+                                activeColor: Colors.amber,
+                              ),
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                CustomCircle(
+                                    title: 'A-Z',
+                                    ontap: () {
+                                      controller.alphabets =
+                                          !controller.alphabets;
+
+                                      controller
+                                          .generatePassword(
+                                              length:
+                                                  controller.characters.toInt(),
+                                              alphabets: controller.alphabets,
+                                              numbers: controller.numbers,
+                                              specchar:
+                                                  controller.specialcharacters)
+                                          .then((value) {
+                                        // _animationController.stop();
+                                        _password.text = value.toString();
+                                        controller.update();
+                                      });
+                                      // controller.update();
+                                    },
+                                    isenabled: controller.alphabets),
+                                CustomCircle(
+                                    title: '0-9',
+                                    ontap: () {
+                                      controller.numbers = !controller.numbers;
+
+                                      controller
+                                          .generatePassword(
+                                              length:
+                                                  controller.characters.toInt(),
+                                              alphabets: controller.alphabets,
+                                              numbers: controller.numbers,
+                                              specchar:
+                                                  controller.specialcharacters)
+                                          .then((value) {
+                                        // _animationController.stop();
+                                        _password.text = value.toString();
+                                        controller.update();
+                                      });
+                                      // controller.update();
+                                    },
+                                    isenabled: controller.numbers),
+                                CustomCircle(
+                                    title: '!@#',
+                                    ontap: () {
+                                      controller.specialcharacters =
+                                          !controller.specialcharacters;
+
+                                      controller
+                                          .generatePassword(
+                                              length:
+                                                  controller.characters.toInt(),
+                                              alphabets: controller.alphabets,
+                                              numbers: controller.numbers,
+                                              specchar:
+                                                  controller.specialcharacters)
+                                          .then((value) {
+                                        // _animationController.stop();
+                                        _password.text = value.toString();
+                                        controller.update();
+                                      });
+                                      // controller.update();
+                                    },
+                                    isenabled: controller.specialcharacters),
+                              ],
+                            ),
+                          ],
                         ),
-                        child: Slider(
-                          value: controller.characters,
-                          onChanged: (val) {
-                            // print(controller.characters.toInt());
-                            if (val > 8) {
-                              // print(val);
-                              controller.characters = val;
-                              controller
-                                  .generatePassword(
-                                      length: val.toInt(),
-                                      alphabets: controller.alphabets,
-                                      numbers: controller.numbers,
-                                      specchar: controller.specialcharacters)
-                                  .then((value) {
-                                // _animationController.stop();
-                                _password.text = value.toString();
-                                controller.update();
-                              });
-                              // controller.update();
-                            }
-                          },
-                          min: 1,
-                          max: 99,
-                          activeColor: Colors.amber,
-                        ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          CustomCircle(
-                              title: 'A-Z',
-                              ontap: () {
-                                controller.alphabets = !controller.alphabets;
-
-                                controller
-                                    .generatePassword(
-                                        length: controller.characters.toInt(),
-                                        alphabets: controller.alphabets,
-                                        numbers: controller.numbers,
-                                        specchar: controller.specialcharacters)
-                                    .then((value) {
-                                  // _animationController.stop();
-                                  _password.text = value.toString();
-                                  controller.update();
-                                });
-                                // controller.update();
-                              },
-                              isenabled: controller.alphabets),
-                          CustomCircle(
-                              title: '0-9',
-                              ontap: () {
-                                controller.numbers = !controller.numbers;
-
-                                controller
-                                    .generatePassword(
-                                        length: controller.characters.toInt(),
-                                        alphabets: controller.alphabets,
-                                        numbers: controller.numbers,
-                                        specchar: controller.specialcharacters)
-                                    .then((value) {
-                                  // _animationController.stop();
-                                  _password.text = value.toString();
-                                  controller.update();
-                                });
-                                // controller.update();
-                              },
-                              isenabled: controller.numbers),
-                          CustomCircle(
-                              title: '!@#',
-                              ontap: () {
-                                controller.specialcharacters =
-                                    !controller.specialcharacters;
-
-                                controller
-                                    .generatePassword(
-                                        length: controller.characters.toInt(),
-                                        alphabets: controller.alphabets,
-                                        numbers: controller.numbers,
-                                        specchar: controller.specialcharacters)
-                                    .then((value) {
-                                  // _animationController.stop();
-                                  _password.text = value.toString();
-                                  controller.update();
-                                });
-                                // controller.update();
-                              },
-                              isenabled: controller.specialcharacters),
-                        ],
-                      ),
-                    ],
-                  );
-                }),
-              ),
-            ),
+                    );
+            }),
             GetBuilder<NewRecordController>(builder: (controller) {
               return Padding(
                 padding: const EdgeInsets.only(
                     left: 13.0, right: 20.0, top: 5.0, bottom: 5.0),
                 child: LinearProgressIndicator(
                   backgroundColor: Colors.grey,
-                  value: controller.alphabets
-                      ? 0.3
-                      : controller.numbers
-                          ? 0.65
-                          : controller.specialcharacters
-                              ? 1.0
-                              : 0.1,
+                  value: controller.progressmodel.value,
+                  color: controller.progressmodel.color,
                 ),
               );
             }),
@@ -296,7 +310,7 @@ class _CreateRecordState extends State<CreateRecord>
               (val) {},
               (val) {},
               Get.width * 0.5,
-              Get.height * 0.95,
+              Get.height * 0.2,
               UnderlineInputBorder(),
               pIcon: FontAwesomeIcons.globe,
             ),
@@ -311,7 +325,7 @@ class _CreateRecordState extends State<CreateRecord>
               (val) {},
               (val) {},
               Get.width * 0.5,
-              Get.height * 0.95,
+              Get.height * 0.2,
               UnderlineInputBorder(),
             ),
           ],
