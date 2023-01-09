@@ -9,8 +9,8 @@ import 'Auth/splash_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter();
-  await Hive.openBox<PasswordModel>('my_data');
   Hive.registerAdapter(PasswordModelAdapter());
+  await Hive.openBox<PasswordModel>('my_data');
   runApp(const MyApp());
 }
 
