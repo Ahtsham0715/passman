@@ -5,8 +5,10 @@ import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:passman/constants.dart';
 import 'package:passman/records/controllers/new_record_controller.dart';
+import 'package:passman/records/models/password_model.dart';
 import 'package:passman/records/models/progressbarmodel.dart';
 import 'package:passman/res/components/custom_formfield.dart';
+import 'package:passman/res/components/custom_snackbar.dart';
 import 'package:passman/res/components/custom_text.dart';
 import 'dart:math' as math;
 
@@ -72,7 +74,30 @@ class _CreateRecordState extends State<CreateRecord>
           Padding(
             padding: const EdgeInsets.all(5.0),
             child: InkWell(
-              onTap: () {},
+              onTap: () async {
+                PasswordModel passworddata = PasswordModel(
+                    title: _title.text.toString(),
+                    login: _login.text.toString().trim(),
+                    password: _password.text.toString(),
+                    website: _websiteaddress.text.toString(),
+                    notes: _notes.text.toString());
+                try {
+                  await passwordbox.put(
+                      passwordbox.keys.length + 1, passworddata);
+                  styledsnackbar(
+                      txt: 'Password Saved Successfully', icon: Icons.check);
+                  _title.clear();
+                  _login.clear();
+                  _password.clear();
+                  _websiteaddress.clear();
+                  _notes.clear();
+                } catch (e) {
+                  print(e);
+                  styledsnackbar(
+                      txt: 'Error Saving Password.Try Again',
+                      icon: Icons.error);
+                }
+              },
               child: Icon(
                 Icons.check,
                 size: 30.0,

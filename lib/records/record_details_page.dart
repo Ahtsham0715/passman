@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter/services.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:passman/constants.dart';
+import 'package:passman/records/models/password_model.dart';
+import 'package:passman/res/components/custom_snackbar.dart';
 import 'package:passman/res/components/custom_text.dart';
 
 class RecordDetails extends StatefulWidget {
-  // final Password password;
+  final PasswordModel password;
 
-  const RecordDetails({Key? key}) : super(key: key);
+  const RecordDetails({Key? key, required this.password}) : super(key: key);
 
   @override
   _RecordDetailsState createState() => _RecordDetailsState();
@@ -73,20 +76,33 @@ class _RecordDetailsState extends State<RecordDetails>
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CustomTile(title: 'Facebook', icon: Icons.note_alt_sharp),
+                CustomTile(
+                    title: widget.password.title.toString(),
+                    icon: Icons.note_alt_sharp),
                 CustomDivider(),
-                CustomTile(title: 'https://facebook.com', icon: MdiIcons.web),
+                CustomTile(
+                    title: widget.password.website.toString(),
+                    icon: MdiIcons.web),
                 CustomDivider(),
-                CustomTile(title: 'shami@gmail.com', icon: MdiIcons.key),
+                CustomTile(
+                    title: widget.password.login.toString(),
+                    icon: MdiIcons.key),
                 CustomDivider(),
                 ListTile(
                   title: CustomText(
                       // fontcolor: Colors.white,
-                      title: '1234***',
+                      title:
+                          widget.password.password.toString().substring(0, 3) +
+                              '***',
                       fontweight: FontWeight.w500,
                       fontsize: 25.0),
                   trailing: InkWell(
-                    onTap: () {},
+                    onTap: () async {
+                      await Clipboard.setData(ClipboardData(
+                          text: widget.password.password.toString()));
+                      styledsnackbar(
+                          txt: 'Copied to clipboard', icon: Icons.copy_sharp);
+                    },
                     child: Icon(
                       Icons.copy_rounded,
                       size: 25.0,
@@ -97,7 +113,8 @@ class _RecordDetailsState extends State<RecordDetails>
                 ),
                 CustomDivider(),
                 CustomTile(
-                    title: 'my facebook password', icon: MdiIcons.noteEdit),
+                    title: widget.password.notes.toString(),
+                    icon: MdiIcons.noteEdit),
                 CustomDivider(),
               ],
             ),

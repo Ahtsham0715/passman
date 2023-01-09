@@ -3,7 +3,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:passman/records/create_new_record_page.dart';
+import 'package:passman/records/models/password_model.dart';
 import 'package:passman/records/record_details_page.dart';
 import 'package:passman/res/components/custom_text.dart';
 import 'package:passman/res/components/onwillpop.dart';
@@ -95,46 +97,52 @@ class _PasswordsPageState extends State<PasswordsPage> {
               Color(0XFFe29587),
             ],
           )),
-          child: ListView.separated(
-            controller: scrollcont,
-            separatorBuilder: (context, index) {
-              return const Divider(
-                color: Colors.white,
-                thickness: 0.5,
-              );
-            },
-            itemCount: 30,
-            itemBuilder: (context, index) {
-              return ListTile(
-                onTap: () {
-                  Get.to(
-                    () => const RecordDetails(),
-                  );
-                },
-                dense: true,
-                leading: const Icon(
-                  FontAwesomeIcons.facebook,
-                  color: Colors.white,
-                  size: 40.0,
-                ),
-                title: const CustomText(
-                    title: 'Facebook',
-                    fontcolor: Colors.white,
-                    fontweight: FontWeight.w600,
-                    fontsize: 23.0),
-                subtitle: const CustomText(
-                    title: 'shami@gmail.com',
-                    fontcolor: Colors.white,
-                    fontweight: FontWeight.w500,
-                    fontsize: 20.0),
-                trailing: const Icon(
-                  Icons.copy,
-                  color: Colors.white,
-                  size: 25.0,
-                ),
-              );
-            },
-          ),
+          child: ValueListenableBuilder(
+              valueListenable: Hive.box<PasswordModel>('my_data').listenable(),
+              builder: (context, box, _) {
+                return ListView.separated(
+                  controller: scrollcont,
+                  separatorBuilder: (context, index) {
+                    return const Divider(
+                      color: Colors.white,
+                      thickness: 0.5,
+                    );
+                  },
+                  itemCount: box.length,
+                  itemBuilder: (context, index) {
+                    print(box.getAt(index)?.title.toString());
+                    var data = box.getAt(index);
+                    return ListTile(
+                      onTap: () {
+                        Get.to(
+                          () => RecordDetails(password: data),
+                        );
+                      },
+                      dense: true,
+                      leading: const Icon(
+                        FontAwesomeIcons.facebook,
+                        color: Colors.white,
+                        size: 40.0,
+                      ),
+                      title: CustomText(
+                          title: data!.title.toString(),
+                          fontcolor: Colors.white,
+                          fontweight: FontWeight.w600,
+                          fontsize: 23.0),
+                      subtitle: CustomText(
+                          title: data.login.toString(),
+                          fontcolor: Colors.white,
+                          fontweight: FontWeight.w500,
+                          fontsize: 20.0),
+                      trailing: const Icon(
+                        Icons.copy,
+                        color: Colors.white,
+                        size: 25.0,
+                      ),
+                    );
+                  },
+                );
+              }),
         ),
         drawer: Drawer(
           child: Container(

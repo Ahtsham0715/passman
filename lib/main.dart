@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:passman/Auth/login_page.dart';
-import 'package:passman/res/components/custom_shape.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:passman/records/models/password_model.dart';
+import 'package:passman/records/models/password_model.g.dart';
 
 import 'Auth/splash_screen.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Hive.initFlutter();
+  await Hive.openBox<PasswordModel>('my_data');
+  Hive.registerAdapter(PasswordModelAdapter());
   runApp(const MyApp());
 }
 
