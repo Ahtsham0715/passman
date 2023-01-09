@@ -56,6 +56,15 @@ class _LoginPageState extends State<LoginPage> {
             width: MediaQuery.of(context).size.width,
             height: MediaQuery.of(context).size.height,
             color: Colors.white.withOpacity(0.9),
+            // decoration: BoxDecoration(
+            //     gradient: LinearGradient(
+            //   begin: Alignment.topLeft,
+            //   end: Alignment.bottomCenter,
+            //   colors: [
+            //     Color(0XFFd66d75),
+            //     Color(0XFFe29587),
+            //   ],
+            // )),
             child: //Add this CustomPaint widget to the Widget Tree
                 Form(
               key: _formkey,
@@ -132,6 +141,8 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     pIcon: Icons.email_outlined,
+                    piconcolor: Colors.grey,
+                    textcolor: Colors.grey,
                   ),
                   SizedBox(
                     height: responsiveHW(context, ht: 3),
@@ -167,6 +178,8 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     pIcon: Icons.lock_outline_rounded,
+                    piconcolor: Colors.grey,
+                    textcolor: Colors.grey,
                   ),
                   SizedBox(
                     height: responsiveHW(context, ht: 3),

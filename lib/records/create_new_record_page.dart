@@ -49,11 +49,24 @@ class _CreateRecordState extends State<CreateRecord>
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
+        elevation: 0.0,
         title: CustomText(
           title: 'Create New Record',
           fontsize: 30.0,
           fontcolor: Colors.white,
           fontweight: FontWeight.w500,
+        ),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0XFFd66d75),
+                Color(0XFFe29587),
+              ],
+              begin: Alignment.bottomCenter,
+              end: Alignment.topCenter,
+            ),
+          ),
         ),
         actions: [
           Padding(
@@ -68,291 +81,332 @@ class _CreateRecordState extends State<CreateRecord>
           ),
         ],
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            customTextField(
-              'Title',
-              false,
-              null,
-              _title,
-              (val) {},
-              (val) {},
-              Get.width * 0.5,
-              Get.height * 0.2,
-              UnderlineInputBorder(),
-              pIcon: Icons.title_sharp,
-            ),
-            SizedBox(
-              height: 5.0,
-            ),
-            customTextField(
-              'Login',
-              false,
-              null,
-              _login,
-              (val) {},
-              (val) {},
-              Get.width * 0.5,
-              Get.height * 0.2,
-              UnderlineInputBorder(),
-              pIcon: Icons.login_rounded,
-            ),
-            SizedBox(
-              height: 5.0,
-            ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                SizedBox(
-                  width: Get.width * 0.9,
-                  child: customTextField(
-                    'Password',
-                    false,
-                    null,
-                    _password,
-                    (val) {},
-                    (val) {},
-                    Get.width * 0.5,
-                    Get.height * 0.2,
-                    UnderlineInputBorder(),
-                    onchanged: (val) {
-                      recordcontroller.progressBarValue(val);
-                      recordcontroller.update();
-                    },
-                    pIcon: Icons.security,
+      body: Container(
+        height: height,
+        width: width,
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color(0XFFd66d75),
+            Color(0XFFe29587),
+          ],
+        )),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              SizedBox(
+                height: 15.0,
+              ),
+              customTextField(
+                'Title',
+                false,
+                null,
+                _title,
+                (val) {},
+                (val) {},
+                Get.width * 0.5,
+                Get.height * 0.2,
+                UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.white,
                   ),
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 10.0),
-                    child: InkWell(
-                      onTap: _animationController.isAnimating
-                          ? null
-                          : () {
-                              recordcontroller.alphabets = true;
-                              recordcontroller.numbers = true;
-                              recordcontroller.specialcharacters = true;
-                              recordcontroller.autogenerate = true;
-                              if (_animationController.isAnimating) {
-                                _animationController.reset();
-                              } else {
-                                _animationController.repeat();
-                                recordcontroller
-                                    .generatePassword(
-                                        length:
-                                            recordcontroller.characters.toInt(),
-                                        alphabets: recordcontroller.alphabets,
-                                        numbers: recordcontroller.numbers,
-                                        specchar:
-                                            recordcontroller.specialcharacters)
-                                    .then((value) {
+                pIcon: Icons.note_alt_outlined,
+              ),
+              SizedBox(
+                height: 5.0,
+              ),
+              customTextField(
+                'Login',
+                false,
+                null,
+                _login,
+                (val) {},
+                (val) {},
+                Get.width * 0.5,
+                Get.height * 0.2,
+                UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.white,
+                  ),
+                ),
+                pIcon: Icons.key,
+              ),
+              SizedBox(
+                height: 5.0,
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  SizedBox(
+                    width: Get.width * 0.9,
+                    child: customTextField(
+                      'Password',
+                      false,
+                      null,
+                      _password,
+                      (val) {},
+                      (val) {},
+                      Get.width * 0.5,
+                      Get.height * 0.25,
+                      UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.white,
+                        ),
+                      ),
+                      onchanged: (val) {
+                        recordcontroller.progressBarValue(val);
+                        recordcontroller.update();
+                      },
+                      pIcon: Icons.security,
+                    ),
+                  ),
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.only(right: 10.0),
+                      child: InkWell(
+                        onTap: _animationController.isAnimating
+                            ? null
+                            : () {
+                                // recordcontroller.alphabets = true;
+                                // recordcontroller.numbers = true;
+                                // recordcontroller.specialcharacters = true;
+                                recordcontroller.autogenerate = true;
+                                if (_animationController.isAnimating) {
                                   _animationController.reset();
-                                  _password.text = value.toString();
-                                  recordcontroller.update();
-                                });
-                              }
-                            },
-                      child: AnimatedBuilder(
-                        animation: _animation,
-                        builder: (context, child) {
-                          return Transform.rotate(
-                            angle: _animation.value * 3 * math.pi,
-                            child: child,
-                          );
-                        },
-                        child: SizedBox(
-                            height: 35,
-                            width: 35,
-                            child: Image.asset('assets/dice.png')),
+                                } else {
+                                  _animationController.repeat();
+                                  recordcontroller
+                                      .generatePassword(
+                                          length: recordcontroller.characters
+                                              .toInt(),
+                                          alphabets: recordcontroller.alphabets,
+                                          numbers: recordcontroller.numbers,
+                                          specchar: recordcontroller
+                                              .specialcharacters)
+                                      .then((value) {
+                                    _animationController.reset();
+                                    _password.text = value.toString();
+                                    recordcontroller.update();
+                                  });
+                                }
+                              },
+                        child: AnimatedBuilder(
+                          animation: _animation,
+                          builder: (context, child) {
+                            return Transform.rotate(
+                              angle: _animation.value * 3 * math.pi,
+                              child: child,
+                            );
+                          },
+                          child: SizedBox(
+                              height: 35,
+                              width: 35,
+                              child: Image.asset('assets/dice.png')),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 15.0,
-            ),
-            GetBuilder<NewRecordController>(builder: (controller) {
-              return !controller.autogenerate
-                  ? Center()
-                  : SizedBox(
-                      height: height * 0.2,
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                        child: Column(
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                CustomText(
-                                  title: 'Number of characters',
-                                  fontsize: 20.0,
-                                  // fontcolor: Colors.white,
-                                  fontweight: FontWeight.w500,
-                                ),
-                                CustomText(
-                                  title:
-                                      controller.characters.toInt().toString(),
-                                  fontsize: 20.0,
-                                  // fontcolor: Colors.white,
-                                  fontweight: FontWeight.w500,
-                                ),
-                              ],
-                            ),
-                            SliderTheme(
-                              data: SliderTheme.of(context).copyWith(
-                                activeTrackColor: Colors.white,
-                                thumbShape: RoundSliderThumbShape(
-                                    enabledThumbRadius: 8.0),
-                                overlayShape: RoundSliderOverlayShape(
-                                    overlayRadius: 24.0),
+                ],
+              ),
+              SizedBox(
+                height: 15.0,
+              ),
+              GetBuilder<NewRecordController>(builder: (controller) {
+                return !controller.autogenerate
+                    ? Center()
+                    : SizedBox(
+                        height: height * 0.2,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  CustomText(
+                                    title: 'Number of characters',
+                                    fontsize: 20.0,
+                                    fontcolor: Colors.white,
+                                    fontweight: FontWeight.w500,
+                                  ),
+                                  CustomText(
+                                    title: controller.characters
+                                        .toInt()
+                                        .toString(),
+                                    fontsize: 20.0,
+                                    fontcolor: Colors.white,
+                                    fontweight: FontWeight.w500,
+                                  ),
+                                ],
                               ),
-                              child: Slider(
-                                value: controller.characters,
-                                onChanged: (val) {
-                                  // print(controller.characters.toInt());
-                                  if (val > 8) {
-                                    // print(val);
-                                    controller.characters = val;
-                                    controller
-                                        .generatePassword(
-                                            length: val.toInt(),
-                                            alphabets: controller.alphabets,
-                                            numbers: controller.numbers,
-                                            specchar:
-                                                controller.specialcharacters)
-                                        .then((value) {
-                                      // _animationController.stop();
-                                      _password.text = value.toString();
-                                      controller.update();
-                                    });
-                                    // controller.update();
-                                  }
-                                },
-                                min: 1,
-                                max: 99,
-                                activeColor: Colors.amber,
+                              SliderTheme(
+                                data: SliderTheme.of(context).copyWith(
+                                  activeTrackColor: Colors.white,
+                                  thumbShape: RoundSliderThumbShape(
+                                      enabledThumbRadius: 8.0),
+                                  overlayShape: RoundSliderOverlayShape(
+                                      overlayRadius: 24.0),
+                                ),
+                                child: Slider(
+                                  value: controller.characters,
+                                  onChanged: (val) {
+                                    // print(controller.characters.toInt());
+                                    if (val > 8) {
+                                      // print(val);
+                                      controller.characters = val;
+                                      controller
+                                          .generatePassword(
+                                              length: val.toInt(),
+                                              alphabets: controller.alphabets,
+                                              numbers: controller.numbers,
+                                              specchar:
+                                                  controller.specialcharacters)
+                                          .then((value) {
+                                        // _animationController.stop();
+                                        _password.text = value.toString();
+                                        controller.update();
+                                      });
+                                      // controller.update();
+                                    }
+                                  },
+                                  min: 1,
+                                  max: 99,
+                                  activeColor: Colors.amber,
+                                  inactiveColor: Colors.white70,
+                                ),
                               ),
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                CustomCircle(
-                                    title: 'A-Z',
-                                    ontap: () {
-                                      controller.alphabets =
-                                          !controller.alphabets;
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  CustomCircle(
+                                      title: 'A-Z',
+                                      ontap: () {
+                                        controller.alphabets =
+                                            !controller.alphabets;
 
-                                      controller
-                                          .generatePassword(
-                                              length:
-                                                  controller.characters.toInt(),
-                                              alphabets: controller.alphabets,
-                                              numbers: controller.numbers,
-                                              specchar:
-                                                  controller.specialcharacters)
-                                          .then((value) {
-                                        // _animationController.stop();
-                                        _password.text = value.toString();
-                                        controller.update();
-                                      });
-                                      // controller.update();
-                                    },
-                                    isenabled: controller.alphabets),
-                                CustomCircle(
-                                    title: '0-9',
-                                    ontap: () {
-                                      controller.numbers = !controller.numbers;
+                                        controller
+                                            .generatePassword(
+                                                length: controller.characters
+                                                    .toInt(),
+                                                alphabets: controller.alphabets,
+                                                numbers: controller.numbers,
+                                                specchar: controller
+                                                    .specialcharacters)
+                                            .then((value) {
+                                          // _animationController.stop();
+                                          _password.text = value.toString();
+                                          controller.update();
+                                        });
+                                        // controller.update();
+                                      },
+                                      isenabled: controller.alphabets),
+                                  CustomCircle(
+                                      title: '0-9',
+                                      ontap: () {
+                                        controller.numbers =
+                                            !controller.numbers;
 
-                                      controller
-                                          .generatePassword(
-                                              length:
-                                                  controller.characters.toInt(),
-                                              alphabets: controller.alphabets,
-                                              numbers: controller.numbers,
-                                              specchar:
-                                                  controller.specialcharacters)
-                                          .then((value) {
-                                        // _animationController.stop();
-                                        _password.text = value.toString();
-                                        controller.update();
-                                      });
-                                      // controller.update();
-                                    },
-                                    isenabled: controller.numbers),
-                                CustomCircle(
-                                    title: '!@#',
-                                    ontap: () {
-                                      controller.specialcharacters =
-                                          !controller.specialcharacters;
+                                        controller
+                                            .generatePassword(
+                                                length: controller.characters
+                                                    .toInt(),
+                                                alphabets: controller.alphabets,
+                                                numbers: controller.numbers,
+                                                specchar: controller
+                                                    .specialcharacters)
+                                            .then((value) {
+                                          // _animationController.stop();
+                                          _password.text = value.toString();
+                                          controller.update();
+                                        });
+                                        // controller.update();
+                                      },
+                                      isenabled: controller.numbers),
+                                  CustomCircle(
+                                      title: '!@#',
+                                      ontap: () {
+                                        controller.specialcharacters =
+                                            !controller.specialcharacters;
 
-                                      controller
-                                          .generatePassword(
-                                              length:
-                                                  controller.characters.toInt(),
-                                              alphabets: controller.alphabets,
-                                              numbers: controller.numbers,
-                                              specchar:
-                                                  controller.specialcharacters)
-                                          .then((value) {
-                                        // _animationController.stop();
-                                        _password.text = value.toString();
-                                        controller.update();
-                                      });
-                                      // controller.update();
-                                    },
-                                    isenabled: controller.specialcharacters),
-                              ],
-                            ),
-                          ],
+                                        controller
+                                            .generatePassword(
+                                                length: controller.characters
+                                                    .toInt(),
+                                                alphabets: controller.alphabets,
+                                                numbers: controller.numbers,
+                                                specchar: controller
+                                                    .specialcharacters)
+                                            .then((value) {
+                                          // _animationController.stop();
+                                          _password.text = value.toString();
+                                          controller.update();
+                                        });
+                                        // controller.update();
+                                      },
+                                      isenabled: controller.specialcharacters),
+                                ],
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    );
-            }),
-            GetBuilder<NewRecordController>(builder: (controller) {
-              return Padding(
-                padding: const EdgeInsets.only(
-                    left: 13.0, right: 20.0, top: 5.0, bottom: 5.0),
-                child: LinearProgressIndicator(
-                  backgroundColor: Colors.grey,
-                  value: controller.progressmodel.value,
-                  color: controller.progressmodel.color,
+                      );
+              }),
+              GetBuilder<NewRecordController>(builder: (controller) {
+                return Padding(
+                  padding: const EdgeInsets.only(
+                      left: 13.0, right: 20.0, top: 5.0, bottom: 5.0),
+                  child: LinearProgressIndicator(
+                    backgroundColor: Colors.grey,
+                    value: controller.progressmodel.value,
+                    color: controller.progressmodel.color,
+                  ),
+                );
+              }),
+              SizedBox(
+                height: 20.0,
+              ),
+              customTextField(
+                'Website Address',
+                false,
+                null,
+                _websiteaddress,
+                (val) {},
+                (val) {},
+                Get.width * 0.5,
+                Get.height * 0.2,
+                UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.white,
+                  ),
                 ),
-              );
-            }),
-            SizedBox(
-              height: 20.0,
-            ),
-            customTextField(
-              'Website Address',
-              false,
-              null,
-              _websiteaddress,
-              (val) {},
-              (val) {},
-              Get.width * 0.5,
-              Get.height * 0.2,
-              UnderlineInputBorder(),
-              pIcon: FontAwesomeIcons.globe,
-            ),
-            SizedBox(
-              height: 10.0,
-            ),
-            customTextField(
-              'Notes',
-              false,
-              null,
-              _notes,
-              (val) {},
-              (val) {},
-              Get.width * 0.5,
-              Get.height * 0.2,
-              UnderlineInputBorder(),
-              pIcon: Icons.note_add_rounded,
-            ),
-          ],
+                pIcon: MdiIcons.web,
+              ),
+              SizedBox(
+                height: 10.0,
+              ),
+              customTextField(
+                'Notes',
+                false,
+                null,
+                _notes,
+                (val) {},
+                (val) {},
+                Get.width * 0.5,
+                Get.height * 0.2,
+                UnderlineInputBorder(
+                  borderSide: BorderSide(
+                    color: Colors.white,
+                  ),
+                ),
+                pIcon: Icons.note_add_outlined,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -386,7 +440,7 @@ class CustomCircle extends StatelessWidget {
         child: CustomText(
           title: title,
           fontsize: 22.0,
-          // fontcolor: Colors.white,
+          fontcolor: Colors.white,
           fontweight: FontWeight.w500,
         ),
       ),

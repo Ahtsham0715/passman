@@ -130,6 +130,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
                 pIcon: Icons.email_outlined,
+                piconcolor: Colors.grey,
+                textcolor: Colors.grey,
               ),
               SizedBox(
                 height: responsiveHW(context, ht: 3),
@@ -165,6 +167,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
                 pIcon: Icons.lock_outline_rounded,
+                piconcolor: Colors.grey,
+                textcolor: Colors.grey,
               ),
               SizedBox(
                 height: responsiveHW(context, ht: 3),
@@ -202,6 +206,8 @@ class _RegisterPageState extends State<RegisterPage> {
                   ),
                 ),
                 pIcon: Icons.lock_outline_rounded,
+                piconcolor: Colors.grey,
+                textcolor: Colors.grey,
               ),
               SizedBox(
                 height: responsiveHW(context, ht: 8),

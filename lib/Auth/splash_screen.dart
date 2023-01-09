@@ -46,39 +46,59 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.green.shade300,
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          SizeTransition(
-            sizeFactor: _animation,
-            axis: Axis.vertical,
-            // opacity: _animation,
-            child: Container(
-                margin: const EdgeInsets.symmetric(
-                  horizontal: 50.0,
-                  vertical: 5.0,
+      // backgroundColor: Colors.green.shade300,
+      body: Container(
+        decoration: BoxDecoration(
+            gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomCenter,
+          colors: [
+            Color(0XFFd66d75),
+            Color(0XFFe29587),
+          ],
+        )),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            SizeTransition(
+              sizeFactor: _animation,
+              axis: Axis.vertical,
+              // opacity: _animation,
+              child: Container(
+                  decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomCenter,
+                    colors: [
+                      Color(0XFFd66d75),
+                      Color(0XFFe29587),
+                    ],
+                  )),
+                  margin: const EdgeInsets.symmetric(
+                    horizontal: 50.0,
+                    vertical: 5.0,
+                  ),
+                  child: Image.asset('assets/icon.png')),
+            ),
+            SizeTransition(
+              sizeFactor: _animation,
+              axis: Axis.horizontal,
+              child: Text(
+                'Secure your passwords secure your life',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  fontSize: 45.0,
+                  fontWeight: FontWeight.w500,
+                  fontFamily: 'majalla',
                 ),
-                child: Image.asset('assets/icon.png')),
-          ),
-          SizeTransition(
-            sizeFactor: _animation,
-            axis: Axis.horizontal,
-            child: Text(
-              'Secure your passwords secure your life',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 45.0,
-                fontWeight: FontWeight.w500,
-                fontFamily: 'majalla',
               ),
             ),
-          ),
-          SizedBox(
-            height: Get.height * 0.05,
-          ),
-        ],
+            SizedBox(
+              height: Get.height * 0.05,
+            ),
+          ],
+        ),
       ),
     );
   }
