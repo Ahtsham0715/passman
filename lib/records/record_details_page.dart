@@ -101,7 +101,7 @@ class _RecordDetailsState extends State<RecordDetails>
                       await Clipboard.setData(ClipboardData(
                           text: widget.password.password.toString()));
                       styledsnackbar(
-                          txt: 'Copied to clipboard', icon: Icons.copy_sharp);
+                          txt: 'Copied to clipboard', icon: Icons.copy_rounded);
                     },
                     child: Icon(
                       Icons.copy_rounded,

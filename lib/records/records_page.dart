@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:passman/records/create_new_record_page.dart';
 import 'package:passman/records/models/password_model.dart';
 import 'package:passman/records/record_details_page.dart';
@@ -100,48 +101,64 @@ class _PasswordsPageState extends State<PasswordsPage> {
           child: ValueListenableBuilder(
               valueListenable: Hive.box<PasswordModel>('my_data').listenable(),
               builder: (context, box, _) {
-                return ListView.separated(
-                  controller: scrollcont,
-                  separatorBuilder: (context, index) {
-                    return const Divider(
-                      color: Colors.white,
-                      thickness: 0.5,
-                    );
-                  },
-                  itemCount: box.length,
-                  itemBuilder: (context, index) {
-                    print(box.getAt(index)?.title.toString());
-                    var data = box.getAt(index);
-                    return ListTile(
-                      onTap: () {
-                        Get.to(
-                          () => RecordDetails(password: data),
-                        );
-                      },
-                      dense: true,
-                      leading: const Icon(
-                        FontAwesomeIcons.facebook,
-                        color: Colors.white,
-                        size: 40.0,
-                      ),
-                      title: CustomText(
-                          title: data!.title.toString(),
-                          fontcolor: Colors.white,
-                          fontweight: FontWeight.w600,
-                          fontsize: 23.0),
-                      subtitle: CustomText(
-                          title: data.login.toString(),
-                          fontcolor: Colors.white,
-                          fontweight: FontWeight.w500,
-                          fontsize: 20.0),
-                      trailing: const Icon(
-                        Icons.copy,
-                        color: Colors.white,
-                        size: 25.0,
-                      ),
-                    );
-                  },
-                );
+                return box.isEmpty
+                    ? Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            MdiIcons.flaskEmptyOutline,
+                            size: 50.0,
+                            color: Colors.white,
+                          ),
+                          CustomText(
+                              title: 'No Data Available',
+                              fontcolor: Colors.white,
+                              fontweight: FontWeight.w600,
+                              fontsize: 40.0),
+                        ],
+                      )
+                    : ListView.separated(
+                        controller: scrollcont,
+                        separatorBuilder: (context, index) {
+                          return const Divider(
+                            color: Colors.white,
+                            thickness: 0.5,
+                          );
+                        },
+                        itemCount: box.length,
+                        itemBuilder: (context, index) {
+                          print(box.getAt(index)?.title.toString());
+                          var data = box.getAt(index);
+                          return ListTile(
+                            onTap: () {
+                              Get.to(
+                                () => RecordDetails(password: data),
+                              );
+                            },
+                            dense: true,
+                            leading: const Icon(
+                              FontAwesomeIcons.facebook,
+                              color: Colors.white,
+                              size: 40.0,
+                            ),
+                            title: CustomText(
+                                title: data!.title.toString(),
+                                fontcolor: Colors.white,
+                                fontweight: FontWeight.w600,
+                                fontsize: 23.0),
+                            subtitle: CustomText(
+                                title: data.login.toString(),
+                                fontcolor: Colors.white,
+                                fontweight: FontWeight.w500,
+                                fontsize: 20.0),
+                            trailing: const Icon(
+                              Icons.copy,
+                              color: Colors.white,
+                              size: 25.0,
+                            ),
+                          );
+                        },
+                      );
               }),
         ),
         drawer: Drawer(
