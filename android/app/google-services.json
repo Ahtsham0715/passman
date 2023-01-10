@@ -1,0 +1,90 @@
+{
+  "project_info": {
+    "project_number": "1020807384910",
+    "project_id": "passman-ccba5",
+    "storage_bucket": "passman-ccba5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1020807384910:android:ca06749bd5c44171ea581f",
+        "android_client_info": {
+          "package_name": "com.example.passman"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1020807384910-atk5csmegi33g0rohavr47b6do3uo34d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWrLm--jP8OZs5ZSX5VFxDR7-ynlky2Dk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1020807384910-atk5csmegi33g0rohavr47b6do3uo34d.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1020807384910-1727nm819qc9isnj6hv5cbam2sar4fmq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.passwordManager"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1020807384910:android:35f20a5e20840b7aea581f",
+        "android_client_info": {
+          "package_name": "com.example.password_manager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1020807384910-176h85kevprkk2nv0p76clidv27oc1j5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.password_manager",
+            "certificate_hash": "371b6dde6a49a7de1278aa95c6f1af0f77574a17"
+          }
+        },
+        {
+          "client_id": "1020807384910-atk5csmegi33g0rohavr47b6do3uo34d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWrLm--jP8OZs5ZSX5VFxDR7-ynlky2Dk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1020807384910-atk5csmegi33g0rohavr47b6do3uo34d.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1020807384910-1727nm819qc9isnj6hv5cbam2sar4fmq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.passwordManager"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,8 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:passman/res/components/custom_snackbar.dart';
 
 import '../../records/records_page.dart';
@@ -72,4 +76,53 @@ class AuthController extends GetxController {
 //     await auth.stopAuthentication();
 //     // setState(() => _isAuthenticating = false);
 //   }
+
+  Future registerUser(
+      {required String emailAddress,
+      required String name,
+      required String password}) async {
+    final db = FirebaseFirestore.instance.collection('users');
+    try {
+      final credentials =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailAddress,
+        password: password,
+      );
+      try {
+        await db.doc(credentials.user?.uid.toString()).set({
+          'name': name,
+          'email': emailAddress,
+        });
+        styledsnackbar(
+            txt: 'Registered Successfully.', icon: Icons.check_outlined);
+        Get.back();
+        Get.to(
+          () => const PasswordsPage(),
+        );
+      } on FirebaseException catch (e) {
+        print(e.code);
+        print(e.message);
+        styledsnackbar(
+            txt: 'Error occured. ${e.message}', icon: Icons.error_outlined);
+        Get.back();
+      }
+    } on FirebaseAuthException catch (e) {
+      if (e.code == 'weak-password') {
+        print('The password provided is too weak.');
+        styledsnackbar(
+            txt: 'The password provided is too weak.',
+            icon: Icons.error_outlined);
+      } else if (e.code == 'email-already-in-use') {
+        print('The account already exists for that email.');
+        styledsnackbar(
+            txt: 'The account already exists for that email.',
+            icon: Icons.error_outlined);
+      }
+      Get.back();
+    } catch (e) {
+      print(e);
+      styledsnackbar(txt: 'Error occured. $e', icon: Icons.error_outlined);
+      Get.back();
+    }
+  }
 }
