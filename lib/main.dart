@@ -5,6 +5,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:passman/firebase_options.dart';
 import 'package:passman/records/models/password_model.dart';
 import 'package:passman/records/models/password_model.g.dart';
+import 'package:path_provider/path_provider.dart';
 import 'Auth/splash_screen.dart';
 
 void main() async {
@@ -12,9 +13,11 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  await Hive.initFlutter();
+  var directory = await getApplicationDocumentsDirectory();
+  await Hive.initFlutter(directory.path);
   Hive.registerAdapter(PasswordModelAdapter());
   await Hive.openBox<PasswordModel>('my_data');
+  await Hive.openBox('logininfo');
   runApp(const MyApp());
 }
 
@@ -30,6 +33,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.green,
         // primaryColor: Colors.black,
+        fontFamily: 'majalla',
       ),
       home: const SplashScreen(),
     );

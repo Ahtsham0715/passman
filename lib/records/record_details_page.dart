@@ -25,7 +25,7 @@ class _RecordDetailsState extends State<RecordDetails>
   void initState() {
     super.initState();
     _animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+        AnimationController(vsync: this, duration: Duration(seconds: 1));
     _animation = Tween<double>(begin: 0, end: 1).animate(_animationController);
     SchedulerBinding.instance.addPostFrameCallback((_) {
       _animationController.forward();

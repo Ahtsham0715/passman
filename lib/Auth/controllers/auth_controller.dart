@@ -7,6 +7,9 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:passman/Auth/fingerprint_page.dart';
+import 'package:passman/Auth/verify_email_page.dart';
+import 'package:passman/constants.dart';
 import 'package:passman/res/components/custom_snackbar.dart';
 
 import '../../records/records_page.dart';
@@ -77,6 +80,48 @@ class AuthController extends GetxController {
 //     // setState(() => _isAuthenticating = false);
 //   }
 
+  Future loginuser({required String email, required String password}) async {
+    try {
+      UserCredential usercredentials = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: email, password: password);
+      Get.back();
+      styledsnackbar(txt: 'Login Successful.', icon: Icons.check_outlined);
+
+      if (usercredentials.user!.emailVerified) {
+        if (logininfo.get('bio_auth') == null) {
+          Get.to(
+            () => const AskBioAuth(),
+          );
+        } else {
+          Get.to(
+            () => const PasswordsPage(),
+          );
+        }
+      } else {
+        Get.to(
+          () => const verifyemail(),
+        );
+      }
+    } on FirebaseAuthException catch (e) {
+      Get.back();
+      if (e.code == 'user-not-found') {
+        print('No user found for that email.');
+        styledsnackbar(
+            txt: 'No user found for that email.', icon: Icons.error_outlined);
+      } else if (e.code == 'wrong-password') {
+        styledsnackbar(
+            txt: 'Wrong password provided for that user.',
+            icon: Icons.error_outlined);
+        print('Wrong password provided for that user.');
+      }
+    } catch (e) {
+      print(e);
+      Get.back();
+
+      styledsnackbar(txt: 'Error occured. $e', icon: Icons.error_outlined);
+    }
+  }
+
   Future registerUser(
       {required String emailAddress,
       required String name,
@@ -93,20 +138,25 @@ class AuthController extends GetxController {
           'name': name,
           'email': emailAddress,
         });
-        styledsnackbar(
-            txt: 'Registered Successfully.', icon: Icons.check_outlined);
+        await credentials.user?.sendEmailVerification();
         Get.back();
+
+        styledsnackbar(
+            txt: 'A verification link has been sent to your email.',
+            icon: Icons.check_outlined);
         Get.to(
-          () => const PasswordsPage(),
+          () => const verifyemail(),
         );
       } on FirebaseException catch (e) {
         print(e.code);
         print(e.message);
+        Get.back();
+
         styledsnackbar(
             txt: 'Error occured. ${e.message}', icon: Icons.error_outlined);
-        Get.back();
       }
     } on FirebaseAuthException catch (e) {
+      Get.back();
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
         styledsnackbar(
@@ -118,11 +168,11 @@ class AuthController extends GetxController {
             txt: 'The account already exists for that email.',
             icon: Icons.error_outlined);
       }
-      Get.back();
     } catch (e) {
       print(e);
-      styledsnackbar(txt: 'Error occured. $e', icon: Icons.error_outlined);
       Get.back();
+
+      styledsnackbar(txt: 'Error occured. $e', icon: Icons.error_outlined);
     }
   }
 }

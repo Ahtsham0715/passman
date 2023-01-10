@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:passman/Auth/login_page.dart';
@@ -25,8 +26,9 @@ class _SplashScreenState extends State<SplashScreen>
       parent: _controller,
       curve: Curves.easeIn,
     );
-    _animation.addStatusListener((status) {
+    _animation.addStatusListener((status) async {
       if (status == AnimationStatus.completed) {
+        await FirebaseAuth.instance.signOut();
         Navigator.of(context).pushReplacement(
           MaterialPageRoute(
             builder: (context) => const LoginPage(),
@@ -61,20 +63,20 @@ class _SplashScreenState extends State<SplashScreen>
           mainAxisAlignment: MainAxisAlignment.end,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizeTransition(
-              sizeFactor: _animation,
-              axis: Axis.vertical,
-              // opacity: _animation,
+            FadeTransition(
+              // sizeFactor: _animation,
+              // axis: Axis.vertical,
+              opacity: _animation,
               child: Container(
-                  decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      Color(0XFFd66d75),
-                      Color(0XFFe29587),
-                    ],
-                  )),
+                  // decoration: BoxDecoration(
+                  //     gradient: LinearGradient(
+                  //   begin: Alignment.topLeft,
+                  //   end: Alignment.bottomCenter,
+                  //   colors: [
+                  //     Color(0XFFd66d75),
+                  //     Color(0XFFe29587),
+                  //   ],
+                  // )),
                   margin: const EdgeInsets.symmetric(
                     horizontal: 50.0,
                     vertical: 5.0,

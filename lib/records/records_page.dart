@@ -1,14 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:passman/Auth/login_page.dart';
 import 'package:passman/records/create_new_record_page.dart';
 import 'package:passman/records/models/password_model.dart';
 import 'package:passman/records/record_details_page.dart';
 import 'package:passman/res/components/custom_text.dart';
+import 'package:passman/res/components/logout_widget.dart';
 import 'package:passman/res/components/onwillpop.dart';
 
 import '../constants.dart';
@@ -26,6 +29,16 @@ class _PasswordsPageState extends State<PasswordsPage> {
   @override
   void initState() {
     super.initState();
+    FirebaseAuth.instance.authStateChanges().listen((User? user) {
+      if (user == null) {
+        print('User is currently signed out!');
+        Get.to(
+          () => LoginPage(),
+        );
+      } else {
+        print('User is signed in!');
+      }
+    });
   }
 
   @override
@@ -176,19 +189,25 @@ class _PasswordsPageState extends State<PasswordsPage> {
                 children: [
                   UserAccountsDrawerHeader(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.vertical(
-                        bottom: Radius.circular(20.0),
-                      ),
-                      color: Colors.grey,
+                      // borderRadius: BorderRadius.vertical(
+                      //   bottom: Radius.circular(20.0),
+                      // ),
+                      color: Colors.transparent,
                     ),
-                    accountName: Text('shami'),
-                    accountEmail: Text('shami@gmail.com'),
+                    accountName: Text(
+                      'shami',
+                      style: TextStyle(fontSize: 20.0),
+                    ),
+                    accountEmail: Text(
+                      'shami@gmail.com',
+                      style: TextStyle(fontSize: 20.0),
+                    ),
                     currentAccountPicture: CircleAvatar(
                       foregroundImage: CachedNetworkImageProvider(''),
-                      backgroundColor: Colors.grey,
+                      backgroundColor: Colors.transparent,
                       child: Icon(
                         CupertinoIcons.profile_circled,
-                        size: 80.0,
+                        size: 70.0,
                         color: Colors.white,
                       ),
                     ),
@@ -207,7 +226,8 @@ class _PasswordsPageState extends State<PasswordsPage> {
                   customDrawerTile(
                     title: 'Logout',
                     leading: Icons.power_settings_new,
-                    onpressed: () {
+                    onpressed: () async {
+                      logout(context);
                       // logout_func();
                     },
                   )
@@ -238,6 +258,7 @@ class customDrawerTile extends StatelessWidget {
         title,
         style: TextStyle(
           color: Colors.white,
+          fontSize: 25.0,
         ),
       ),
       leading: Icon(

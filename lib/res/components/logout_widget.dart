@@ -1,7 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:passman/res/components/custom_snackbar.dart';
 
-Future<bool> onWillPop(ctx) async {
+Future<bool> logout(ctx) async {
   return (await showDialog(
         context: ctx,
         builder: (context) => AlertDialog(
@@ -11,7 +12,7 @@ Future<bool> onWillPop(ctx) async {
             style: TextStyle(fontSize: 25.0),
           ),
           content: const Text(
-            'Do you want to exit the App',
+            'Do you want to logout.',
             style: TextStyle(fontSize: 25.0),
           ),
           actions: <Widget>[
@@ -23,7 +24,11 @@ Future<bool> onWillPop(ctx) async {
               ),
             ),
             MaterialButton(
-              onPressed: () => SystemNavigator.pop(),
+              onPressed: () async {
+                await FirebaseAuth.instance.signOut();
+                styledsnackbar(
+                    txt: 'user logged out.', icon: Icons.logout_outlined);
+              },
               child: const Text(
                 'Yes',
                 style: TextStyle(fontSize: 25.0),

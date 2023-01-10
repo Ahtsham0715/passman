@@ -17,3 +17,4 @@ var width = Get.width;
 
 // open a box
 var passwordbox = Hive.box<PasswordModel>('my_data');
+var logininfo = Hive.box('logininfo');
