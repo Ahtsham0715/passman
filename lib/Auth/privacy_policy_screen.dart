@@ -30,9 +30,31 @@ class _TermsAndPrivacyPolicyPageState extends State<TermsAndPrivacyPolicyPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Terms and Privacy Policy'),
+        title: Text(
+          'Terms and Privacy Policy',
+          style: TextStyle(
+            fontSize: 25.0,
+            fontFamily: 'majalla',
+          ),
+        ),
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Color(0XFFd66d75),
+                Color(0XFFe29587),
+              ],
+              begin: Alignment.bottomCenter,
+              end: Alignment.topCenter,
+            ),
+          ),
+        ),
         bottom: TabBar(
           controller: _tabController,
+          labelStyle: TextStyle(
+            fontSize: 25.0,
+            fontFamily: 'majalla',
+          ),
           tabs: [
             Tab(text: 'Terms'),
             Tab(text: 'Privacy Policy'),

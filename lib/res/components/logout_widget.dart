@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:passman/res/components/custom_snackbar.dart';
 
 Future<bool> logout(ctx) async {
@@ -25,6 +26,7 @@ Future<bool> logout(ctx) async {
             ),
             MaterialButton(
               onPressed: () async {
+                Get.back();
                 await FirebaseAuth.instance.signOut();
                 styledsnackbar(
                     txt: 'user logged out.', icon: Icons.logout_outlined);

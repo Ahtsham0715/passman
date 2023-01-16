@@ -1,7 +1,9 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -15,6 +17,7 @@ import 'package:passman/res/components/logout_widget.dart';
 import 'package:passman/res/components/onwillpop.dart';
 
 import '../constants.dart';
+import '../res/components/custom_snackbar.dart';
 
 class PasswordsPage extends StatefulWidget {
   const PasswordsPage({super.key});
@@ -45,7 +48,31 @@ class _PasswordsPageState extends State<PasswordsPage> {
   Widget build(BuildContext context) {
     return WillPopScope(
       onWillPop: () async {
-        return onWillPop(context);
+        AwesomeDialog(
+          context: context,
+          animType: AnimType.topSlide,
+          dialogType: DialogType.question,
+          // body: Center(child: Text(
+          //         'If the body is specified, then title and description will be ignored, this allows to 											further customize the dialogue.',
+          //         style: TextStyle(fontStyle: FontStyle.italic),
+          //       ),),
+          title: 'Are you sure?',
+          desc: 'Do you want to exit the app?',
+          btnOkOnPress: () async {
+            try {
+              SystemNavigator.pop();
+            } catch (e) {
+              //  Get.back();
+
+              styledsnackbar(txt: 'Error Occured. $e', icon: Icons.error);
+            }
+          },
+          btnCancelOnPress: () {
+            // Get.back();
+          },
+        )..show();
+        return false;
+        // return onWillPop(context);
       },
       child: Scaffold(
         // backgroundColor: Colors.teal.shade100,
@@ -145,7 +172,10 @@ class _PasswordsPageState extends State<PasswordsPage> {
                           return ListTile(
                             onTap: () {
                               Get.to(
-                                () => RecordDetails(password: data),
+                                () => RecordDetails(
+                                  password: data,
+                                  passwordkey: index,
+                                ),
                               );
                             },
                             dense: true,
@@ -227,7 +257,35 @@ class _PasswordsPageState extends State<PasswordsPage> {
                     title: 'Logout',
                     leading: Icons.power_settings_new,
                     onpressed: () async {
-                      logout(context);
+                      // logout(context);
+                      AwesomeDialog(
+                        context: context,
+                        animType: AnimType.topSlide,
+                        dialogType: DialogType.question,
+                        // body: Center(child: Text(
+                        //         'If the body is specified, then title and description will be ignored, this allows to 											further customize the dialogue.',
+                        //         style: TextStyle(fontStyle: FontStyle.italic),
+                        //       ),),
+                        title: 'Are you sure?',
+                        desc: 'Do you want to logout?',
+                        btnOkOnPress: () async {
+                          try {
+                            // Get.back();
+                            await FirebaseAuth.instance.signOut();
+                            styledsnackbar(
+                                txt: 'user logged out.',
+                                icon: Icons.logout_outlined);
+                          } catch (e) {
+                            //  Get.back();
+
+                            styledsnackbar(
+                                txt: 'Error Occured. $e', icon: Icons.error);
+                          }
+                        },
+                        btnCancelOnPress: () {
+                          // Get.back();
+                        },
+                      )..show();
                       // logout_func();
                     },
                   )

@@ -1,6 +1,8 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:passman/constants.dart';
 import 'package:passman/records/models/password_model.dart';
@@ -9,8 +11,11 @@ import 'package:passman/res/components/custom_text.dart';
 
 class RecordDetails extends StatefulWidget {
   final PasswordModel password;
+  final int passwordkey;
 
-  const RecordDetails({Key? key, required this.password}) : super(key: key);
+  const RecordDetails(
+      {Key? key, required this.password, required this.passwordkey})
+      : super(key: key);
 
   @override
   _RecordDetailsState createState() => _RecordDetailsState();
@@ -56,6 +61,74 @@ class _RecordDetailsState extends State<RecordDetails>
             ),
           ),
         ),
+        actions: [
+          PopupMenuButton<String>(
+            itemBuilder: (_) {
+              return const [
+                PopupMenuItem<String>(
+                    value: "1",
+                    child: Text(
+                      "Edit",
+                      style: TextStyle(fontSize: 20.0),
+                    )),
+                PopupMenuItem<String>(
+                    value: "2",
+                    child: Text(
+                      "Delete",
+                      style: TextStyle(fontSize: 20.0),
+                    )),
+                // PopupMenuItem<String>(value: "2", child: Text("Leave a review")),
+                // PopupMenuItem<String>(value: "3", child: Text("Share")),
+                // PopupMenuItem<String>(value: "4", child: Text("Exit")),
+              ];
+            },
+            icon: const Icon(Icons.more_vert_rounded),
+            onSelected: (i) {
+              if (i == "1") {
+                //  displayBar(context, i);
+              } else if (i == "2") {
+                AwesomeDialog(
+                  context: context,
+                  animType: AnimType.topSlide,
+                  dialogType: DialogType.question,
+                  // body: Center(child: Text(
+                  //         'If the body is specified, then title and description will be ignored, this allows to 											further customize the dialogue.',
+                  //         style: TextStyle(fontStyle: FontStyle.italic),
+                  //       ),),
+                  title: 'Are you sure?',
+                  desc: 'Do you want to delete this data?',
+                  btnOkOnPress: () async {
+                    try {
+                      await passwordbox.deleteAt(widget.passwordkey);
+                      Get.back();
+
+                      styledsnackbar(
+                          txt: 'Password Deleted Successfully.',
+                          icon: MdiIcons.check);
+                    } catch (e) {
+                      //  Get.back();
+
+                      styledsnackbar(
+                          txt: 'Error Occured. $e', icon: Icons.error);
+                    }
+                  },
+                  btnCancelOnPress: () {
+                    // Get.back();
+                  },
+                )..show();
+                //  displayBar(context, i);
+              }
+              //  else if(i == "3"){
+              //    displayBar(context, i);
+              //  }
+              //  else if(i == "4"){
+              //    displayBar(context, i);
+              //  }
+              else {}
+            },
+            // onCanceled: () => displayBar(context,"Cancelled",cancel: true),
+          ),
+        ],
       ),
       body: Container(
         width: width,

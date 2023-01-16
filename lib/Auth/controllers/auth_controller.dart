@@ -13,6 +13,7 @@ import 'package:passman/constants.dart';
 import 'package:passman/res/components/custom_snackbar.dart';
 
 import '../../records/records_page.dart';
+import '../../res/components/loading_page.dart';
 
 class AuthController extends GetxController {
   final LocalAuthentication auth = LocalAuthentication();
@@ -57,10 +58,12 @@ class AuthController extends GetxController {
       )
           .then((authenticated) {
         if (authenticated) {
-          styledsnackbar(txt: 'Login Successful.', icon: Icons.check_box);
-          Get.to(
-            () => const PasswordsPage(),
-          );
+          // styledsnackbar(txt: 'Login Successful.', icon: Icons.check_box);
+          // Get.to(
+          //   () => const PasswordsPage(),
+          // );
+          Get.dialog(LoadingPage());
+          loginuser(email: 'ahtsham50743@gmail.com', password: 'bhakkar43');
         } else {
           styledsnackbar(txt: 'Unable to authenticate', icon: Icons.error);
         }
@@ -88,7 +91,7 @@ class AuthController extends GetxController {
       styledsnackbar(txt: 'Login Successful.', icon: Icons.check_outlined);
 
       if (usercredentials.user!.emailVerified) {
-        if (logininfo.get('bio_auth') == null) {
+        if (logininfo.get('bio_auth') == null && isbiometricavailable.value) {
           Get.to(
             () => const AskBioAuth(),
           );
