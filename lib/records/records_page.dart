@@ -199,7 +199,17 @@ class _PasswordsPageState extends State<PasswordsPage> {
                                 fontweight: FontWeight.w500,
                                 fontsize: 20.0),
                             trailing: InkWell(
-                              onTap: () async {},
+                              onTap: () async {
+                                await Clipboard.setData(ClipboardData(
+                                  text: encrypter.decrypt(
+                                      encryption.Encrypted.from64(
+                                          data.password.toString()),
+                                      iv: iv),
+                                ));
+                                styledsnackbar(
+                                    txt: 'Copied to clipboard',
+                                    icon: Icons.copy_rounded);
+                              },
                               child: const Icon(
                                 Icons.copy,
                                 color: Colors.white,

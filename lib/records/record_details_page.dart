@@ -175,7 +175,11 @@ class _RecordDetailsState extends State<RecordDetails>
                   trailing: InkWell(
                     onTap: () async {
                       await Clipboard.setData(ClipboardData(
-                          text: widget.password.password.toString()));
+                        text: encrypter.decrypt(
+                            encryption.Encrypted.from64(
+                                widget.password.password.toString()),
+                            iv: iv),
+                      ));
                       styledsnackbar(
                           txt: 'Copied to clipboard', icon: Icons.copy_rounded);
                     },
