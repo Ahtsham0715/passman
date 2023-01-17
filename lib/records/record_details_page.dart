@@ -1,9 +1,12 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:passman/Auth/controllers/auth_controller.dart';
 import 'package:passman/constants.dart';
 import 'package:passman/records/models/password_model.dart';
 import 'package:passman/res/components/custom_snackbar.dart';
@@ -172,22 +175,70 @@ class _RecordDetailsState extends State<RecordDetails>
                               ('*' * (widget.password.length!.toInt() - 2)),
                       fontweight: FontWeight.w500,
                       fontsize: 25.0),
-                  trailing: InkWell(
-                    onTap: () async {
-                      await Clipboard.setData(ClipboardData(
-                        text: encrypter.decrypt(
-                            encryption.Encrypted.from64(
-                                widget.password.password.toString()),
-                            iv: iv),
-                      ));
-                      styledsnackbar(
-                          txt: 'Copied to clipboard', icon: Icons.copy_rounded);
-                    },
-                    child: Icon(
-                      Icons.copy_rounded,
-                      size: 25.0,
-                      color: Colors.white,
-                    ),
+                  trailing: ButtonBar(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      InkWell(
+                        onTap: () async {
+                          final LocalAuthentication auth =
+                              LocalAuthentication();
+                          try {
+                            await auth
+                                .authenticate(
+                              localizedReason: 'Verify your identity',
+                              options: const AuthenticationOptions(
+                                stickyAuth: true,
+                                // biometricOnly: true,
+                              ),
+                            )
+                                .then((authenticated) {
+                              if (authenticated) {
+                                styledsnackbar(
+                                    txt: encrypter.decrypt(
+                                        encryption.Encrypted.from64(widget
+                                            .password.password
+                                            .toString()),
+                                        iv: iv),
+                                    icon: Icons.visibility);
+                              }
+                            });
+                          } on PlatformException catch (e) {
+                            styledsnackbar(
+                                txt: 'Error occured. $e', icon: Icons.error);
+                            if (kDebugMode) {
+                              print(e);
+                              styledsnackbar(
+                                  txt: 'Error occured. $e', icon: Icons.error);
+                            }
+
+                            return;
+                          }
+                        },
+                        child: Icon(
+                          Icons.visibility,
+                          size: 25.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                      InkWell(
+                        onTap: () async {
+                          await Clipboard.setData(ClipboardData(
+                            text: encrypter.decrypt(
+                                encryption.Encrypted.from64(
+                                    widget.password.password.toString()),
+                                iv: iv),
+                          ));
+                          styledsnackbar(
+                              txt: 'Copied to clipboard',
+                              icon: Icons.copy_rounded);
+                        },
+                        child: Icon(
+                          Icons.copy_rounded,
+                          size: 25.0,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ],
                   ),
                   //  ),
                 ),
