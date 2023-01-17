@@ -8,14 +8,13 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:passman/Auth/controllers/user_data_controller.dart';
 import 'package:passman/Auth/login_page.dart';
 import 'package:passman/records/create_new_record_page.dart';
 import 'package:passman/records/models/password_model.dart';
 import 'package:passman/records/record_details_page.dart';
 import 'package:passman/res/components/custom_text.dart';
-import 'package:passman/res/components/logout_widget.dart';
-import 'package:passman/res/components/onwillpop.dart';
-
+import 'package:encrypt/encrypt.dart' as encryption;
 import '../constants.dart';
 import '../res/components/custom_snackbar.dart';
 
@@ -32,6 +31,7 @@ class _PasswordsPageState extends State<PasswordsPage> {
   @override
   void initState() {
     super.initState();
+    Get.put(UserDataController());
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (user == null) {
         print('User is currently signed out!');
@@ -46,6 +46,7 @@ class _PasswordsPageState extends State<PasswordsPage> {
 
   @override
   Widget build(BuildContext context) {
+    // final UserDataController userdata = UserDataController();
     return WillPopScope(
       onWillPop: () async {
         AwesomeDialog(
@@ -190,14 +191,20 @@ class _PasswordsPageState extends State<PasswordsPage> {
                                 fontweight: FontWeight.w600,
                                 fontsize: 23.0),
                             subtitle: CustomText(
-                                title: data.login.toString(),
+                                title: encrypter.decrypt(
+                                    encryption.Encrypted.from64(
+                                        data.login.toString()),
+                                    iv: iv),
                                 fontcolor: Colors.white,
                                 fontweight: FontWeight.w500,
                                 fontsize: 20.0),
-                            trailing: const Icon(
-                              Icons.copy,
-                              color: Colors.white,
-                              size: 25.0,
+                            trailing: InkWell(
+                              onTap: () async {},
+                              child: const Icon(
+                                Icons.copy,
+                                color: Colors.white,
+                                size: 25.0,
+                              ),
                             ),
                           );
                         },
@@ -225,11 +232,13 @@ class _PasswordsPageState extends State<PasswordsPage> {
                       color: Colors.transparent,
                     ),
                     accountName: Text(
-                      'shami',
+                      logininfo.get('name') ?? '',
                       style: TextStyle(fontSize: 20.0),
                     ),
                     accountEmail: Text(
-                      'shami@gmail.com',
+                      encrypter.decrypt(
+                          encryption.Encrypted.from64(logininfo.get('email')),
+                          iv: iv),
                       style: TextStyle(fontSize: 20.0),
                     ),
                     currentAccountPicture: CircleAvatar(

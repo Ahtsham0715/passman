@@ -75,12 +75,18 @@ class _CreateRecordState extends State<CreateRecord>
             padding: const EdgeInsets.all(5.0),
             child: InkWell(
               onTap: () async {
+                var loginencrypt =
+                    encrypter.encrypt(_login.text.toString().trim(), iv: iv);
+                var passwordencrypt =
+                    encrypter.encrypt(_password.text.toString(), iv: iv);
                 PasswordModel passworddata = PasswordModel(
-                    title: _title.text.toString(),
-                    login: _login.text.toString().trim(),
-                    password: _password.text.toString(),
-                    website: _websiteaddress.text.toString(),
-                    notes: _notes.text.toString());
+                  title: _title.text.toString(),
+                  login: loginencrypt.base64,
+                  password: passwordencrypt.base64,
+                  website: _websiteaddress.text.toString(),
+                  notes: _notes.text.toString(),
+                  length: _password.text.length,
+                );
                 try {
                   await passwordbox.put(
                       passwordbox.keys.length + 1, passworddata);

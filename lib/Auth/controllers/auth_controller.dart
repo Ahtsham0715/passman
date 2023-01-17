@@ -3,23 +3,24 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:local_auth/local_auth.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:passman/Auth/controllers/user_data_controller.dart';
 import 'package:passman/Auth/fingerprint_page.dart';
 import 'package:passman/Auth/verify_email_page.dart';
 import 'package:passman/constants.dart';
 import 'package:passman/res/components/custom_snackbar.dart';
-
 import '../../records/records_page.dart';
 import '../../res/components/loading_page.dart';
+import 'package:encrypt/encrypt.dart' as encryption;
 
 class AuthController extends GetxController {
   final LocalAuthentication auth = LocalAuthentication();
   RxBool isbiometricavailable = false.obs;
 
   bool isAuthenticating = false;
+  var encrypted;
+  var decrypted;
 
   @override
   void onInit() {
@@ -63,7 +64,13 @@ class AuthController extends GetxController {
           //   () => const PasswordsPage(),
           // );
           Get.dialog(LoadingPage());
-          loginuser(email: 'ahtsham50743@gmail.com', password: 'bhakkar43');
+          loginuser(
+              email: encrypter.decrypt(
+                  encryption.Encrypted.from64(logininfo.get('email')),
+                  iv: iv),
+              password: encrypter.decrypt(
+                  encryption.Encrypted.from64(logininfo.get('password')),
+                  iv: iv));
         } else {
           styledsnackbar(txt: 'Unable to authenticate', icon: Icons.error);
         }
@@ -87,9 +94,42 @@ class AuthController extends GetxController {
     try {
       UserCredential usercredentials = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: email, password: password);
+      final UserDataController controller = Get.put(UserDataController());
+      logininfo.put('userid', usercredentials.user?.uid.toString());
+      await controller.getUserData();
       Get.back();
       styledsnackbar(txt: 'Login Successful.', icon: Icons.check_outlined);
+      var emailencrypt = encrypter.encrypt(email, iv: iv);
+      var passwordencrypt = encrypter.encrypt(password, iv: iv);
+      print(emailencrypt.base64);
+      print(passwordencrypt.base64);
 
+      logininfo.put(
+        'email',
+        emailencrypt.base64,
+      );
+      logininfo.put(
+        'password',
+        passwordencrypt.base64,
+      );
+//       if(!logininfo.containsKey('email')){
+//  logininfo.put(
+//           'email',
+//           emailencrypt.base64,
+//         );
+//       }
+//       if(!logininfo.containsKey('email')){
+//    logininfo.put(
+//           'password',
+//           passwordencrypt.base64,
+//         );
+//       }
+
+      // logininfo.put('credentials', {
+      //   'name': nameencrypt.base64,
+      //   'email': emailencrypt.base64,
+      //   'password': passwordencrypt.base64,
+      // });
       if (usercredentials.user!.emailVerified) {
         if (logininfo.get('bio_auth') == null && isbiometricavailable.value) {
           Get.to(
@@ -136,11 +176,35 @@ class AuthController extends GetxController {
         email: emailAddress,
         password: password,
       );
+
       try {
         await db.doc(credentials.user?.uid.toString()).set({
           'name': name,
           'email': emailAddress,
         });
+
+        var emailencrypt = encrypter.encrypt(emailAddress, iv: iv);
+
+        var passwordencrypt = encrypter.encrypt(password, iv: iv);
+
+        print(emailencrypt.base64);
+        print(passwordencrypt.base64);
+        logininfo.put('userid', credentials.user?.uid.toString());
+        logininfo.put('name', name);
+        logininfo.put(
+          'email',
+          emailencrypt.base64,
+        );
+        logininfo.put(
+          'password',
+          passwordencrypt.base64,
+        );
+        // logininfo.put('credentials', {
+        //   'name': nameencrypt.base64,
+        //   'email': emailencrypt.base64,
+        //   'password': passwordencrypt.base64,
+        // });
+
         await credentials.user?.sendEmailVerification();
         Get.back();
 

@@ -12,12 +12,14 @@ class PasswordModelAdapter extends TypeAdapter<PasswordModel> {
     var password = reader.readString();
     var website = reader.readString();
     var notes = reader.readString();
+    var length = reader.readInt();
     return PasswordModel(
       title: title,
       login: login,
       password: password,
       website: website,
       notes: notes,
+      length: length,
     );
   }
 
@@ -28,5 +30,6 @@ class PasswordModelAdapter extends TypeAdapter<PasswordModel> {
     writer.writeString(obj.password ?? "");
     writer.writeString(obj.website ?? "");
     writer.writeString(obj.notes ?? "");
+    writer.writeInt(obj.length ?? 0);
   }
 }

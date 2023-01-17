@@ -292,7 +292,9 @@ class _LoginPageState extends State<LoginPage> {
                             bottom: 50.0,
                             child: !controller.isbiometricavailable.value ||
                                     logininfo.get('bio_auth') == null ||
-                                    !logininfo.get('bio_auth')
+                                    !logininfo.get('bio_auth') ||
+                                    logininfo.get('email') == null ||
+                                    logininfo.get('password') == null
                                 ? const Center()
                                 : MaterialButton(
                                     onPressed: () {
@@ -324,7 +326,9 @@ class _LoginPageState extends State<LoginPage> {
                             bottom: 0.0,
                             child: !controller.isbiometricavailable.value ||
                                     logininfo.get('bio_auth') == null ||
-                                    !logininfo.get('bio_auth')
+                                    !logininfo.get('bio_auth') ||
+                                    logininfo.get('email') == null ||
+                                    logininfo.get('password') == null
                                 ? const Center()
                                 : Text(
                                     'Login with touch ID',

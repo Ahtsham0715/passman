@@ -8,11 +8,11 @@ import 'package:passman/constants.dart';
 import 'package:passman/records/models/password_model.dart';
 import 'package:passman/res/components/custom_snackbar.dart';
 import 'package:passman/res/components/custom_text.dart';
+import 'package:encrypt/encrypt.dart' as encryption;
 
 class RecordDetails extends StatefulWidget {
   final PasswordModel password;
   final int passwordkey;
-
   const RecordDetails(
       {Key? key, required this.password, required this.passwordkey})
       : super(key: key);
@@ -158,15 +158,18 @@ class _RecordDetailsState extends State<RecordDetails>
                     icon: MdiIcons.web),
                 CustomDivider(),
                 CustomTile(
-                    title: widget.password.login.toString(),
+                    title: encrypter.decrypt(
+                        encryption.Encrypted.from64(
+                            widget.password.login.toString()),
+                        iv: iv),
                     icon: MdiIcons.key),
                 CustomDivider(),
                 ListTile(
                   title: CustomText(
                       // fontcolor: Colors.white,
                       title:
-                          widget.password.password.toString().substring(0, 3) +
-                              '***',
+                          widget.password.password.toString().substring(0, 2) +
+                              ('*' * (widget.password.length!.toInt() - 2)),
                       fontweight: FontWeight.w500,
                       fontsize: 25.0),
                   trailing: InkWell(

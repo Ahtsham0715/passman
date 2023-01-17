@@ -16,6 +16,7 @@ class PasswordModel {
     required this.password,
     required this.website,
     required this.notes,
+    required this.length,
   });
 
   String? title;
@@ -23,6 +24,7 @@ class PasswordModel {
   String? password;
   String? website;
   String? notes;
+  int? length;
 
   factory PasswordModel.fromJson(Map<String, dynamic> json) => PasswordModel(
         title: json["title"],
@@ -30,6 +32,7 @@ class PasswordModel {
         password: json["password"],
         website: json["website"],
         notes: json["notes"],
+        length: json["length"],
       );
 
   Map<String, dynamic> toJson() => {
