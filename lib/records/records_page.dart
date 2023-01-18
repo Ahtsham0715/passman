@@ -33,7 +33,7 @@ class _PasswordsPageState extends State<PasswordsPage> {
     super.initState();
     Get.put(UserDataController());
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
-      if (user == null) {
+      if (user == null || user.isAnonymous) {
         print('User is currently signed out!');
         Get.to(
           () => LoginPage(),
@@ -188,7 +188,7 @@ class _PasswordsPageState extends State<PasswordsPage> {
                             title: CustomText(
                                 title: data!.title.toString(),
                                 fontcolor: Colors.white,
-                                fontweight: FontWeight.w600,
+                                fontweight: FontWeight.w500,
                                 fontsize: 23.0),
                             subtitle: CustomText(
                                 title: encrypter.decrypt(
@@ -252,7 +252,9 @@ class _PasswordsPageState extends State<PasswordsPage> {
                       style: TextStyle(fontSize: 20.0),
                     ),
                     currentAccountPicture: CircleAvatar(
-                      foregroundImage: CachedNetworkImageProvider(''),
+                      // radius: 30.0,
+                      foregroundImage: CachedNetworkImageProvider(
+                          logininfo.get('img') ?? ''),
                       backgroundColor: Colors.transparent,
                       child: Icon(
                         CupertinoIcons.profile_circled,
@@ -260,7 +262,7 @@ class _PasswordsPageState extends State<PasswordsPage> {
                         color: Colors.white,
                       ),
                     ),
-                    currentAccountPictureSize: Size.square(80.0),
+                    currentAccountPictureSize: Size.square(70.0),
                   ),
                   customDrawerTile(
                     title: 'Profile',

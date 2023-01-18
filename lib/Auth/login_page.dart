@@ -60,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
         return onWillPop(context);
       },
       child: Scaffold(
-        backgroundColor: Colors.white.withOpacity(0.9),
+        backgroundColor: Colors.white.withOpacity(1.0),
         resizeToAvoidBottomInset: false,
         body: GetBuilder<AuthController>(builder: (authcontroller) {
           return SingleChildScrollView(
@@ -68,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
               // padding: const EdgeInsets.only(top: 15.0),
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
-              color: Colors.white.withOpacity(0.9),
+              color: Colors.white.withOpacity(1.0),
               // decoration: BoxDecoration(
               //     gradient: LinearGradient(
               //   begin: Alignment.topLeft,
@@ -119,7 +119,7 @@ class _LoginPageState extends State<LoginPage> {
                               },
                             style: const TextStyle(
                               fontSize: 22.0,
-                              color: Colors.green,
+                              color: Color(0XFFd66d75),
                               fontFamily: 'majalla',
                               fontWeight: FontWeight.w500,
                             )),
@@ -147,7 +147,7 @@ class _LoginPageState extends State<LoginPage> {
                         _email.text = value!;
                       },
                       responsiveHW(context, wd: 100),
-                      responsiveHW(context, ht: 100),
+                      responsiveHW(context, ht: 70),
                       const UnderlineInputBorder(
                         borderSide: BorderSide(
                           color: Colors.grey,
@@ -184,7 +184,7 @@ class _LoginPageState extends State<LoginPage> {
                         _password.text = value!;
                       },
                       responsiveHW(context, wd: 100),
-                      responsiveHW(context, ht: 100),
+                      responsiveHW(context, ht: 70),
                       const UnderlineInputBorder(
                         borderSide: BorderSide(
                           color: Colors.grey,
@@ -212,6 +212,7 @@ class _LoginPageState extends State<LoginPage> {
                               'Register',
                               style: TextStyle(
                                 fontSize: 21.0,
+                                color: Color(0XFFd66d75),
                                 fontWeight: FontWeight.w500,
                                 fontFamily: 'majalla',
                               ),
@@ -226,6 +227,7 @@ class _LoginPageState extends State<LoginPage> {
                               'Forgot Password',
                               style: TextStyle(
                                 fontSize: 21.0,
+                                color: Color(0XFFd66d75),
                                 fontWeight: FontWeight.w500,
                                 fontFamily: 'majalla',
                               ),
@@ -249,7 +251,7 @@ class _LoginPageState extends State<LoginPage> {
                         //   () => const PasswordsPage(),
                         // );
                       },
-                      color: Colors.green,
+                      color: Color(0XFFd66d75),
                       elevation: 0.0,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(5.0)),
@@ -302,7 +304,7 @@ class _LoginPageState extends State<LoginPage> {
 
                                       controller.authenticateWithBiometrics();
                                     },
-                                    color: Colors.green,
+                                    color: Color(0XFFd66d75),
                                     elevation: 0.0,
                                     shape: RoundedRectangleBorder(
                                         side: BorderSide(

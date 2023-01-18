@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,7 +10,10 @@ import 'package:passman/Auth/privacy_policy_screen.dart';
 import 'package:passman/constants.dart';
 import 'package:passman/res/components/custom_formfield.dart';
 import 'package:passman/res/components/custom_shape.dart';
+import 'package:passman/res/components/custom_snackbar.dart';
 import 'package:passman/res/components/loading_page.dart';
+
+import '../res/components/file_picker.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -22,7 +28,6 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController _name = TextEditingController();
   TextEditingController _password = TextEditingController();
   TextEditingController _confirmpassword = TextEditingController();
-
   bool passwordVisible = true;
   bool confirmPasswordVisible = true;
   // Visibility of password
@@ -47,13 +52,22 @@ class _RegisterPageState extends State<RegisterPage> {
   Widget build(BuildContext context) {
     final authcontroller = Get.put(AuthController());
     return Scaffold(
-      backgroundColor: Colors.white.withOpacity(0.9),
+      backgroundColor: Colors.white.withOpacity(1.0),
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         foregroundColor: Colors.black,
-        backgroundColor: Colors.white.withOpacity(0.9),
+        backgroundColor: Colors.white.withOpacity(1.0),
         elevation: 0.0,
-        toolbarHeight: 30.0,
+        toolbarHeight: 40.0,
+        centerTitle: true,
+        title: Text(
+          'Register',
+          style: TextStyle(
+            fontSize: 40.0,
+            fontWeight: FontWeight.w500,
+            fontFamily: 'majalla',
+          ),
+        ),
       ),
       body: SingleChildScrollView(
         child: Container(
@@ -68,17 +82,10 @@ class _RegisterPageState extends State<RegisterPage> {
                 // SizedBox(
                 //   height: MediaQuery.of(context).size.height * 0.06,
                 // ),
-                const Padding(
-                  padding: EdgeInsets.symmetric(vertical: 2.0),
-                  child: Text(
-                    'Register',
-                    style: TextStyle(
-                      fontSize: 40.0,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'majalla',
-                    ),
-                  ),
-                ),
+                // const Padding(
+                //   padding: EdgeInsets.symmetric(vertical: 2.0),
+                //   child:
+                // ),
                 RichText(
                   textAlign: TextAlign.center,
                   text: TextSpan(children: [
@@ -101,7 +108,7 @@ class _RegisterPageState extends State<RegisterPage> {
                           },
                         style: const TextStyle(
                           fontSize: 22.0,
-                          color: Colors.green,
+                          color: Color(0XFFd66d75),
                           fontFamily: 'majalla',
                           fontWeight: FontWeight.w500,
                         )),
@@ -110,6 +117,32 @@ class _RegisterPageState extends State<RegisterPage> {
                 SizedBox(
                   height: 5,
                 ),
+                Obx(
+                  () => Center(
+                    child: GestureDetector(
+                        onTap: () {
+                          filepicker().then((selectedpath) {
+                            if (selectedpath.toString().isNotEmpty) {
+                              authcontroller.path.value = selectedpath;
+                            }
+                          });
+                        },
+                        child: CircleAvatar(
+                          radius: 40.0,
+                          backgroundColor: Color(0XFFe29587),
+                          foregroundImage:
+                              FileImage(File(authcontroller.path.value)),
+                          child: Icon(
+                            Icons.person,
+                            size: 60.0,
+                            color: Colors.white,
+                          ),
+                        )),
+                  ),
+                ),
+                // SizedBox(
+                //   height: 5,
+                // ),
                 customTextField(
                   "Name",
                   false,
@@ -129,7 +162,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     _name.text = value!;
                   },
                   responsiveHW(context, wd: 100),
-                  responsiveHW(context, ht: 100),
+                  responsiveHW(context, ht: 70),
                   const UnderlineInputBorder(
                     borderSide: BorderSide(
                       color: Colors.grey,
@@ -139,9 +172,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   piconcolor: Colors.grey,
                   textcolor: Colors.grey,
                 ),
-                SizedBox(
-                  height: responsiveHW(context, ht: 1),
-                ),
+                // SizedBox(
+                //   height: responsiveHW(context, ht: 1),
+                // ),
                 customTextField(
                   "Email Address",
                   false,
@@ -161,7 +194,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     _email.text = value!;
                   },
                   responsiveHW(context, wd: 100),
-                  responsiveHW(context, ht: 100),
+                  responsiveHW(context, ht: 70),
                   const UnderlineInputBorder(
                     borderSide: BorderSide(
                       color: Colors.grey,
@@ -171,9 +204,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   piconcolor: Colors.grey,
                   textcolor: Colors.grey,
                 ),
-                SizedBox(
-                  height: responsiveHW(context, ht: 1),
-                ),
+                // SizedBox(
+                //   height: responsiveHW(context, ht: 1),
+                // ),
                 customTextField(
                   "Password",
                   passwordVisible,
@@ -201,7 +234,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     _password.text = value!;
                   },
                   responsiveHW(context, wd: 100),
-                  responsiveHW(context, ht: 100),
+                  responsiveHW(context, ht: 70),
                   const UnderlineInputBorder(
                     borderSide: BorderSide(
                       color: Colors.grey,
@@ -211,9 +244,9 @@ class _RegisterPageState extends State<RegisterPage> {
                   piconcolor: Colors.grey,
                   textcolor: Colors.grey,
                 ),
-                SizedBox(
-                  height: responsiveHW(context, ht: 1),
-                ),
+                // SizedBox(
+                //   height: responsiveHW(context, ht: 1),
+                // ),
                 customTextField(
                   "Confirm Password",
                   confirmPasswordVisible,
@@ -243,7 +276,7 @@ class _RegisterPageState extends State<RegisterPage> {
                     _confirmpassword.text = value!;
                   },
                   responsiveHW(context, wd: 100),
-                  responsiveHW(context, ht: 100),
+                  responsiveHW(context, ht: 70),
                   const UnderlineInputBorder(
                     borderSide: BorderSide(
                       color: Colors.grey,
@@ -254,20 +287,27 @@ class _RegisterPageState extends State<RegisterPage> {
                   textcolor: Colors.grey,
                 ),
                 SizedBox(
-                  height: responsiveHW(context, ht: 7),
+                  height: responsiveHW(context, ht: 4),
                 ),
                 GetBuilder<AuthController>(builder: (cont) {
                   return MaterialButton(
                     onPressed: () {
                       if (_formkey.currentState!.validate()) {
-                        Get.dialog(LoadingPage());
-                        authcontroller.registerUser(
-                            name: _name.text.trim(),
-                            emailAddress: _email.text.trim(),
-                            password: _password.text);
+                        if (authcontroller.path.isEmpty) {
+                          styledsnackbar(
+                              txt: 'Please select profile picture',
+                              icon: Icons.error);
+                        } else {
+                          Get.dialog(LoadingPage());
+                          authcontroller.registerUser(
+                              name: _name.text.trim(),
+                              imgpath: authcontroller.path.value,
+                              emailAddress: _email.text.trim(),
+                              password: _password.text);
+                        }
                       }
                     },
-                    color: Colors.green,
+                    color: Color(0XFFd66d75),
                     elevation: 0.0,
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5.0)),
@@ -287,6 +327,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 //   height: MediaQuery.of(context).size.height * 0.05,
                 // ),
                 Expanded(
+                  // flex: 1,
                   child: Stack(
                     fit: StackFit.passthrough,
                     alignment: AlignmentDirectional.center,

@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,6 +20,8 @@ import 'package:encrypt/encrypt.dart' as encryption;
 class AuthController extends GetxController {
   final LocalAuthentication auth = LocalAuthentication();
   RxBool isbiometricavailable = false.obs;
+  RxString path = ''.obs;
+  String imgurl = '';
 
   bool isAuthenticating = false;
   var encrypted;
@@ -90,6 +95,23 @@ class AuthController extends GetxController {
 //     // setState(() => _isAuthenticating = false);
 //   }
 
+  Future<void> uploadFile(
+      {required String filePath, required String userid}) async {
+    File file = File(filePath);
+
+    try {
+      await FirebaseStorage.instance
+          .ref('images/profile_pictures/$userid.png')
+          .putFile(file)
+          .then((res) async {
+        imgurl = await res.ref.getDownloadURL();
+      });
+    } on FirebaseException catch (e) {
+      styledsnackbar(txt: 'Error occured. $e', icon: Icons.error);
+      // Get.snackbar('Error occured.', '');
+    }
+  }
+
   Future loginuser({required String email, required String password}) async {
     try {
       UserCredential usercredentials = await FirebaseAuth.instance
@@ -112,24 +134,6 @@ class AuthController extends GetxController {
         'password',
         passwordencrypt.base64,
       );
-//       if(!logininfo.containsKey('email')){
-//  logininfo.put(
-//           'email',
-//           emailencrypt.base64,
-//         );
-//       }
-//       if(!logininfo.containsKey('email')){
-//    logininfo.put(
-//           'password',
-//           passwordencrypt.base64,
-//         );
-//       }
-
-      // logininfo.put('credentials', {
-      //   'name': nameencrypt.base64,
-      //   'email': emailencrypt.base64,
-      //   'password': passwordencrypt.base64,
-      // });
       if (usercredentials.user!.emailVerified) {
         if (logininfo.get('bio_auth') == null && isbiometricavailable.value) {
           Get.to(
@@ -168,6 +172,7 @@ class AuthController extends GetxController {
   Future registerUser(
       {required String emailAddress,
       required String name,
+      required String imgpath,
       required String password}) async {
     final db = FirebaseFirestore.instance.collection('users');
     try {
@@ -176,44 +181,56 @@ class AuthController extends GetxController {
         email: emailAddress,
         password: password,
       );
-
       try {
-        await db.doc(credentials.user?.uid.toString()).set({
-          'name': name,
-          'email': emailAddress,
-        });
+        await uploadFile(
+            filePath: imgpath, userid: credentials.user!.uid.toString());
+        try {
+          await db.doc(credentials.user?.uid.toString()).set({
+            'name': name,
+            'email': emailAddress,
+            'imgUrl': imgurl.toString(),
+          });
 
-        var emailencrypt = encrypter.encrypt(emailAddress, iv: iv);
+          var emailencrypt = encrypter.encrypt(emailAddress, iv: iv);
 
-        var passwordencrypt = encrypter.encrypt(password, iv: iv);
+          var passwordencrypt = encrypter.encrypt(password, iv: iv);
 
-        print(emailencrypt.base64);
-        print(passwordencrypt.base64);
-        logininfo.put('userid', credentials.user?.uid.toString());
-        logininfo.put('name', name);
-        logininfo.put(
-          'email',
-          emailencrypt.base64,
-        );
-        logininfo.put(
-          'password',
-          passwordencrypt.base64,
-        );
-        // logininfo.put('credentials', {
-        //   'name': nameencrypt.base64,
-        //   'email': emailencrypt.base64,
-        //   'password': passwordencrypt.base64,
-        // });
+          print(emailencrypt.base64);
+          print(passwordencrypt.base64);
+          logininfo.put('userid', credentials.user?.uid.toString());
+          logininfo.put('name', name);
+          logininfo.put('img', imgurl.toString());
+          logininfo.put(
+            'email',
+            emailencrypt.base64,
+          );
+          logininfo.put(
+            'password',
+            passwordencrypt.base64,
+          );
+          // logininfo.put('credentials', {
+          //   'name': nameencrypt.base64,
+          //   'email': emailencrypt.base64,
+          //   'password': passwordencrypt.base64,
+          // });
 
-        await credentials.user?.sendEmailVerification();
-        Get.back();
+          await credentials.user?.sendEmailVerification();
+          Get.back();
 
-        styledsnackbar(
-            txt: 'A verification link has been sent to your email.',
-            icon: Icons.check_outlined);
-        Get.to(
-          () => const verifyemail(),
-        );
+          styledsnackbar(
+              txt: 'A verification link has been sent to your email.',
+              icon: Icons.check_outlined);
+          Get.to(
+            () => const verifyemail(),
+          );
+        } on FirebaseException catch (e) {
+          print(e.code);
+          print(e.message);
+          Get.back();
+
+          styledsnackbar(
+              txt: 'Error occured. ${e.message}', icon: Icons.error_outlined);
+        }
       } on FirebaseException catch (e) {
         print(e.code);
         print(e.message);

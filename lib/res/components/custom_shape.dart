@@ -28,7 +28,7 @@ class CustomAuthShape extends CustomPainter {
     path_0.close();
 
     Paint paint_0_fill = Paint()..style = PaintingStyle.fill;
-    paint_0_fill.color = Colors.green.withOpacity(1.0);
+    paint_0_fill.color = Color(0XFFd66d75).withOpacity(1.0);
     canvas.drawPath(path_0, paint_0_fill);
   }
 

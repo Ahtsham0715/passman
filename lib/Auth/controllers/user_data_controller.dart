@@ -16,6 +16,7 @@ class UserDataController extends GetxController {
         .get()
         .then((DocumentSnapshot userdata) {
       logininfo.put('name', userdata['name']);
+      logininfo.put('img', userdata['imgUrl']);
       update();
     });
   }

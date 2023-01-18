@@ -30,6 +30,7 @@ class _TermsAndPrivacyPolicyPageState extends State<TermsAndPrivacyPolicyPage>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        elevation: 0.0,
         title: Text(
           'Terms and Privacy Policy',
           style: TextStyle(

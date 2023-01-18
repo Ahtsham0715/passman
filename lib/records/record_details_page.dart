@@ -220,6 +220,7 @@ class _RecordDetailsState extends State<RecordDetails>
                           color: Colors.white,
                         ),
                       ),
+                      SizedBox.shrink(),
                       InkWell(
                         onTap: () async {
                           await Clipboard.setData(ClipboardData(

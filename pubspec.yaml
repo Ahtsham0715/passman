@@ -45,6 +45,8 @@ dependencies:
   firebase_auth: ^4.2.2
   awesome_dialog: ^3.0.2
   encrypt: ^5.0.1
+  file_picker: any
+  firebase_storage: any
 
 
   # The following adds the Cupertino Icons font to your application.

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -44,7 +45,6 @@ class _verifyemailState extends State<verifyemail> {
     await user?.reload();
     if (user!.emailVerified) {
       timer?.cancel();
-      dispose();
       if (logininfo.get('bio_auth') == null) {
         Get.to(
           () => const AskBioAuth(),
@@ -90,7 +90,33 @@ class _verifyemailState extends State<verifyemail> {
           actions: [
             TextButton(
               onPressed: () {
-                logout(context);
+                AwesomeDialog(
+                  context: context,
+                  animType: AnimType.topSlide,
+                  dialogType: DialogType.question,
+                  // body: Center(child: Text(
+                  //         'If the body is specified, then title and description will be ignored, this allows to 											further customize the dialogue.',
+                  //         style: TextStyle(fontStyle: FontStyle.italic),
+                  //       ),),
+                  title: 'Are you sure?',
+                  desc: 'Do you want to logout?',
+                  btnOkOnPress: () async {
+                    try {
+                      // Get.back();
+                      await FirebaseAuth.instance.signOut();
+                      styledsnackbar(
+                          txt: 'user logged out.', icon: Icons.logout_outlined);
+                    } catch (e) {
+                      //  Get.back();
+
+                      styledsnackbar(
+                          txt: 'Error Occured. $e', icon: Icons.error);
+                    }
+                  },
+                  btnCancelOnPress: () {
+                    // Get.back();
+                  },
+                )..show();
               },
               child: Text(
                 'Logout',

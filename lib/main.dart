@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.green,
-        // primaryColor: Colors.black,
+        primaryColor: Color(0XFFd66d75),
         fontFamily: 'majalla',
       ),
       home: const SplashScreen(),
