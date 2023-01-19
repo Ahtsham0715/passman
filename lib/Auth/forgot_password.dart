@@ -79,7 +79,12 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                 },
                 responsiveHW(context, wd: 100),
                 responsiveHW(context, ht: 100),
-                InputBorder.none,
+                OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(95.0),
+                  borderSide: BorderSide(
+                    color: Colors.grey,
+                  ),
+                ),
                 pIcon: Icons.email_outlined,
                 piconcolor: Colors.grey,
                 textcolor: Colors.grey,
@@ -89,7 +94,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
               ),
               Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: responsiveHW(context, wd: 6)!.toDouble(),
+                  horizontal: responsiveHW(context, wd: 5)!.toDouble(),
                 ),
                 child: Container(
                   decoration: const BoxDecoration(
@@ -111,7 +116,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                             Get.back();
 
                             styledsnackbar(
-                                txt: 'Reset link sent successfully',
+                                txt: 'Password reset link sent successfully',
                                 icon: Icons.check);
                           } catch (e) {
                             // Navigator.pop(context);
@@ -130,7 +135,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         }
                       }
                     },
-                    child: Text("Verify Email",
+                    child: Text("Reset Password",
                         style: const TextStyle(
                             fontSize: 20,
                             color: Colors.white,

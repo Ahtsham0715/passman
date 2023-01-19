@@ -291,7 +291,7 @@ class _LoginPageState extends State<LoginPage> {
                             width: MediaQuery.of(context).size.width * 0.85,
                             height: MediaQuery.of(context).size.height * 0.35,
                             child: Image.asset(
-                              'assets/auth.png',
+                              'assets/auth1.jpg',
                             ),
                           ),
                           CustomPaint(

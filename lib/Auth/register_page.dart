@@ -335,7 +335,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       SizedBox(
                           width: MediaQuery.of(context).size.width * 0.85,
                           height: MediaQuery.of(context).size.height * 0.15,
-                          child: Image.asset('assets/auth.png')),
+                          child: Image.asset('assets/auth1.jpg')),
                       CustomPaint(
                         size: Size(
                             MediaQuery.of(context).size.width,
