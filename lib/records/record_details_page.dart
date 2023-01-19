@@ -8,6 +8,7 @@ import 'package:local_auth/local_auth.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:passman/Auth/controllers/auth_controller.dart';
 import 'package:passman/constants.dart';
+import 'package:passman/records/create_new_record_page.dart';
 import 'package:passman/records/models/password_model.dart';
 import 'package:passman/res/components/custom_snackbar.dart';
 import 'package:passman/res/components/custom_text.dart';
@@ -15,9 +16,13 @@ import 'package:encrypt/encrypt.dart' as encryption;
 
 class RecordDetails extends StatefulWidget {
   final PasswordModel password;
-  final int passwordkey;
+  final int passwordIndex;
+  final String passwordKey;
   const RecordDetails(
-      {Key? key, required this.password, required this.passwordkey})
+      {Key? key,
+      required this.password,
+      required this.passwordIndex,
+      required this.passwordKey})
       : super(key: key);
 
   @override
@@ -88,6 +93,26 @@ class _RecordDetailsState extends State<RecordDetails>
             icon: const Icon(Icons.more_vert_rounded),
             onSelected: (i) {
               if (i == "1") {
+                Get.to(
+                  () => CreateRecord(
+                    passwordData: PasswordModel(
+                      title: widget.password.title.toString(),
+                      login: encrypter.decrypt(
+                          encryption.Encrypted.from64(
+                              widget.password.login.toString()),
+                          iv: iv),
+                      password: encrypter.decrypt(
+                          encryption.Encrypted.from64(
+                              widget.password.password.toString()),
+                          iv: iv),
+                      website: widget.password.website.toString(),
+                      notes: widget.password.notes.toString(),
+                      length: widget.password.length,
+                    ),
+                    passwordIndex: widget.passwordKey.toString(),
+                    edit: true,
+                  ),
+                );
                 //  displayBar(context, i);
               } else if (i == "2") {
                 AwesomeDialog(
@@ -102,7 +127,7 @@ class _RecordDetailsState extends State<RecordDetails>
                   desc: 'Do you want to delete this data?',
                   btnOkOnPress: () async {
                     try {
-                      await passwordbox.deleteAt(widget.passwordkey);
+                      await passwordbox.deleteAt(widget.passwordIndex);
                       Get.back();
 
                       styledsnackbar(
@@ -170,9 +195,13 @@ class _RecordDetailsState extends State<RecordDetails>
                 ListTile(
                   title: CustomText(
                       // fontcolor: Colors.white,
-                      title:
-                          widget.password.password.toString().substring(0, 2) +
-                              ('*' * (widget.password.length!.toInt() - 2)),
+                      title: encrypter
+                              .decrypt(
+                                  encryption.Encrypted.from64(
+                                      widget.password.password.toString()),
+                                  iv: iv)
+                              .substring(0, 2) +
+                          ('*' * (widget.password.length!.toInt() - 2)),
                       fontweight: FontWeight.w500,
                       fontsize: 25.0),
                   trailing: ButtonBar(

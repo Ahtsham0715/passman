@@ -5,9 +5,12 @@ Widget customTextField(hintTitle, isPassword, sIcon, controllerName,
     validationFunc, onSavedFunc, wSize, hSize, border,
     {pIcon,
     filled,
+    focusnode,
+    readonly = false,
     fillColor,
     labeltext,
     onchanged,
+    onsubmit,
     piconcolor = Colors.white,
     textcolor = Colors.white}) {
   return Padding(
@@ -15,7 +18,10 @@ Widget customTextField(hintTitle, isPassword, sIcon, controllerName,
     child: TextFormField(
       autovalidateMode: AutovalidateMode.onUserInteraction,
       obscureText: isPassword,
+      focusNode: focusnode,
       onChanged: onchanged,
+      onFieldSubmitted: onsubmit,
+      readOnly: readonly,
       style: TextStyle(
         color: textcolor,
       ),

@@ -10,6 +10,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:passman/Auth/controllers/user_data_controller.dart';
 import 'package:passman/Auth/login_page.dart';
+import 'package:passman/profile/user_profile.dart';
 import 'package:passman/records/create_new_record_page.dart';
 import 'package:passman/records/models/password_model.dart';
 import 'package:passman/records/record_details_page.dart';
@@ -27,11 +28,13 @@ class PasswordsPage extends StatefulWidget {
 
 class _PasswordsPageState extends State<PasswordsPage> {
   final ScrollController scrollcont = ScrollController();
+  bool bioauth = logininfo.get('bio_auth') ?? false;
   // ValueNotifier<bool> isScrolling = ValueNotifier(true);
   @override
   void initState() {
     super.initState();
     Get.put(UserDataController());
+
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (user == null || user.isAnonymous) {
         print('User is currently signed out!');
@@ -53,30 +56,20 @@ class _PasswordsPageState extends State<PasswordsPage> {
           context: context,
           animType: AnimType.topSlide,
           dialogType: DialogType.question,
-          // body: Center(child: Text(
-          //         'If the body is specified, then title and description will be ignored, this allows to 											further customize the dialogue.',
-          //         style: TextStyle(fontStyle: FontStyle.italic),
-          //       ),),
           title: 'Are you sure?',
           desc: 'Do you want to exit the app?',
           btnOkOnPress: () async {
             try {
               SystemNavigator.pop();
             } catch (e) {
-              //  Get.back();
-
               styledsnackbar(txt: 'Error Occured. $e', icon: Icons.error);
             }
           },
-          btnCancelOnPress: () {
-            // Get.back();
-          },
+          btnCancelOnPress: () {},
         )..show();
         return false;
-        // return onWillPop(context);
       },
       child: Scaffold(
-        // backgroundColor: Colors.teal.shade100,
         backgroundColor: Colors.white.withOpacity(0.9),
         appBar: AppBar(
           // automaticallyImplyLeading: false,
@@ -108,7 +101,16 @@ class _PasswordsPageState extends State<PasswordsPage> {
         floatingActionButton: FloatingActionButton.extended(
           onPressed: () {
             Get.to(
-              () => const CreateRecord(),
+              () => CreateRecord(
+                passwordData: PasswordModel(
+                    title: '',
+                    login: '',
+                    password: '',
+                    website: '',
+                    notes: '',
+                    length: 0),
+                edit: false,
+              ),
             );
           },
           elevation: 0.0,
@@ -168,22 +170,24 @@ class _PasswordsPageState extends State<PasswordsPage> {
                         },
                         itemCount: box.length,
                         itemBuilder: (context, index) {
-                          print(box.getAt(index)?.title.toString());
+                          // print(box.getAt(index)?.title.toString());
+                          // print(box.keyAt(index)?.toString());
                           var data = box.getAt(index);
                           return ListTile(
                             onTap: () {
                               Get.to(
                                 () => RecordDetails(
                                   password: data,
-                                  passwordkey: index,
+                                  passwordIndex: index,
+                                  passwordKey: box.keyAt(index).toString(),
                                 ),
                               );
                             },
                             dense: true,
                             leading: const Icon(
-                              FontAwesomeIcons.facebook,
+                              FontAwesomeIcons.unlockKeyhole,
                               color: Colors.white,
-                              size: 40.0,
+                              size: 30.0,
                             ),
                             title: CustomText(
                                 title: data!.title.toString(),
@@ -222,99 +226,148 @@ class _PasswordsPageState extends State<PasswordsPage> {
               }),
         ),
         drawer: Drawer(
-          child: Container(
-              decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomCenter,
-                colors: [
-                  Color(0XFFd66d75),
-                  Color(0XFFe29587),
-                ],
-              )),
-              child: Column(
-                children: [
-                  UserAccountsDrawerHeader(
+          // shape: RoundedRectangleBorder(
+          //   borderRadius: BorderRadius.only(
+          //     topRight: Radius.circular(100.0),
+          //     bottomRight: Radius.circular(100.0),
+          //   ),
+          // ),
+          child: ValueListenableBuilder(
+              valueListenable: logininfo.listenable(),
+              builder: (context, box, _) {
+                return Container(
                     decoration: BoxDecoration(
-                      // borderRadius: BorderRadius.vertical(
-                      //   bottom: Radius.circular(20.0),
-                      // ),
-                      color: Colors.transparent,
-                    ),
-                    accountName: Text(
-                      logininfo.get('name') ?? '',
-                      style: TextStyle(fontSize: 20.0),
-                    ),
-                    accountEmail: Text(
-                      encrypter.decrypt(
-                          encryption.Encrypted.from64(logininfo.get('email')),
-                          iv: iv),
-                      style: TextStyle(fontSize: 20.0),
-                    ),
-                    currentAccountPicture: CircleAvatar(
-                      // radius: 30.0,
-                      foregroundImage: CachedNetworkImageProvider(
-                          logininfo.get('img') ?? ''),
-                      backgroundColor: Colors.transparent,
-                      child: Icon(
-                        CupertinoIcons.profile_circled,
-                        size: 70.0,
-                        color: Colors.white,
-                      ),
-                    ),
-                    currentAccountPictureSize: Size.square(70.0),
-                  ),
-                  customDrawerTile(
-                    title: 'Profile',
-                    leading: Icons.group,
-                    onpressed: () {},
-                  ),
-                  // customDrawerTile(
-                  //   title: 'Start Match',
-                  //   leading: Icons.arrow_right,
-                  //   onpressed: () {},
-                  // ),
-                  customDrawerTile(
-                    title: 'Logout',
-                    leading: Icons.power_settings_new,
-                    onpressed: () async {
-                      // logout(context);
-                      AwesomeDialog(
-                        context: context,
-                        animType: AnimType.topSlide,
-                        dialogType: DialogType.question,
-                        // body: Center(child: Text(
-                        //         'If the body is specified, then title and description will be ignored, this allows to 											further customize the dialogue.',
-                        //         style: TextStyle(fontStyle: FontStyle.italic),
-                        //       ),),
-                        title: 'Are you sure?',
-                        desc: 'Do you want to logout?',
-                        btnOkOnPress: () async {
-                          try {
-                            // Get.back();
-                            await FirebaseAuth.instance.signOut();
-                            styledsnackbar(
-                                txt: 'user logged out.',
-                                icon: Icons.logout_outlined);
-                          } catch (e) {
-                            //  Get.back();
+                        gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        Color(0XFFd66d75),
+                        Color(0XFFe29587),
+                      ],
+                    )),
+                    child: Column(
+                      children: [
+                        UserAccountsDrawerHeader(
+                          decoration: BoxDecoration(
+                            // borderRadius: BorderRadius.vertical(
+                            //   bottom: Radius.circular(20.0),
+                            // ),
+                            color: Colors.black26,
+                          ),
+                          accountName: Text(
+                            box.get('name') ?? '',
+                            style: TextStyle(fontSize: 20.0),
+                          ),
+                          accountEmail: Text(
+                            encrypter.decrypt(
+                                encryption.Encrypted.from64(box.get('email')),
+                                iv: iv),
+                            style: TextStyle(fontSize: 20.0),
+                          ),
+                          currentAccountPicture: CircleAvatar(
+                            // radius: 30.0,
+                            foregroundImage: CachedNetworkImageProvider(
+                                box.get('img') ?? ''),
+                            backgroundColor: Colors.transparent,
+                            child: Icon(
+                              CupertinoIcons.profile_circled,
+                              size: 70.0,
+                              color: Colors.white,
+                            ),
+                          ),
+                          currentAccountPictureSize: Size.square(70.0),
+                        ),
 
-                            styledsnackbar(
-                                txt: 'Error Occured. $e', icon: Icons.error);
-                          }
-                        },
-                        btnCancelOnPress: () {
-                          // Get.back();
-                        },
-                      )..show();
-                      // logout_func();
-                    },
-                  )
-                ],
-              )),
+                        SwitchListTile(
+                          value: bioauth,
+                          inactiveTrackColor:
+                              Color.fromARGB(255, 228, 151, 157),
+                          activeColor: Colors.green,
+                          title: CustomText(
+                              fontcolor: Colors.white,
+                              title: 'Fingerprint Login',
+                              fontweight: FontWeight.w500,
+                              fontsize: 22.0),
+                          onChanged: (value) {
+                            logininfo.put('bio_auth', value);
+                            print(logininfo.get('bio_auth'));
+                            setState(() {
+                              bioauth = value;
+                            });
+                          },
+                        ),
+                        CustomDivider(),
+                        customDrawerTile(
+                          title: 'Profile',
+                          leading: Icons.group,
+                          onpressed: () {
+                            Get.to(
+                              () => UserProfile(),
+                            );
+                          },
+                        ),
+                        CustomDivider(),
+
+                        // customDrawerTile(
+                        //   title: 'Start Match',
+                        //   leading: Icons.arrow_right,
+                        //   onpressed: () {},
+                        // ),
+                        customDrawerTile(
+                          title: 'Logout',
+                          leading: Icons.power_settings_new,
+                          onpressed: () async {
+                            // logout(context);
+                            AwesomeDialog(
+                              context: context,
+                              animType: AnimType.topSlide,
+                              dialogType: DialogType.question,
+                              // body: Center(child: Text(
+                              //         'If the body is specified, then title and description will be ignored, this allows to 											further customize the dialogue.',
+                              //         style: TextStyle(fontStyle: FontStyle.italic),
+                              //       ),),
+                              title: 'Are you sure?',
+                              desc: 'Do you want to logout?',
+                              btnOkOnPress: () async {
+                                try {
+                                  // Get.back();
+                                  await FirebaseAuth.instance.signOut();
+                                  styledsnackbar(
+                                      txt: 'user logged out.',
+                                      icon: Icons.logout_outlined);
+                                } catch (e) {
+                                  //  Get.back();
+
+                                  styledsnackbar(
+                                      txt: 'Error Occured. $e',
+                                      icon: Icons.error);
+                                }
+                              },
+                              btnCancelOnPress: () {
+                                // Get.back();
+                              },
+                            )..show();
+                            // logout_func();
+                          },
+                        )
+                      ],
+                    ));
+              }),
           // backgroundColor: Colors.white.withOpacity(0.9),
         ),
       ),
+    );
+  }
+}
+
+class CustomDivider extends StatelessWidget {
+  const CustomDivider({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Divider(
+      color: Colors.black26,
+      thickness: 0.25,
     );
   }
 }

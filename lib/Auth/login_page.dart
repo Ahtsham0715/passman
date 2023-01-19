@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:passman/Auth/controllers/auth_controller.dart';
+import 'package:passman/Auth/forgot_password.dart';
 import 'package:passman/Auth/privacy_policy_screen.dart';
 import 'package:passman/Auth/register_page.dart';
 import 'package:passman/constants.dart';
@@ -222,7 +223,18 @@ class _LoginPageState extends State<LoginPage> {
                         Padding(
                           padding: const EdgeInsets.only(right: 15.0),
                           child: TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              showModalBottomSheet(
+                                  shape: const RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.only(
+                                          topLeft: Radius.circular(16),
+                                          topRight: Radius.circular(16))),
+                                  isScrollControlled: true,
+                                  context: context,
+                                  builder: (context) {
+                                    return const ForgotPassword();
+                                  });
+                            },
                             child: const Text(
                               'Forgot Password',
                               style: TextStyle(
