@@ -155,25 +155,75 @@ class _CreateRecordState extends State<CreateRecord>
                 SizedBox(
                   height: 15.0,
                 ),
-                customTextField(
-                  'Title',
-                  false,
-                  null,
-                  _title,
-                  (val) {
-                    if (val!.isEmpty) {
-                      return "required";
-                    }
+                Autocomplete<String>(
+                  fieldViewBuilder:
+                      (context, _title, titlefocusNode, onFieldSubmitted) {
+                    return customTextField(
+                      'Title',
+                      false,
+                      null,
+                      _title,
+                      (val) {
+                        if (val!.isEmpty) {
+                          return "required";
+                        }
+                      },
+                      (val) {},
+                      Get.width * 0.5,
+                      Get.height * 0.2,
+                      UnderlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.white,
+                        ),
+                      ),
+                      pIcon: Icons.note_alt_outlined,
+                      focusnode: titlefocusNode,
+                    );
                   },
-                  (val) {},
-                  Get.width * 0.5,
-                  Get.height * 0.2,
-                  UnderlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.white,
-                    ),
-                  ),
-                  pIcon: Icons.note_alt_outlined,
+                  //       optionsViewBuilder: (context, onSelected, options) {
+                  //       return  Align(
+                  //   alignment: Alignment.topLeft,
+                  //   child: Material(
+                  //     child: Container(
+                  //       width: 300,
+                  //       color: Colors.green.shade500,
+                  //       child: ListView.builder(
+                  //         padding: EdgeInsets.all(10.0),
+                  //         itemCount: options.length,
+                  //         itemBuilder: (BuildContext context, int index) {
+                  //           final  option = options.elementAt(index);
+
+                  //           return GestureDetector(
+                  //             onTap: () {
+                  //               onSelected(option);
+                  //             },
+                  //             child: ListTile(
+                  //               title: Text(option, style: const TextStyle(color: Colors.white)),
+                  //             ),
+                  //           );
+                  //         },
+                  //       ),
+                  //     ),
+                  //   ),
+                  // );
+                  //       },
+                  optionsBuilder: (TextEditingValue _title) {
+                    if (_title.text == '') {
+                      _websiteaddress.clear();
+                      return const Iterable<String>.empty();
+                    }
+                    return apps.where((String option) {
+                      return option
+                          .toLowerCase()
+                          .startsWith(_title.text.toLowerCase());
+                    });
+                  },
+                  onSelected: (String selection) {
+                    _title.text = selection;
+                    _websiteaddress.text = websites[selection].toString();
+                    debugPrint('You just selected $selection');
+                    debugPrint('controller value ${_title.text}');
+                  },
                 ),
                 SizedBox(
                   height: 5.0,
@@ -452,6 +502,11 @@ class _CreateRecordState extends State<CreateRecord>
                   (val) {
                     if (val!.isEmpty) {
                       return "required";
+                    }
+                    if (!RegExp(
+                            r"(http|https)://[\w-]+(\.[\w-]+)+([\w.,@?^=%&amp;:/~+#-]*[\w@?^=%&amp;/~+#-])?")
+                        .hasMatch(val)) {
+                      return "Please Enter Valid URL";
                     }
                   },
                   (val) {},

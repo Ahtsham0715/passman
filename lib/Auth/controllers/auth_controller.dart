@@ -216,7 +216,8 @@ class AuthController extends GetxController {
 
           await credentials.user?.sendEmailVerification();
           Get.back();
-
+          path.value = '';
+          update();
           styledsnackbar(
               txt: 'A verification link has been sent to your email.',
               icon: Icons.check_outlined);

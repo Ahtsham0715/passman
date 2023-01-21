@@ -214,7 +214,7 @@ class _RecordDetailsState extends State<RecordDetails>
                           try {
                             await auth
                                 .authenticate(
-                              localizedReason: 'Verify your identity',
+                              localizedReason: ' ',
                               options: const AuthenticationOptions(
                                 stickyAuth: true,
                                 // biometricOnly: true,

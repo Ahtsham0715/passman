@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -184,13 +185,20 @@ class _PasswordsPageState extends State<PasswordsPage> {
                               );
                             },
                             dense: true,
-                            leading: const Icon(
-                              FontAwesomeIcons.unlockKeyhole,
-                              color: Colors.white,
-                              size: 30.0,
-                            ),
+                            leading: websites
+                                    .containsKey(data!.title.toString())
+                                ? SizedBox(
+                                    height: 40,
+                                    width: 40,
+                                    child: SvgPicture.asset(
+                                        'assets/icons/${data.title.toString().toLowerCase()}.svg'))
+                                : Icon(
+                                    FontAwesomeIcons.unlockKeyhole,
+                                    color: Colors.white,
+                                    size: 30.0,
+                                  ),
                             title: CustomText(
-                                title: data!.title.toString(),
+                                title: data.title.toString(),
                                 fontcolor: Colors.white,
                                 fontweight: FontWeight.w500,
                                 fontsize: 23.0),
@@ -290,10 +298,17 @@ class _PasswordsPageState extends State<PasswordsPage> {
                               fontsize: 22.0),
                           onChanged: (value) {
                             logininfo.put('bio_auth', value);
+
                             print(logininfo.get('bio_auth'));
                             setState(() {
                               bioauth = value;
                             });
+                            if (value) {
+                              styledsnackbar(
+                                  txt:
+                                      'Next time you can login using fingerprint',
+                                  icon: Icons.login);
+                            }
                           },
                         ),
                         CustomDivider(),
