@@ -112,7 +112,7 @@ class onboardingPage extends GetView<OnboardingController> {
                         ),
                         CustomText(
                           fontweight: FontWeight.w500,
-                          fontsize: 18.sp,
+                          fontsize: 19.sp,
                           title: controller.splashInfo[index]['subtitle'],
                         ),
                         SizedBox(
