@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:passman/Auth/login_page.dart';
+import 'package:passman/Auth/onbaording_screen.dart';
+import 'package:passman/constants.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -29,11 +31,16 @@ class _SplashScreenState extends State<SplashScreen>
     _animation.addStatusListener((status) async {
       if (status == AnimationStatus.completed) {
         await FirebaseAuth.instance.signOut();
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(
-            builder: (context) => const LoginPage(),
-          ),
-        );
+        if (logininfo.containsKey('istutorial') &&
+            logininfo.get('istutorial')) {
+          Get.to(
+            () => LoginPage(),
+          );
+        } else {
+          Get.to(
+            () => onboardingPage(),
+          );
+        }
       }
     });
     _controller.forward();

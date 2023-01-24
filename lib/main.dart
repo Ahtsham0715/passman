@@ -6,6 +6,7 @@ import 'package:passman/firebase_options.dart';
 import 'package:passman/records/models/password_model.dart';
 import 'package:passman/records/models/password_model.g.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:responsive_sizer/responsive_sizer.dart';
 import 'Auth/splash_screen.dart';
 
 void main() async {
@@ -27,15 +28,17 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.green,
-        primaryColor: Color(0XFFd66d75),
-        fontFamily: 'majalla',
-      ),
-      home: const SplashScreen(),
-    );
+    return ResponsiveSizer(builder: (context, orientation, screenType) {
+      return GetMaterialApp(
+        debugShowCheckedModeBanner: false,
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          primarySwatch: Colors.green,
+          primaryColor: Color(0XFFd66d75),
+          fontFamily: 'majalla',
+        ),
+        home: const SplashScreen(),
+      );
+    });
   }
 }

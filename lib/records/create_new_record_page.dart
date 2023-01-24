@@ -292,8 +292,8 @@ class _CreateRecordState extends State<CreateRecord>
                                   // recordcontroller.numbers = true;
                                   // recordcontroller.specialcharacters = true;
                                   recordcontroller.autogenerate = true;
-                                  if (_animationController.isAnimating) {
-                                    _animationController.reset();
+                                  if (_animationController.isCompleted) {
+                                    _animationController.repeat();
                                   } else {
                                     _animationController.repeat();
                                     recordcontroller
