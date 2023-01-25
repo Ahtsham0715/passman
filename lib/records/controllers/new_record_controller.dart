@@ -84,10 +84,8 @@ class NewRecordController extends GetxController {
     if (specchar) {
       _chars = _chars + special;
     }
-    // print(_chars);
     password = String.fromCharCodes(Iterable.generate(
         length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
-    // if(password.contains(RegExp(r'^(?=.*[a-zA-Z])(?=.*[*".!@#\$%^&(){}:;<>,.\' + r"'?/~_+-=])(?=.*[0-9]).{8,30}\$")))
     while (true) {
       if (passwordValidator(
           password: password,

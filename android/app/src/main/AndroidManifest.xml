@@ -2,7 +2,7 @@
     package="com.example.passman">
     <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
    <application
-        android:label="passman"
+        android:label="passMan"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
         <activity

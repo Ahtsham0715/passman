@@ -8,6 +8,7 @@ import 'package:local_auth/local_auth.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:passman/Auth/controllers/auth_controller.dart';
 import 'package:passman/constants.dart';
+import 'package:passman/records/controllers/records_controller.dart';
 import 'package:passman/records/create_new_record_page.dart';
 import 'package:passman/records/models/password_model.dart';
 import 'package:passman/res/components/custom_snackbar.dart';
@@ -53,6 +54,7 @@ class _RecordDetailsState extends State<RecordDetails>
 
   @override
   Widget build(BuildContext context) {
+    final RecordsController recordscontroller = Get.put(RecordsController());
     return Scaffold(
       appBar: AppBar(
         title: Text('Password Details'),
@@ -85,9 +87,6 @@ class _RecordDetailsState extends State<RecordDetails>
                       "Delete",
                       style: TextStyle(fontSize: 20.0),
                     )),
-                // PopupMenuItem<String>(value: "2", child: Text("Leave a review")),
-                // PopupMenuItem<String>(value: "3", child: Text("Share")),
-                // PopupMenuItem<String>(value: "4", child: Text("Exit")),
               ];
             },
             icon: const Icon(Icons.more_vert_rounded),
@@ -119,10 +118,6 @@ class _RecordDetailsState extends State<RecordDetails>
                   context: context,
                   animType: AnimType.topSlide,
                   dialogType: DialogType.question,
-                  // body: Center(child: Text(
-                  //         'If the body is specified, then title and description will be ignored, this allows to 											further customize the dialogue.',
-                  //         style: TextStyle(fontStyle: FontStyle.italic),
-                  //       ),),
                   title: 'Are you sure?',
                   desc: 'Do you want to delete this data?',
                   btnOkOnPress: () async {
@@ -144,17 +139,8 @@ class _RecordDetailsState extends State<RecordDetails>
                     // Get.back();
                   },
                 )..show();
-                //  displayBar(context, i);
-              }
-              //  else if(i == "3"){
-              //    displayBar(context, i);
-              //  }
-              //  else if(i == "4"){
-              //    displayBar(context, i);
-              //  }
-              else {}
+              } else {}
             },
-            // onCanceled: () => displayBar(context,"Cancelled",cancel: true),
           ),
         ],
       ),
@@ -209,39 +195,18 @@ class _RecordDetailsState extends State<RecordDetails>
                     children: [
                       InkWell(
                         onTap: () async {
-                          final LocalAuthentication auth =
-                              LocalAuthentication();
-                          try {
-                            await auth
-                                .authenticate(
-                              localizedReason: ' ',
-                              options: const AuthenticationOptions(
-                                stickyAuth: true,
-                                // biometricOnly: true,
-                              ),
-                            )
-                                .then((authenticated) {
-                              if (authenticated) {
-                                styledsnackbar(
-                                    txt: encrypter.decrypt(
-                                        encryption.Encrypted.from64(widget
-                                            .password.password
-                                            .toString()),
-                                        iv: iv),
-                                    icon: Icons.visibility);
-                              }
-                            });
-                          } on PlatformException catch (e) {
-                            styledsnackbar(
-                                txt: 'Error occured. $e', icon: Icons.error);
-                            if (kDebugMode) {
-                              print(e);
+                          await recordscontroller
+                              .authenticateWithBiometrics()
+                              .then((value) async {
+                            if (recordscontroller.isauthenticated.value) {
                               styledsnackbar(
-                                  txt: 'Error occured. $e', icon: Icons.error);
+                                  txt: encrypter.decrypt(
+                                      encryption.Encrypted.from64(
+                                          widget.password.password.toString()),
+                                      iv: iv),
+                                  icon: Icons.visibility);
                             }
-
-                            return;
-                          }
+                          });
                         },
                         child: Icon(
                           Icons.visibility,
@@ -252,6 +217,13 @@ class _RecordDetailsState extends State<RecordDetails>
                       SizedBox.shrink(),
                       InkWell(
                         onTap: () async {
+                          // await recordscontroller
+                          //     .authenticateWithBiometrics()
+                          //     .then((value) async {
+                          //   if (recordscontroller.isauthenticated.value) {
+
+                          //   }
+                          // });
                           await Clipboard.setData(ClipboardData(
                             text: encrypter.decrypt(
                                 encryption.Encrypted.from64(
