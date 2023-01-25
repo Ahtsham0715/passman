@@ -84,11 +84,75 @@ class NewRecordController extends GetxController {
     if (specchar) {
       _chars = _chars + special;
     }
-    print(_chars);
+    // print(_chars);
     password = String.fromCharCodes(Iterable.generate(
         length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
     // if(password.contains(RegExp(r'^(?=.*[a-zA-Z])(?=.*[*".!@#\$%^&(){}:;<>,.\' + r"'?/~_+-=])(?=.*[0-9]).{8,30}\$")))
+    while (true) {
+      if (passwordValidator(
+          password: password,
+          uppercase: alphabets,
+          numbers: numbers,
+          specialchars: specchar)) {
+        break;
+      } else {
+        password = String.fromCharCodes(Iterable.generate(
+            length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+      }
+    }
+
     progressBarValue(password);
     return password;
+  }
+
+  bool passwordValidator(
+      {required String password,
+      required bool uppercase,
+      required bool numbers,
+      required bool specialchars}) {
+    final RegExp allregExp = new RegExp(
+        r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$');
+    final RegExp alphabets = RegExp(r"[A-Z]+");
+    final RegExp symbols = RegExp(r'[`~!@#$%\^&*\(\)_+\\\-={}\[\]\/.,<>;]');
+    final RegExp numbersregex = RegExp(r"[0-9.]+");
+    if (uppercase && numbers && specialchars) {
+      if (allregExp.hasMatch(password)) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (uppercase && numbers) {
+      if (alphabets.hasMatch(password) && numbersregex.hasMatch(password)) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (uppercase && specialchars) {
+      if (alphabets.hasMatch(password) && symbols.hasMatch(password)) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (uppercase) {
+      if (alphabets.hasMatch(password)) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (numbers) {
+      if (numbersregex.hasMatch(password)) {
+        return true;
+      } else {
+        return false;
+      }
+    } else if (specialchars) {
+      if (symbols.hasMatch(password)) {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return true;
+    }
   }
 }

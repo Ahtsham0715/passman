@@ -34,7 +34,7 @@ class _CreateRecordState extends State<CreateRecord>
   TextEditingController _password = TextEditingController();
   TextEditingController _websiteaddress = TextEditingController();
   TextEditingController _notes = TextEditingController();
-
+  int repeats = 0;
   @override
   void initState() {
     super.initState();
@@ -47,6 +47,7 @@ class _CreateRecordState extends State<CreateRecord>
       vsync: this,
       duration: Duration(milliseconds: 400),
     );
+
     _animation = Tween(begin: 0.0, end: 1.0).animate(_animationController);
   }
 
@@ -285,33 +286,58 @@ class _CreateRecordState extends State<CreateRecord>
                       child: Padding(
                         padding: const EdgeInsets.only(right: 10.0),
                         child: InkWell(
-                          onTap: _animationController.isAnimating
-                              ? null
-                              : () {
-                                  // recordcontroller.alphabets = true;
-                                  // recordcontroller.numbers = true;
-                                  // recordcontroller.specialcharacters = true;
-                                  recordcontroller.autogenerate = true;
-                                  if (_animationController.isCompleted) {
-                                    _animationController.repeat();
-                                  } else {
-                                    _animationController.repeat();
-                                    recordcontroller
-                                        .generatePassword(
-                                            length: recordcontroller.characters
-                                                .toInt(),
-                                            alphabets:
-                                                recordcontroller.alphabets,
-                                            numbers: recordcontroller.numbers,
-                                            specchar: recordcontroller
-                                                .specialcharacters)
-                                        .then((value) {
-                                      _animationController.reset();
-                                      _password.text = value.toString();
-                                      recordcontroller.update();
-                                    });
-                                  }
-                                },
+                          onTap:
+                              // _animationController.isAnimating
+                              //     ? null
+                              //     :
+                              () {
+                            // recordcontroller.alphabets = true;
+                            // recordcontroller.numbers = true;
+                            // recordcontroller.specialcharacters = true;
+                            recordcontroller.autogenerate = true;
+                            _animationController.addListener(() {});
+                            TickerFuture tickerFuture =
+                                _animationController.repeat();
+                            tickerFuture.timeout(
+                                Duration(milliseconds: 400 * 2), onTimeout: () {
+                              _animationController.removeListener(() {});
+                              _animationController.forward(from: 0);
+                              _animationController.stop(canceled: true);
+                              recordcontroller
+                                  .generatePassword(
+                                      length:
+                                          recordcontroller.characters.toInt(),
+                                      alphabets: recordcontroller.alphabets,
+                                      numbers: recordcontroller.numbers,
+                                      specchar:
+                                          recordcontroller.specialcharacters)
+                                  .then((value) {
+                                _animationController.reset();
+                                _password.text = value.toString();
+                                recordcontroller.update();
+                              });
+                            });
+
+                            // if (_animationController.isCompleted) {
+                            //   _animationController.repeat();
+                            // } else {
+                            //   _animationController.repeat();
+                            // recordcontroller
+                            //     .generatePassword(
+                            //         length: recordcontroller.characters
+                            //             .toInt(),
+                            //         alphabets:
+                            //             recordcontroller.alphabets,
+                            //         numbers: recordcontroller.numbers,
+                            //         specchar: recordcontroller
+                            //             .specialcharacters)
+                            //     .then((value) {
+                            //   _animationController.reset();
+                            //   _password.text = value.toString();
+                            //   recordcontroller.update();
+                            // });
+                            // }
+                          },
                           child: AnimatedBuilder(
                             animation: _animation,
                             builder: (context, child) {
