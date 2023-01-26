@@ -30,6 +30,7 @@ class PasswordsPage extends StatefulWidget {
 class _PasswordsPageState extends State<PasswordsPage> {
   final ScrollController scrollcont = ScrollController();
   bool bioauth = logininfo.get('bio_auth') ?? false;
+  bool allow_screenshots = true;
   // ValueNotifier<bool> isScrolling = ValueNotifier(true);
   @override
   void initState() {
@@ -300,6 +301,32 @@ class _PasswordsPageState extends State<PasswordsPage> {
                             logininfo.put('bio_auth', value);
 
                             print(logininfo.get('bio_auth'));
+                            setState(() {
+                              bioauth = value;
+                            });
+                            if (value) {
+                              styledsnackbar(
+                                  txt:
+                                      'Next time you can login using fingerprint',
+                                  icon: Icons.login);
+                            }
+                          },
+                        ),
+                        CustomDivider(),
+                        SwitchListTile(
+                          value: bioauth,
+                          inactiveTrackColor:
+                              Color.fromARGB(255, 228, 151, 157),
+                          activeColor: Colors.green,
+                          title: CustomText(
+                              fontcolor: Colors.white,
+                              title: 'Prevent Screenshot',
+                              fontweight: FontWeight.w500,
+                              fontsize: 22.0),
+                          onChanged: (value) {
+                            // logininfo.put('bio_auth', value);
+
+                            // print(logininfo.get('bio_auth'));
                             setState(() {
                               bioauth = value;
                             });

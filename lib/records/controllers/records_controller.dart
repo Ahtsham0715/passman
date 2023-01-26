@@ -1,7 +1,9 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
 import 'package:local_auth/local_auth.dart';
+import 'package:passman/res/components/custom_snackbar.dart';
 
 class RecordsController extends GetxController {
   final LocalAuthentication auth = LocalAuthentication();
@@ -13,6 +15,8 @@ class RecordsController extends GetxController {
         localizedReason: ' ',
         options: const AuthenticationOptions(
           stickyAuth: true,
+          sensitiveTransaction: true,
+          // useErrorDialogs: false,
           // biometricOnly: true,
         ),
       )
@@ -26,6 +30,8 @@ class RecordsController extends GetxController {
         }
       });
     } on PlatformException catch (e) {
+      print(e);
+      styledsnackbar(txt: 'Error occured. $e', icon: Icons.error_outline);
       isauthenticated.value = false;
       return;
     }
