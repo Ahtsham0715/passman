@@ -175,105 +175,128 @@ class _PasswordsPageState extends State<PasswordsPage> {
                             thickness: 0.5,
                           );
                         },
-                        itemCount: box.length,
+                        itemCount: box.length + 1,
                         itemBuilder: (context, index) {
                           // print(box.getAt(index)?.title.toString());
                           // print(box.keyAt(index)?.toString());
-                          var data = box.getAt(index);
-                          return ListTile(
-                            onTap: () {
-                              Get.to(
-                                () => RecordDetails(
-                                  password: data,
-                                  passwordIndex: index,
-                                  passwordKey: box.keyAt(index).toString(),
-                                ),
-                              );
-                            },
-                            dense: true,
-                            leading: websites
-                                    .containsKey(data!.title.toString())
-                                ? SizedBox(
-                                    height: 40,
-                                    width: 40,
-                                    child: SvgPicture.asset(
-                                        'assets/icons/${data.title.toString().toLowerCase()}.svg'))
-                                : Icon(
-                                    FontAwesomeIcons.unlockKeyhole,
-                                    color: Colors.white,
-                                    size: 30.0,
+                          dynamic data;
+                          index == 0
+                              ? data = box.getAt(index)
+                              : data = box.getAt(index - 1);
+                          return index == 0
+                              ? Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 5.0, horizontal: 25.0),
+                                  child: CustomText(
+                                      fontcolor: Colors.white,
+                                      title:
+                                          'Total Records: ${box.length.toString()}',
+                                      fontweight: FontWeight.w500,
+                                      fontsize: 27.0),
+                                )
+                              : ListTile(
+                                  onTap: () {
+                                    Get.to(
+                                      () => RecordDetails(
+                                        password: data,
+                                        passwordIndex: index,
+                                        passwordKey:
+                                            box.keyAt(index).toString(),
+                                      ),
+                                    );
+                                  },
+                                  dense: true,
+                                  leading: websites
+                                          .containsKey(data!.title.toString())
+                                      ? SizedBox(
+                                          height: 40,
+                                          width: 40,
+                                          child: SvgPicture.asset(
+                                              'assets/icons/${data.title.toString().toLowerCase()}.svg'))
+                                      : Icon(
+                                          FontAwesomeIcons.unlockKeyhole,
+                                          color: Colors.white,
+                                          size: 30.0,
+                                        ),
+                                  title: CustomText(
+                                      title: data.title.toString(),
+                                      fontcolor: Colors.white,
+                                      fontweight: FontWeight.w500,
+                                      fontsize: 23.0),
+                                  subtitle: CustomText(
+                                      title: encrypter.decrypt(
+                                          encryption.Encrypted.from64(
+                                              data.login.toString()),
+                                          iv: iv),
+                                      fontcolor: Colors.white,
+                                      fontweight: FontWeight.w500,
+                                      fontsize: 20.0),
+                                  trailing: InkWell(
+                                    onTap: () async {
+                                      !logininfo.get(
+                                                  'is_biometric_available') ||
+                                              !logininfo.get('bio_auth')
+                                          ? showDialog(
+                                              context: context,
+                                              builder: (context) =>
+                                                  MasterPasswordDialog(),
+                                            ).then((value) async {
+                                              if (value != null) {
+                                                if (value ==
+                                                    encrypter.decrypt(
+                                                        encryption.Encrypted
+                                                            .from64(
+                                                                logininfo.get(
+                                                                    'password')),
+                                                        iv: iv)) {
+                                                  await Clipboard.setData(
+                                                      ClipboardData(
+                                                    text: encrypter.decrypt(
+                                                        encryption.Encrypted
+                                                            .from64(data
+                                                                .password
+                                                                .toString()),
+                                                        iv: iv),
+                                                  ));
+                                                  styledsnackbar(
+                                                      txt:
+                                                          'Copied to clipboard',
+                                                      icon: Icons.copy_rounded);
+                                                } else {
+                                                  styledsnackbar(
+                                                      txt:
+                                                          'Incorrect master password',
+                                                      icon:
+                                                          Icons.error_outlined);
+                                                }
+                                              }
+                                            })
+                                          : await recordscontroller
+                                              .authenticateWithBiometrics()
+                                              .then((value) async {
+                                              if (recordscontroller
+                                                  .isauthenticated.value) {
+                                                await Clipboard.setData(
+                                                    ClipboardData(
+                                                  text: encrypter.decrypt(
+                                                      encryption.Encrypted
+                                                          .from64(data.password
+                                                              .toString()),
+                                                      iv: iv),
+                                                ));
+                                                styledsnackbar(
+                                                    txt: 'Copied to clipboard',
+                                                    icon: Icons.copy_rounded);
+                                              }
+                                            });
+                                    },
+                                    child: const Icon(
+                                      Icons.copy,
+                                      color: Colors.white,
+                                      size: 25.0,
+                                    ),
                                   ),
-                            title: CustomText(
-                                title: data.title.toString(),
-                                fontcolor: Colors.white,
-                                fontweight: FontWeight.w500,
-                                fontsize: 23.0),
-                            subtitle: CustomText(
-                                title: encrypter.decrypt(
-                                    encryption.Encrypted.from64(
-                                        data.login.toString()),
-                                    iv: iv),
-                                fontcolor: Colors.white,
-                                fontweight: FontWeight.w500,
-                                fontsize: 20.0),
-                            trailing: InkWell(
-                              onTap: () async {
-                                !logininfo.get('is_biometric_available') ||
-                                        !logininfo.get('bio_auth')
-                                    ? showDialog(
-                                        context: context,
-                                        builder: (context) =>
-                                            MasterPasswordDialog(),
-                                      ).then((value) async {
-                                        if (value != null) {
-                                          if (value ==
-                                              encrypter.decrypt(
-                                                  encryption.Encrypted.from64(
-                                                      logininfo
-                                                          .get('password')),
-                                                  iv: iv)) {
-                                            await Clipboard.setData(
-                                                ClipboardData(
-                                              text: encrypter.decrypt(
-                                                  encryption.Encrypted.from64(
-                                                      data.password.toString()),
-                                                  iv: iv),
-                                            ));
-                                            styledsnackbar(
-                                                txt: 'Copied to clipboard',
-                                                icon: Icons.copy_rounded);
-                                          } else {
-                                            styledsnackbar(
-                                                txt:
-                                                    'Incorrect master password',
-                                                icon: Icons.error_outlined);
-                                          }
-                                        }
-                                      })
-                                    : await recordscontroller
-                                        .authenticateWithBiometrics()
-                                        .then((value) async {
-                                        if (recordscontroller
-                                            .isauthenticated.value) {
-                                          await Clipboard.setData(ClipboardData(
-                                            text: encrypter.decrypt(
-                                                encryption.Encrypted.from64(
-                                                    data.password.toString()),
-                                                iv: iv),
-                                          ));
-                                          styledsnackbar(
-                                              txt: 'Copied to clipboard',
-                                              icon: Icons.copy_rounded);
-                                        }
-                                      });
-                              },
-                              child: const Icon(
-                                Icons.copy,
-                                color: Colors.white,
-                                size: 25.0,
-                              ),
-                            ),
-                          );
+                                );
                         },
                       );
               }),
