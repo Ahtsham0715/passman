@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:encrypt/encrypt.dart' as encryption;
-import 'package:passman/res/components/custom_snackbar.dart';
-import '../../constants.dart';
 
 class MasterPasswordDialog extends StatefulWidget {
   @override
@@ -9,7 +6,8 @@ class MasterPasswordDialog extends StatefulWidget {
 }
 
 class _MasterPasswordDialogState extends State<MasterPasswordDialog> {
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  GlobalKey<FormState> formkey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -28,12 +26,21 @@ class _MasterPasswordDialogState extends State<MasterPasswordDialog> {
       ),
       content: Container(
         width: double.maxFinite,
-        child: TextField(
-          controller: _passwordController,
-          obscureText: true,
-          decoration: InputDecoration(
-            hintText: "Password",
-            prefixIcon: Icon(Icons.lock),
+        child: Form(
+          key: formkey,
+          child: TextFormField(
+            controller: _passwordController,
+            obscureText: true,
+            validator: (value) {
+              if (value!.isEmpty) {
+                return "Master Password Required";
+              }
+              return null;
+            },
+            decoration: InputDecoration(
+              hintText: "Password",
+              prefixIcon: Icon(Icons.lock),
+            ),
           ),
         ),
       ),
@@ -63,8 +70,9 @@ class _MasterPasswordDialogState extends State<MasterPasswordDialog> {
             ),
           ),
           onPressed: () {
-            print(_passwordController.text);
-            Navigator.of(context).pop(_passwordController.text);
+            if (formkey.currentState!.validate()) {
+              Navigator.of(context).pop(_passwordController.text);
+            }
           },
         ),
       ],

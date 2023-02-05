@@ -17,7 +17,7 @@ void main() async {
   var directory = await getApplicationDocumentsDirectory();
   await Hive.initFlutter(directory.path);
   Hive.registerAdapter(PasswordModelAdapter());
-  await Hive.openBox<PasswordModel>('my_data');
+  // await Hive.openBox<PasswordModel>('my_data');
   await Hive.openBox('logininfo');
   runApp(const MyApp());
 }

@@ -24,7 +24,8 @@ class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   final TextEditingController _email = TextEditingController();
   final TextEditingController _password = TextEditingController();
-
+  final FocusNode _emailfocusNode = FocusNode();
+  final FocusNode _passwordfocusNode = FocusNode();
   AuthController controller = Get.put(AuthController());
 
   bool passwordVisible = true;
@@ -38,6 +39,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (user == null) {
         print('User is currently signed out!');
@@ -50,6 +52,13 @@ class _LoginPageState extends State<LoginPage> {
     });
     // controller.checkBiometrics();
     // controller.update();
+  }
+
+  @override
+  void dispose() {
+    _emailfocusNode.dispose();
+    _passwordfocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -130,71 +139,86 @@ class _LoginPageState extends State<LoginPage> {
                       height: MediaQuery.of(context).size.height * 0.025,
                     ),
                     customTextField(
-                      "Email Address",
-                      false,
-                      null,
-                      _email,
-                      (value) {
-                        if (value!.isEmpty) {
-                          return "Please Enter Your Email";
-                        }
-                        if (!RegExp(
-                                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                            .hasMatch(value)) {
-                          return "Please Enter Valid Email Address";
-                        }
-                      },
-                      (value) {
-                        _email.text = value!;
-                      },
-                      responsiveHW(context, wd: 100),
-                      responsiveHW(context, ht: 70),
-                      const UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.grey,
+                        "Email Address",
+                        false,
+                        null,
+                        _email,
+                        (value) {
+                          if (value!.isEmpty) {
+                            return "Please Enter Your Email";
+                          }
+                          if (!RegExp(
+                                  r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                              .hasMatch(value)) {
+                            return "Please Enter Valid Email Address";
+                          }
+                        },
+                        (value) {
+                          _email.text = value!;
+                        },
+                        responsiveHW(context, wd: 100),
+                        responsiveHW(context, ht: 70),
+                        const UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey,
+                          ),
                         ),
-                      ),
-                      pIcon: Icons.email_outlined,
-                      piconcolor: Colors.grey,
-                      textcolor: Colors.grey,
-                    ),
+                        pIcon: Icons.email_outlined,
+                        piconcolor: Colors.grey,
+                        textcolor: Colors.grey,
+                        // autofocus: true,
+                        focusnode: _emailfocusNode,
+                        onsubmit: (val) {
+                          _emailfocusNode.unfocus();
+                          FocusScope.of(context)
+                              .requestFocus(_passwordfocusNode);
+                        }),
                     SizedBox(
                       height: responsiveHW(context, ht: 1),
                     ),
                     customTextField(
-                      "Master Password",
-                      passwordVisible,
-                      IconButton(
-                        // splashColor: Colors.transparent,
-                        icon: Icon(
-                          //choose the icon on based of passwordVisibility
-                          passwordVisible
-                              ? Icons.visibility_outlined
-                              : Icons.visibility_off_outlined,
-                          color: Colors.grey,
+                        "Master Password",
+                        passwordVisible,
+                        IconButton(
+                          // splashColor: Colors.transparent,
+                          icon: Icon(
+                            //choose the icon on based of passwordVisibility
+                            passwordVisible
+                                ? Icons.visibility_outlined
+                                : Icons.visibility_off_outlined,
+                            color: Colors.grey,
+                          ),
+                          onPressed: _passwordVisibility,
                         ),
-                        onPressed: _passwordVisibility,
-                      ),
-                      _password,
-                      (value) {
-                        if (value!.isEmpty) {
-                          return "Please Enter Your Password";
-                        }
-                      },
-                      (value) {
-                        _password.text = value!;
-                      },
-                      responsiveHW(context, wd: 100),
-                      responsiveHW(context, ht: 70),
-                      const UnderlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.grey,
+                        _password,
+                        (value) {
+                          if (value!.isEmpty) {
+                            return "Please Enter Your Password";
+                          }
+                        },
+                        (value) {
+                          _password.text = value!;
+                        },
+                        responsiveHW(context, wd: 100),
+                        responsiveHW(context, ht: 70),
+                        const UnderlineInputBorder(
+                          borderSide: BorderSide(
+                            color: Colors.grey,
+                          ),
                         ),
-                      ),
-                      pIcon: Icons.lock_outline_rounded,
-                      piconcolor: Colors.grey,
-                      textcolor: Colors.grey,
-                    ),
+                        pIcon: Icons.lock_outline_rounded,
+                        piconcolor: Colors.grey,
+                        textcolor: Colors.grey,
+                        focusnode: _passwordfocusNode,
+                        onsubmit: (val) {
+                          _passwordfocusNode.unfocus();
+                          if (_formkey.currentState!.validate()) {
+                            Get.dialog(LoadingPage());
+                            authcontroller.loginuser(
+                                email: _email.text.trim(),
+                                password: _password.text);
+                          }
+                        }),
                     SizedBox(
                       height: responsiveHW(context, ht: 1),
                     ),

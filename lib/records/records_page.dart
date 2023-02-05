@@ -148,7 +148,8 @@ class _PasswordsPageState extends State<PasswordsPage> {
             ],
           )),
           child: ValueListenableBuilder(
-              valueListenable: Hive.box<PasswordModel>('my_data').listenable(),
+              valueListenable:
+                  Hive.box<PasswordModel>(logininfo.get('userid')).listenable(),
               builder: (context, box, _) {
                 return box.isEmpty
                     ? Column(
@@ -217,8 +218,8 @@ class _PasswordsPageState extends State<PasswordsPage> {
                                 fontsize: 20.0),
                             trailing: InkWell(
                               onTap: () async {
-                                // !logininfo.get('is_biometric_available') &&
-                                !logininfo.get('bio_auth')
+                                !logininfo.get('is_biometric_available') ||
+                                        !logininfo.get('bio_auth')
                                     ? showDialog(
                                         context: context,
                                         builder: (context) =>
@@ -329,32 +330,35 @@ class _PasswordsPageState extends State<PasswordsPage> {
                           ),
                           currentAccountPictureSize: Size.square(70.0),
                         ),
+                        !logininfo.get('is_biometric_available')
+                            ? const Center()
+                            : SwitchListTile(
+                                value: bioauth,
+                                inactiveTrackColor:
+                                    Color.fromARGB(255, 228, 151, 157),
+                                activeColor: Colors.green,
+                                title: CustomText(
+                                    fontcolor: Colors.white,
+                                    title: 'Fingerprint Auth',
+                                    fontweight: FontWeight.w500,
+                                    fontsize: 22.0),
+                                onChanged: (value) {
+                                  // print(
+                                  //     'bio ${logininfo.get('is_biometric_available')}');
+                                  logininfo.put('bio_auth', value);
 
-                        SwitchListTile(
-                          value: bioauth,
-                          inactiveTrackColor:
-                              Color.fromARGB(255, 228, 151, 157),
-                          activeColor: Colors.green,
-                          title: CustomText(
-                              fontcolor: Colors.white,
-                              title: 'Fingerprint Auth',
-                              fontweight: FontWeight.w500,
-                              fontsize: 22.0),
-                          onChanged: (value) {
-                            logininfo.put('bio_auth', value);
-
-                            print(logininfo.get('bio_auth'));
-                            setState(() {
-                              bioauth = value;
-                            });
-                            if (value) {
-                              styledsnackbar(
-                                  txt:
-                                      'You can now use fingerprint authentication',
-                                  icon: Icons.login);
-                            }
-                          },
-                        ),
+                                  print(logininfo.get('bio_auth'));
+                                  setState(() {
+                                    bioauth = value;
+                                  });
+                                  if (value) {
+                                    styledsnackbar(
+                                        txt:
+                                            'You can now use fingerprint authentication',
+                                        icon: Icons.login);
+                                  }
+                                },
+                              ),
                         CustomDivider(),
 
                         customDrawerTile(

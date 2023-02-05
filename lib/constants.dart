@@ -20,7 +20,7 @@ final enckey = encryption.Key.fromLength(32);
 final iv = encryption.IV.fromLength(16);
 var encrypter = encryption.Encrypter(encryption.AES(enckey));
 // open a box
-var passwordbox = Hive.box<PasswordModel>('my_data');
+var passwordbox = Hive.box<PasswordModel>(logininfo.get('userid'));
 var logininfo = Hive.box('logininfo');
 
 List<String> apps = [
@@ -28,6 +28,7 @@ List<String> apps = [
   "Twitter",
   "Instagram",
   "Gmail",
+  "Google",
   "Youtube",
   "LinkedIn",
   "WhatsApp",
@@ -43,23 +44,26 @@ List<String> apps = [
   "Spotify",
   "Telegram",
   "TikTok",
-  "Snack Videos",
+  "Snack Video",
   "Tinder",
-  "Tumbler",
+  "Tumblr",
   "Twitch",
   "Vimeo",
   "We Chat",
   "Skype",
   "Discord",
   "Signal",
+  "Sound Cloud",
   // and so on
 ];
 
 Map<String, String> websites = {
   "Facebook": "https://www.facebook.com/",
+  "Sound Cloud": "https://soundcloud.com/",
   "Twitter": "https://twitter.com/",
   "Instagram": "https://www.instagram.com/",
   "Gmail": "https://mail.google.com/",
+  "Google": "https://www.google.com/",
   "Youtube": "https://www.youtube.com/",
   "LinkedIn": "https://www.linkedin.com/",
   "WhatsApp": "https://www.whatsapp.com/",

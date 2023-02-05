@@ -7,12 +7,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:passman/Auth/controllers/user_data_controller.dart';
 import 'package:passman/Auth/fingerprint_page.dart';
 import 'package:passman/Auth/verify_email_page.dart';
 import 'package:passman/constants.dart';
 import 'package:passman/res/components/custom_snackbar.dart';
+import '../../records/models/password_model.dart';
 import '../../records/records_page.dart';
 import '../../res/components/loading_page.dart';
 import 'package:encrypt/encrypt.dart' as encryption;
@@ -36,7 +38,17 @@ class AuthController extends GetxController {
   Future<void> checkBiometrics() async {
     late bool canCheckBiometrics;
     try {
-      canCheckBiometrics = await auth.canCheckBiometrics;
+      canCheckBiometrics = await auth.isDeviceSupported();
+      final List<BiometricType> availableBiometrics =
+          await auth.getAvailableBiometrics();
+      print(availableBiometrics);
+      print(canCheckBiometrics);
+      if (availableBiometrics.isNotEmpty) {
+        canCheckBiometrics = true;
+      } else {
+        canCheckBiometrics = false;
+        logininfo.put('bio_auth', false);
+      }
       if (kDebugMode) {
         print(canCheckBiometrics);
       }
@@ -119,6 +131,10 @@ class AuthController extends GetxController {
           .signInWithEmailAndPassword(email: email, password: password);
       final UserDataController controller = Get.put(UserDataController());
       logininfo.put('userid', usercredentials.user?.uid.toString());
+      if (!Hive.isBoxOpen(logininfo.get('userid'))) {
+        await Hive.openBox<PasswordModel>(logininfo.get('userid'));
+      }
+
       await controller.getUserData();
       Get.back();
       styledsnackbar(txt: 'Login Successful.', icon: Icons.check_outlined);
@@ -136,7 +152,8 @@ class AuthController extends GetxController {
         passwordencrypt.base64,
       );
       if (usercredentials.user!.emailVerified) {
-        if (logininfo.get('bio_auth') == null && isbiometricavailable.value) {
+        if (logininfo.get('bio_auth') == null &&
+            logininfo.get('is_biometric_available')) {
           Get.to(
             () => const AskBioAuth(),
           );
@@ -152,18 +169,19 @@ class AuthController extends GetxController {
       }
     } on FirebaseAuthException catch (e) {
       Get.back();
+
       if (e.code == 'user-not-found') {
-        print('No user found for that email.');
+        // print('No user found for that email.');
         styledsnackbar(
             txt: 'No user found for that email.', icon: Icons.error_outlined);
       } else if (e.code == 'wrong-password') {
         styledsnackbar(
             txt: 'Wrong password provided for that user.',
             icon: Icons.error_outlined);
-        print('Wrong password provided for that user.');
+        // print('Wrong password provided for that user.');
       }
     } catch (e) {
-      print(e);
+      // print(e);
       Get.back();
 
       styledsnackbar(txt: 'Error occured. $e', icon: Icons.error_outlined);
@@ -209,6 +227,9 @@ class AuthController extends GetxController {
             'password',
             passwordencrypt.base64,
           );
+          if (!Hive.isBoxOpen(logininfo.get('userid'))) {
+            await Hive.openBox<PasswordModel>(logininfo.get('userid'));
+          }
           // logininfo.put('credentials', {
           //   'name': nameencrypt.base64,
           //   'email': emailencrypt.base64,

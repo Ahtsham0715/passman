@@ -197,8 +197,8 @@ class _RecordDetailsState extends State<RecordDetails>
                     children: [
                       InkWell(
                         onTap: () async {
-                          // !logininfo.get('is_biometric_available') &&
-                          !logininfo.get('bio_auth')
+                          !logininfo.get('is_biometric_available') ||
+                                  !logininfo.get('bio_auth')
                               ? showDialog(
                                   context: context,
                                   builder: (context) => MasterPasswordDialog(),
@@ -246,8 +246,8 @@ class _RecordDetailsState extends State<RecordDetails>
                       SizedBox.shrink(),
                       InkWell(
                         onTap: () async {
-                          // !logininfo.get('is_biometric_available') &&
-                          !logininfo.get('bio_auth')
+                          !logininfo.get('is_biometric_available') ||
+                                  !logininfo.get('bio_auth')
                               ? showDialog(
                                   context: context,
                                   builder: (context) => MasterPasswordDialog(),

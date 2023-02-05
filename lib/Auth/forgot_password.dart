@@ -113,6 +113,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           try {
                             await FirebaseAuth.instance.sendPasswordResetEmail(
                                 email: _email.text.trim());
+                            logininfo.put('bio_auth', false);
                             Get.back();
 
                             styledsnackbar(

@@ -30,6 +30,12 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController _confirmpassword = TextEditingController();
   bool passwordVisible = true;
   bool confirmPasswordVisible = true;
+
+  final FocusNode _namefocusNode = FocusNode();
+  final FocusNode _emailfocusNode = FocusNode();
+  final FocusNode _passwordfocusNode = FocusNode();
+  final FocusNode _confirmpasswordfocusNode = FocusNode();
+
   // Visibility of password
   void _passwordVisibility() {
     setState(() {
@@ -45,7 +51,17 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   void initState() {
+    // FocusScope.of(context).requestFocus(_namefocusNode);
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _emailfocusNode.dispose();
+    _namefocusNode.dispose();
+    _passwordfocusNode.dispose();
+    _confirmpasswordfocusNode.dispose();
+    super.dispose();
   }
 
   @override
@@ -171,6 +187,12 @@ class _RegisterPageState extends State<RegisterPage> {
                   pIcon: Icons.person_outline,
                   piconcolor: Colors.grey,
                   textcolor: Colors.grey,
+                  autofocus: true,
+                  focusnode: _namefocusNode,
+                  onsubmit: (val) {
+                    _namefocusNode.unfocus();
+                    FocusScope.of(context).requestFocus(_emailfocusNode);
+                  },
                 ),
                 // SizedBox(
                 //   height: responsiveHW(context, ht: 1),
@@ -203,6 +225,11 @@ class _RegisterPageState extends State<RegisterPage> {
                   pIcon: Icons.email_outlined,
                   piconcolor: Colors.grey,
                   textcolor: Colors.grey,
+                  focusnode: _emailfocusNode,
+                  onsubmit: (val) {
+                    _emailfocusNode.unfocus();
+                    FocusScope.of(context).requestFocus(_passwordfocusNode);
+                  },
                 ),
                 // SizedBox(
                 //   height: responsiveHW(context, ht: 1),
@@ -243,12 +270,18 @@ class _RegisterPageState extends State<RegisterPage> {
                   pIcon: Icons.lock_outline_rounded,
                   piconcolor: Colors.grey,
                   textcolor: Colors.grey,
+                  focusnode: _passwordfocusNode,
+                  onsubmit: (val) {
+                    _passwordfocusNode.unfocus();
+                    FocusScope.of(context)
+                        .requestFocus(_confirmpasswordfocusNode);
+                  },
                 ),
                 // SizedBox(
                 //   height: responsiveHW(context, ht: 1),
                 // ),
                 customTextField(
-                  "Confirm Password",
+                  "Confirm Master Password",
                   confirmPasswordVisible,
                   IconButton(
                     icon: Icon(
@@ -285,6 +318,24 @@ class _RegisterPageState extends State<RegisterPage> {
                   pIcon: Icons.lock_outline_rounded,
                   piconcolor: Colors.grey,
                   textcolor: Colors.grey,
+                  focusnode: _confirmpasswordfocusNode,
+                  onsubmit: (val) {
+                    _confirmpasswordfocusNode.unfocus();
+                    if (_formkey.currentState!.validate()) {
+                      if (authcontroller.path.isEmpty) {
+                        styledsnackbar(
+                            txt: 'Please select profile picture',
+                            icon: Icons.error);
+                      } else {
+                        Get.dialog(LoadingPage());
+                        authcontroller.registerUser(
+                            name: _name.text.trim(),
+                            imgpath: authcontroller.path.value,
+                            emailAddress: _email.text.trim(),
+                            password: _password.text);
+                      }
+                    }
+                  },
                 ),
                 SizedBox(
                   height: responsiveHW(context, ht: 4),
