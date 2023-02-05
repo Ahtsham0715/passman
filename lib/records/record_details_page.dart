@@ -15,6 +15,8 @@ import 'package:passman/res/components/custom_snackbar.dart';
 import 'package:passman/res/components/custom_text.dart';
 import 'package:encrypt/encrypt.dart' as encryption;
 
+import '../res/components/master_password_dialog.dart';
+
 class RecordDetails extends StatefulWidget {
   final PasswordModel password;
   final int passwordIndex;
@@ -195,18 +197,45 @@ class _RecordDetailsState extends State<RecordDetails>
                     children: [
                       InkWell(
                         onTap: () async {
-                          await recordscontroller
-                              .authenticateWithBiometrics()
-                              .then((value) async {
-                            if (recordscontroller.isauthenticated.value) {
-                              styledsnackbar(
-                                  txt: encrypter.decrypt(
-                                      encryption.Encrypted.from64(
-                                          widget.password.password.toString()),
-                                      iv: iv),
-                                  icon: Icons.visibility);
-                            }
-                          });
+                          // !logininfo.get('is_biometric_available') &&
+                          !logininfo.get('bio_auth')
+                              ? showDialog(
+                                  context: context,
+                                  builder: (context) => MasterPasswordDialog(),
+                                ).then((value) {
+                                  if (value != null) {
+                                    if (value ==
+                                        encrypter.decrypt(
+                                            encryption.Encrypted.from64(
+                                                logininfo.get('password')),
+                                            iv: iv)) {
+                                      styledsnackbar(
+                                          txt: encrypter.decrypt(
+                                              encryption.Encrypted.from64(widget
+                                                  .password.password
+                                                  .toString()),
+                                              iv: iv),
+                                          icon: Icons.visibility);
+                                    } else {
+                                      styledsnackbar(
+                                          txt: 'Incorrect master password',
+                                          icon: Icons.error_outlined);
+                                    }
+                                  }
+                                })
+                              : await recordscontroller
+                                  .authenticateWithBiometrics()
+                                  .then((value) async {
+                                  if (recordscontroller.isauthenticated.value) {
+                                    styledsnackbar(
+                                        txt: encrypter.decrypt(
+                                            encryption.Encrypted.from64(widget
+                                                .password.password
+                                                .toString()),
+                                            iv: iv),
+                                        icon: Icons.visibility);
+                                  }
+                                });
                         },
                         child: Icon(
                           Icons.visibility,
@@ -217,22 +246,51 @@ class _RecordDetailsState extends State<RecordDetails>
                       SizedBox.shrink(),
                       InkWell(
                         onTap: () async {
-                          // await recordscontroller
-                          //     .authenticateWithBiometrics()
-                          //     .then((value) async {
-                          //   if (recordscontroller.isauthenticated.value) {
-
-                          //   }
-                          // });
-                          await Clipboard.setData(ClipboardData(
-                            text: encrypter.decrypt(
-                                encryption.Encrypted.from64(
-                                    widget.password.password.toString()),
-                                iv: iv),
-                          ));
-                          styledsnackbar(
-                              txt: 'Copied to clipboard',
-                              icon: Icons.copy_rounded);
+                          // !logininfo.get('is_biometric_available') &&
+                          !logininfo.get('bio_auth')
+                              ? showDialog(
+                                  context: context,
+                                  builder: (context) => MasterPasswordDialog(),
+                                ).then((value) async {
+                                  if (value != null) {
+                                    if (value ==
+                                        encrypter.decrypt(
+                                            encryption.Encrypted.from64(
+                                                logininfo.get('password')),
+                                            iv: iv)) {
+                                      await Clipboard.setData(ClipboardData(
+                                        text: encrypter.decrypt(
+                                            encryption.Encrypted.from64(widget
+                                                .password.password
+                                                .toString()),
+                                            iv: iv),
+                                      ));
+                                      styledsnackbar(
+                                          txt: 'Copied to clipboard',
+                                          icon: Icons.copy_rounded);
+                                    } else {
+                                      styledsnackbar(
+                                          txt: 'Incorrect master password',
+                                          icon: Icons.error_outlined);
+                                    }
+                                  }
+                                })
+                              : await recordscontroller
+                                  .authenticateWithBiometrics()
+                                  .then((value) async {
+                                  if (recordscontroller.isauthenticated.value) {
+                                    await Clipboard.setData(ClipboardData(
+                                      text: encrypter.decrypt(
+                                          encryption.Encrypted.from64(widget
+                                              .password.password
+                                              .toString()),
+                                          iv: iv),
+                                    ));
+                                    styledsnackbar(
+                                        txt: 'Copied to clipboard',
+                                        icon: Icons.copy_rounded);
+                                  }
+                                });
                         },
                         child: Icon(
                           Icons.copy_rounded,

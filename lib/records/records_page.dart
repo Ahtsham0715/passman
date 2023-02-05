@@ -12,6 +12,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:passman/Auth/controllers/user_data_controller.dart';
 import 'package:passman/Auth/login_page.dart';
 import 'package:passman/profile/user_profile.dart';
+import 'package:passman/records/controllers/records_controller.dart';
 import 'package:passman/records/create_new_record_page.dart';
 import 'package:passman/records/models/password_model.dart';
 import 'package:passman/records/record_details_page.dart';
@@ -19,6 +20,7 @@ import 'package:passman/res/components/custom_text.dart';
 import 'package:encrypt/encrypt.dart' as encryption;
 import '../constants.dart';
 import '../res/components/custom_snackbar.dart';
+import '../res/components/master_password_dialog.dart';
 
 class PasswordsPage extends StatefulWidget {
   const PasswordsPage({super.key});
@@ -52,6 +54,8 @@ class _PasswordsPageState extends State<PasswordsPage> {
   @override
   Widget build(BuildContext context) {
     // final UserDataController userdata = UserDataController();
+    final RecordsController recordscontroller = Get.put(RecordsController());
+
     return WillPopScope(
       onWillPop: () async {
         AwesomeDialog(
@@ -213,15 +217,54 @@ class _PasswordsPageState extends State<PasswordsPage> {
                                 fontsize: 20.0),
                             trailing: InkWell(
                               onTap: () async {
-                                await Clipboard.setData(ClipboardData(
-                                  text: encrypter.decrypt(
-                                      encryption.Encrypted.from64(
-                                          data.password.toString()),
-                                      iv: iv),
-                                ));
-                                styledsnackbar(
-                                    txt: 'Copied to clipboard',
-                                    icon: Icons.copy_rounded);
+                                // !logininfo.get('is_biometric_available') &&
+                                !logininfo.get('bio_auth')
+                                    ? showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            MasterPasswordDialog(),
+                                      ).then((value) async {
+                                        if (value != null) {
+                                          if (value ==
+                                              encrypter.decrypt(
+                                                  encryption.Encrypted.from64(
+                                                      logininfo
+                                                          .get('password')),
+                                                  iv: iv)) {
+                                            await Clipboard.setData(
+                                                ClipboardData(
+                                              text: encrypter.decrypt(
+                                                  encryption.Encrypted.from64(
+                                                      data.password.toString()),
+                                                  iv: iv),
+                                            ));
+                                            styledsnackbar(
+                                                txt: 'Copied to clipboard',
+                                                icon: Icons.copy_rounded);
+                                          } else {
+                                            styledsnackbar(
+                                                txt:
+                                                    'Incorrect master password',
+                                                icon: Icons.error_outlined);
+                                          }
+                                        }
+                                      })
+                                    : await recordscontroller
+                                        .authenticateWithBiometrics()
+                                        .then((value) async {
+                                        if (recordscontroller
+                                            .isauthenticated.value) {
+                                          await Clipboard.setData(ClipboardData(
+                                            text: encrypter.decrypt(
+                                                encryption.Encrypted.from64(
+                                                    data.password.toString()),
+                                                iv: iv),
+                                          ));
+                                          styledsnackbar(
+                                              txt: 'Copied to clipboard',
+                                              icon: Icons.copy_rounded);
+                                        }
+                                      });
                               },
                               child: const Icon(
                                 Icons.copy,
@@ -294,7 +337,7 @@ class _PasswordsPageState extends State<PasswordsPage> {
                           activeColor: Colors.green,
                           title: CustomText(
                               fontcolor: Colors.white,
-                              title: 'Fingerprint Login',
+                              title: 'Fingerprint Auth',
                               fontweight: FontWeight.w500,
                               fontsize: 22.0),
                           onChanged: (value) {
@@ -307,7 +350,7 @@ class _PasswordsPageState extends State<PasswordsPage> {
                             if (value) {
                               styledsnackbar(
                                   txt:
-                                      'Next time you can login using fingerprint',
+                                      'You can now use fingerprint authentication',
                                   icon: Icons.login);
                             }
                           },

@@ -162,7 +162,7 @@ class _LoginPageState extends State<LoginPage> {
                       height: responsiveHW(context, ht: 1),
                     ),
                     customTextField(
-                      "Password",
+                      "Master Password",
                       passwordVisible,
                       IconButton(
                         // splashColor: Colors.transparent,

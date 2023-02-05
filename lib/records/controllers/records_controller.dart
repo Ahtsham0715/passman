@@ -31,7 +31,9 @@ class RecordsController extends GetxController {
       });
     } on PlatformException catch (e) {
       print(e);
-      styledsnackbar(txt: 'Error occured. $e', icon: Icons.error_outline);
+      styledsnackbar(
+          txt: '${e.message}\n Disable fingerprint auth and use password.',
+          icon: Icons.error_outline);
       isauthenticated.value = false;
       return;
     }

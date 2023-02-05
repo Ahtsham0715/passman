@@ -41,6 +41,7 @@ class AuthController extends GetxController {
         print(canCheckBiometrics);
       }
       isbiometricavailable.value = canCheckBiometrics;
+      logininfo.put('is_biometric_available', canCheckBiometrics);
       update();
     } on PlatformException catch (e) {
       canCheckBiometrics = false;
