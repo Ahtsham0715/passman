@@ -19,6 +19,7 @@ void main() async {
   Hive.registerAdapter(PasswordModelAdapter());
   // await Hive.openBox<PasswordModel>('my_data');
   await Hive.openBox('logininfo');
+
   runApp(const MyApp());
 }
 

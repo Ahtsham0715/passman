@@ -134,6 +134,9 @@ class AuthController extends GetxController {
       if (!Hive.isBoxOpen(logininfo.get('userid'))) {
         await Hive.openBox<PasswordModel>(logininfo.get('userid'));
       }
+      if (!Hive.isBoxOpen('folders${logininfo.get('userid')}')) {
+        await Hive.openBox('folders${logininfo.get('userid')}');
+      }
 
       await controller.getUserData();
       Get.back();

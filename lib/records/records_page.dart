@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -18,8 +19,12 @@ import 'package:passman/records/models/password_model.dart';
 import 'package:passman/records/record_details_page.dart';
 import 'package:passman/res/components/custom_text.dart';
 import 'package:encrypt/encrypt.dart' as encryption;
+import 'package:passman/res/components/new_folder.dart';
 import '../constants.dart';
+import '../media files/controllers/media_controller.dart';
+import '../res/components/custom_formfield.dart';
 import '../res/components/custom_snackbar.dart';
+import '../res/components/loading_page.dart';
 import '../res/components/master_password_dialog.dart';
 
 class PasswordsPage extends StatefulWidget {
@@ -33,6 +38,8 @@ class _PasswordsPageState extends State<PasswordsPage> {
   final ScrollController scrollcont = ScrollController();
   bool bioauth = logininfo.get('bio_auth') ?? false;
   bool allow_screenshots = true;
+  final searchController = TextEditingController();
+
   // ValueNotifier<bool> isScrolling = ValueNotifier(true);
   @override
   void initState() {
@@ -55,7 +62,7 @@ class _PasswordsPageState extends State<PasswordsPage> {
   Widget build(BuildContext context) {
     // final UserDataController userdata = UserDataController();
     final RecordsController recordscontroller = Get.put(RecordsController());
-
+    final MediaController folderscontroller = Get.put(MediaController());
     return WillPopScope(
       onWillPop: () async {
         AwesomeDialog(
@@ -83,13 +90,59 @@ class _PasswordsPageState extends State<PasswordsPage> {
           // backgroundColor: Colors.green,
           elevation: 0.0,
           centerTitle: true,
-          title: const Text(
-            'My Records',
-            style: TextStyle(
-                fontSize: 30.0,
-                fontWeight: FontWeight.w500,
-                color: Colors.white,
-                fontFamily: 'majalla'),
+          title: GetBuilder<RecordsController>(
+            builder: (controller) {
+              return controller.isSearchBarVisible
+                  ? Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: customTextField(
+                          'Search',
+                          false,
+                          null,
+                          searchController,
+                          (val) {},
+                          (val) {},
+                          Get.width * 0.5,
+                          Get.height * 0.2,
+                          OutlineInputBorder(
+                            borderSide: BorderSide(
+                              color: Colors.white,
+                              width: 1.5,
+                            ),
+                            borderRadius: BorderRadius.circular(25.0),
+                          ),
+                          textcolor: Colors.white, onchanged: (val) {
+                        print(searchController.text);
+                        if (searchController.text.toString().isEmpty) {
+                          controller.box =
+                              Hive.box<PasswordModel>(logininfo.get('userid'))
+                                  .values
+                                  .toList();
+                        } else {
+                          List<PasswordModel> passList = controller.box;
+
+                          controller.box.clear();
+                          for (var pass in passList) {
+                            if (pass.title!.toLowerCase().startsWith(
+                                searchController.text
+                                    .toString()
+                                    .toLowerCase())) {
+                              controller.box.add(pass);
+                            }
+                          }
+                        }
+                        controller.update();
+                      }),
+                    )
+                  : const Text(
+                      'My Records',
+                      style: TextStyle(
+                          fontSize: 30.0,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                          fontFamily: 'majalla'),
+                    );
+            },
           ),
           flexibleSpace: Container(
             decoration: BoxDecoration(
@@ -103,37 +156,107 @@ class _PasswordsPageState extends State<PasswordsPage> {
               ),
             ),
           ),
+          actions: [
+            GetBuilder<RecordsController>(builder: (controller) {
+              return recordscontroller.isSearchBarVisible
+                  ? IconButton(
+                      icon: Icon(Icons.close),
+                      onPressed: () {
+                        controller.isSearchBarVisible = false;
+                        controller.update();
+                      },
+                    )
+                  : IconButton(
+                      icon: Icon(Icons.search),
+                      onPressed: () {
+                        controller.isSearchBarVisible = true;
+                        controller.update();
+                      },
+                    );
+            }),
+          ],
         ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () {
-            Get.to(
-              () => CreateRecord(
-                passwordData: PasswordModel(
-                    title: '',
-                    login: '',
-                    password: '',
-                    website: '',
-                    notes: '',
-                    length: 0),
-                edit: false,
-              ),
-            );
-          },
+        floatingActionButton: SpeedDial(
+          backgroundColor: Colors.green,
+          activeBackgroundColor: Colors.red,
           elevation: 0.0,
-
-          // shape: scrolling ? null : const CircleBorder(),
+          activeChild: Icon(Icons.close),
+          closeDialOnPop: true,
+          spaceBetweenChildren: 20.0,
+          tooltip: 'Create New Folder/Password',
+          renderOverlay: false,
           label: const CustomText(
               fontcolor: Colors.white,
-              title: 'Password',
+              title: 'Create',
               fontweight: FontWeight.w500,
               fontsize: 22.0),
-          backgroundColor: Colors.green.shade400,
-
-          icon: const Icon(
+          activeLabel: const CustomText(
+              fontcolor: Colors.white,
+              title: 'Close',
+              fontweight: FontWeight.w500,
+              fontsize: 22.0),
+          child: Icon(
             Icons.add,
-            color: Colors.white,
-            size: 25.0,
+            // color: Colors.black,
           ),
+          children: [
+            SpeedDialChild(
+              child: Icon(
+                Icons.lock_outline,
+                size: 25.0,
+              ),
+              elevation: 0.0,
+              labelBackgroundColor: Colors.black.withOpacity(0.7),
+              backgroundColor: Colors.black.withOpacity(0.7),
+              label: "New Password",
+              labelStyle: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  fontSize: 20.0,
+                  color: Colors.white),
+              foregroundColor: Colors.white,
+              onTap: () {
+                Get.to(
+                  () => CreateRecord(
+                    passwordData: PasswordModel(
+                        title: '',
+                        login: '',
+                        password: '',
+                        website: '',
+                        notes: '',
+                        length: 0),
+                    edit: false,
+                  ),
+                );
+              },
+            ),
+            SpeedDialChild(
+              child: Icon(
+                Icons.folder_open_rounded,
+                size: 25.0,
+              ),
+              labelBackgroundColor: Colors.black.withOpacity(0.7),
+              backgroundColor: Colors.black.withOpacity(0.7),
+              foregroundColor: Colors.white,
+              labelStyle: TextStyle(
+                fontWeight: FontWeight.w500,
+                fontSize: 20.0,
+                color: Colors.white,
+              ),
+              label: "New Folder",
+              onTap: () {
+                showDialog(
+                  context: context,
+                  builder: (context) => showNewFolderDialog(),
+                ).then((value) {
+                  if (value != null) {
+                    Get.dialog(LoadingPage());
+                    folderscontroller.createFolder(
+                        folderName: value.toString());
+                  }
+                });
+              },
+            ),
+          ],
         ),
         body: Container(
           height: height,
@@ -147,108 +270,148 @@ class _PasswordsPageState extends State<PasswordsPage> {
               Color(0XFFe29587),
             ],
           )),
-          child: ValueListenableBuilder(
-              valueListenable:
-                  Hive.box<PasswordModel>(logininfo.get('userid')).listenable(),
-              builder: (context, box, _) {
-                return box.isEmpty
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            MdiIcons.flaskEmptyOutline,
-                            size: 50.0,
-                            color: Colors.white,
-                          ),
-                          CustomText(
-                              title: 'No Data Available',
-                              fontcolor: Colors.white,
-                              fontweight: FontWeight.w600,
-                              fontsize: 40.0),
-                        ],
-                      )
-                    : ListView.separated(
-                        controller: scrollcont,
-                        separatorBuilder: (context, index) {
-                          return const Divider(
-                            color: Colors.white,
-                            thickness: 0.5,
-                          );
-                        },
-                        itemCount: box.length + 1,
-                        itemBuilder: (context, index) {
-                          // print(box.getAt(index)?.title.toString());
-                          // print(box.keyAt(index)?.toString());
-                          dynamic data;
-                          index == 0
-                              ? data = box.getAt(index)
-                              : data = box.getAt(index - 1);
-                          return index == 0
-                              ? Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      vertical: 5.0, horizontal: 25.0),
-                                  child: CustomText(
-                                      fontcolor: Colors.white,
-                                      title:
-                                          'Total Records: ${box.length.toString()}',
-                                      fontweight: FontWeight.w500,
-                                      fontsize: 27.0),
-                                )
-                              : ListTile(
-                                  onTap: () {
-                                    Get.to(
-                                      () => RecordDetails(
-                                        password: data,
-                                        passwordIndex: index,
-                                        passwordKey:
-                                            box.keyAt(index).toString(),
-                                      ),
-                                    );
-                                  },
-                                  dense: true,
-                                  leading: websites
-                                          .containsKey(data!.title.toString())
-                                      ? SizedBox(
-                                          height: 40,
-                                          width: 40,
-                                          child: SvgPicture.asset(
-                                              'assets/icons/${data.title.toString().toLowerCase()}.svg'))
-                                      : Icon(
-                                          FontAwesomeIcons.unlockKeyhole,
-                                          color: Colors.white,
-                                          size: 30.0,
+          child: GetBuilder<RecordsController>(builder: (controller) {
+            return ValueListenableBuilder(
+                valueListenable:
+                    Hive.box<PasswordModel>(logininfo.get('userid'))
+                        .listenable(),
+                builder: (context, passbox, _) {
+                  controller.box = passbox.values.toList();
+                  return controller.box.isEmpty
+                      ? Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              MdiIcons.flaskEmptyOutline,
+                              size: 50.0,
+                              color: Colors.white,
+                            ),
+                            CustomText(
+                                title: 'No Data Available',
+                                fontcolor: Colors.white,
+                                fontweight: FontWeight.w600,
+                                fontsize: 40.0),
+                          ],
+                        )
+                      : ListView.separated(
+                          controller: scrollcont,
+                          separatorBuilder: (context, index) {
+                            return const Divider(
+                              color: Colors.white,
+                              thickness: 0.5,
+                            );
+                          },
+                          itemCount: controller.box.length + 1,
+                          itemBuilder: (context, index) {
+                            // print(box.getAt(index)?.title.toString());
+                            // print(box.keyAt(index)?.toString());
+                            dynamic data;
+
+                            index == 0
+                                ? data = controller.box[index]
+                                : data = controller.box[index - 1];
+                            return index == 0
+                                ? Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 5.0, horizontal: 25.0),
+                                    child: CustomText(
+                                        fontcolor: Colors.white,
+                                        title:
+                                            'Total Records: ${controller.box.length.toString()}',
+                                        fontweight: FontWeight.w500,
+                                        fontsize: 27.0),
+                                  )
+                                : ListTile(
+                                    onTap: () {
+                                      Get.to(
+                                        () => RecordDetails(
+                                          password: data,
+                                          passwordIndex:
+                                              index == 0 ? index : index - 1,
+                                          passwordKey: passbox
+                                              .keyAt(index == 0
+                                                  ? index
+                                                  : index - 1)
+                                              .toString(),
+                                          img: websites.containsKey(
+                                                  data!.title.toString())
+                                              ? 'assets/icons/${data.title.toString().toLowerCase()}.svg'
+                                              : '',
                                         ),
-                                  title: CustomText(
-                                      title: data.title.toString(),
-                                      fontcolor: Colors.white,
-                                      fontweight: FontWeight.w500,
-                                      fontsize: 23.0),
-                                  subtitle: CustomText(
-                                      title: encrypter.decrypt(
-                                          encryption.Encrypted.from64(
-                                              data.login.toString()),
-                                          iv: iv),
-                                      fontcolor: Colors.white,
-                                      fontweight: FontWeight.w500,
-                                      fontsize: 20.0),
-                                  trailing: InkWell(
-                                    onTap: () async {
-                                      !logininfo.get(
-                                                  'is_biometric_available') ||
-                                              !logininfo.get('bio_auth')
-                                          ? showDialog(
-                                              context: context,
-                                              builder: (context) =>
-                                                  MasterPasswordDialog(),
-                                            ).then((value) async {
-                                              if (value != null) {
-                                                if (value ==
-                                                    encrypter.decrypt(
-                                                        encryption.Encrypted
-                                                            .from64(
-                                                                logininfo.get(
-                                                                    'password')),
-                                                        iv: iv)) {
+                                      );
+                                    },
+                                    dense: true,
+                                    leading: websites
+                                            .containsKey(data!.title.toString())
+                                        ? SizedBox(
+                                            height: 40,
+                                            width: 40,
+                                            child: SvgPicture.asset(
+                                                'assets/icons/${data.title.toString().toLowerCase()}.svg'))
+                                        : Icon(
+                                            FontAwesomeIcons.unlockKeyhole,
+                                            color: Colors.white,
+                                            size: 30.0,
+                                          ),
+                                    title: CustomText(
+                                        title: data.title.toString(),
+                                        fontcolor: Colors.white,
+                                        fontweight: FontWeight.w500,
+                                        fontsize: 23.0),
+                                    subtitle: CustomText(
+                                        title: encrypter.decrypt(
+                                            encryption.Encrypted.from64(
+                                                data.login.toString()),
+                                            iv: iv),
+                                        fontcolor: Colors.white,
+                                        fontweight: FontWeight.w500,
+                                        fontsize: 20.0),
+                                    trailing: InkWell(
+                                      onTap: () async {
+                                        !logininfo.get(
+                                                    'is_biometric_available') ||
+                                                !logininfo.get('bio_auth')
+                                            ? showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    MasterPasswordDialog(),
+                                              ).then((value) async {
+                                                if (value != null) {
+                                                  if (value ==
+                                                      encrypter.decrypt(
+                                                          encryption.Encrypted
+                                                              .from64(
+                                                                  logininfo.get(
+                                                                      'password')),
+                                                          iv: iv)) {
+                                                    await Clipboard.setData(
+                                                        ClipboardData(
+                                                      text: encrypter.decrypt(
+                                                          encryption.Encrypted
+                                                              .from64(data
+                                                                  .password
+                                                                  .toString()),
+                                                          iv: iv),
+                                                    ));
+                                                    styledsnackbar(
+                                                        txt:
+                                                            'Copied to clipboard',
+                                                        icon:
+                                                            Icons.copy_rounded);
+                                                  } else {
+                                                    styledsnackbar(
+                                                        txt:
+                                                            'Incorrect master password',
+                                                        icon: Icons
+                                                            .error_outlined);
+                                                  }
+                                                }
+                                              })
+                                            : await recordscontroller
+                                                .authenticateWithBiometrics()
+                                                .then((value) async {
+                                                if (recordscontroller
+                                                    .isauthenticated.value) {
                                                   await Clipboard.setData(
                                                       ClipboardData(
                                                     text: encrypter.decrypt(
@@ -262,44 +425,20 @@ class _PasswordsPageState extends State<PasswordsPage> {
                                                       txt:
                                                           'Copied to clipboard',
                                                       icon: Icons.copy_rounded);
-                                                } else {
-                                                  styledsnackbar(
-                                                      txt:
-                                                          'Incorrect master password',
-                                                      icon:
-                                                          Icons.error_outlined);
                                                 }
-                                              }
-                                            })
-                                          : await recordscontroller
-                                              .authenticateWithBiometrics()
-                                              .then((value) async {
-                                              if (recordscontroller
-                                                  .isauthenticated.value) {
-                                                await Clipboard.setData(
-                                                    ClipboardData(
-                                                  text: encrypter.decrypt(
-                                                      encryption.Encrypted
-                                                          .from64(data.password
-                                                              .toString()),
-                                                      iv: iv),
-                                                ));
-                                                styledsnackbar(
-                                                    txt: 'Copied to clipboard',
-                                                    icon: Icons.copy_rounded);
-                                              }
-                                            });
-                                    },
-                                    child: const Icon(
-                                      Icons.copy,
-                                      color: Colors.white,
-                                      size: 25.0,
+                                              });
+                                      },
+                                      child: const Icon(
+                                        Icons.copy,
+                                        color: Colors.white,
+                                        size: 25.0,
+                                      ),
                                     ),
-                                  ),
-                                );
-                        },
-                      );
-              }),
+                                  );
+                          },
+                        );
+                });
+          }),
         ),
         drawer: Drawer(
           // shape: RoundedRectangleBorder(

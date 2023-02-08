@@ -158,13 +158,13 @@ class _CreateRecordState extends State<CreateRecord>
                 ),
                 Autocomplete<String>(
                   fieldViewBuilder:
-                      (context, _title, titlefocusNode, onFieldSubmitted) {
-                    _title.text = widget.passwordData.title.toString();
+                      (context, title, titlefocusNode, onFieldSubmitted) {
+                    title.text = widget.passwordData.title.toString();
                     return customTextField(
                       'Title',
                       false,
                       null,
-                      _title,
+                      title,
                       (val) {
                         if (val!.isEmpty) {
                           return "required";
@@ -180,6 +180,13 @@ class _CreateRecordState extends State<CreateRecord>
                       ),
                       pIcon: Icons.note_alt_outlined,
                       focusnode: titlefocusNode,
+
+                      // onsubmit: (val) {
+                      //   _title.text = val;
+                      // },
+                      onchanged: (val) {
+                        _title.text = val;
+                      },
                     );
                   },
                   //       optionsViewBuilder: (context, onSelected, options) {
@@ -209,19 +216,22 @@ class _CreateRecordState extends State<CreateRecord>
                   //   ),
                   // );
                   //       },
-                  optionsBuilder: (TextEditingValue _title) {
-                    if (_title.text == '') {
-                      _websiteaddress.clear();
+                  optionsBuilder: (TextEditingValue title) {
+                    if (title.text == '') {
                       return const Iterable<String>.empty();
                     }
                     return apps.where((String option) {
                       return option
                           .toLowerCase()
-                          .startsWith(_title.text.toLowerCase());
+                          .startsWith(title.text.toLowerCase());
                     });
                   },
+
                   onSelected: (String selection) {
+                    _websiteaddress.clear();
+
                     _title.text = selection;
+                    print(selection);
                     _websiteaddress.text = websites[selection].toString();
                     debugPrint('You just selected $selection');
                     debugPrint('controller value ${_title.text}');
@@ -318,26 +328,6 @@ class _CreateRecordState extends State<CreateRecord>
                                 recordcontroller.update();
                               });
                             });
-
-                            // if (_animationController.isCompleted) {
-                            //   _animationController.repeat();
-                            // } else {
-                            //   _animationController.repeat();
-                            // recordcontroller
-                            //     .generatePassword(
-                            //         length: recordcontroller.characters
-                            //             .toInt(),
-                            //         alphabets:
-                            //             recordcontroller.alphabets,
-                            //         numbers: recordcontroller.numbers,
-                            //         specchar: recordcontroller
-                            //             .specialcharacters)
-                            //     .then((value) {
-                            //   _animationController.reset();
-                            //   _password.text = value.toString();
-                            //   recordcontroller.update();
-                            // });
-                            // }
                           },
                           child: AnimatedBuilder(
                             animation: _animation,

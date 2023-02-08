@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -21,11 +23,13 @@ class RecordDetails extends StatefulWidget {
   final PasswordModel password;
   final int passwordIndex;
   final String passwordKey;
+  final String img;
   const RecordDetails(
       {Key? key,
       required this.password,
       required this.passwordIndex,
-      required this.passwordKey})
+      required this.passwordKey,
+      required this.img})
       : super(key: key);
 
   @override
@@ -166,8 +170,10 @@ class _RecordDetailsState extends State<RecordDetails>
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CustomTile(
-                    title: widget.password.title.toString(),
-                    icon: Icons.note_alt_sharp),
+                  title: widget.password.title.toString(),
+                  icon: FontAwesomeIcons.unlockKeyhole,
+                  img: widget.img,
+                ),
                 CustomDivider(),
                 CustomTile(
                     title: widget.password.website.toString(),
@@ -319,16 +325,21 @@ class _RecordDetailsState extends State<RecordDetails>
 class CustomTile extends StatelessWidget {
   final String title;
   final IconData icon;
-  const CustomTile({super.key, required this.title, required this.icon});
+  final String img;
+  const CustomTile(
+      {super.key, required this.title, required this.icon, this.img = ''});
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(
-        icon,
-        size: 25.0,
-        color: Colors.white,
-      ),
+      leading: img.toString().isNotEmpty
+          ? SizedBox(
+              height: 30, width: 30, child: SvgPicture.asset(img.toString()))
+          : Icon(
+              icon,
+              size: 25.0,
+              color: Colors.white,
+            ),
       title: CustomText(
           fontcolor: Colors.white,
           title: title,
