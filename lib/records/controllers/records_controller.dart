@@ -13,8 +13,49 @@ class RecordsController extends GetxController {
   final LocalAuthentication auth = LocalAuthentication();
   RxBool isauthenticated = false.obs;
   bool isSearchBarVisible = false;
-  List<PasswordModel> box =
-      Hive.box<PasswordModel>(logininfo.get('userid')).values.toList();
+
+  List box = [];
+
+  void combinedata() {
+    Map<dynamic, PasswordModel> passbox =
+        Hive.box<PasswordModel>(logininfo.get('userid')).toMap();
+    Map folderbox = Hive.box('folders${logininfo.get('userid')}').toMap();
+
+    box.clear();
+
+    folderbox.forEach((key, value) {
+      box.add({
+        'key': key.toString(),
+        'value': value,
+        'title': value['name'].toString(),
+        'isfolder': true,
+      });
+    });
+    passbox.forEach((key, value) {
+      box.add({
+        'key': key.toString(),
+        'value': value,
+        'title': value.title.toString(),
+        'isfolder': false,
+      });
+    });
+  }
+
+  @override
+  void onInit() {
+    combinedata();
+    update();
+    super.onInit();
+    foldersbox.listenable().addListener(() {
+      combinedata();
+      update();
+    });
+    passwordbox.listenable().addListener(() {
+      combinedata();
+      update();
+    });
+  }
+
   Future<void> authenticateWithBiometrics() async {
     try {
       await auth

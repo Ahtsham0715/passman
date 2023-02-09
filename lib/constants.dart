@@ -23,6 +23,7 @@ var encrypter = encryption.Encrypter(encryption.AES(enckey));
 var passwordbox = Hive.box<PasswordModel>(logininfo.get('userid'));
 var logininfo = Hive.box('logininfo');
 var foldersbox = Hive.box('folders${logininfo.get('userid')}');
+var foldersdatabox = Hive.box('foldersdata${logininfo.get('userid')}');
 
 List<String> apps = [
   "Facebook",

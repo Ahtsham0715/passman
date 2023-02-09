@@ -100,12 +100,15 @@ class _CreateRecordState extends State<CreateRecord>
                     notes: _notes.text.toString(),
                     length: _password.text.length,
                   );
+                  String randomKey = recordcontroller.generateHiveKey();
+
+                  if (passwordbox.containsKey(randomKey)) {
+                    randomKey = recordcontroller.generateHiveKey();
+                  } else {}
                   try {
                     await widget.edit
                         ? passwordbox.put(widget.passwordIndex, passworddata)
-                        : passwordbox.put(
-                            (passwordbox.keys.length + 1).toString(),
-                            passworddata);
+                        : passwordbox.put(randomKey.toString(), passworddata);
                     Get.back();
                     if (widget.edit) {
                       Get.back();

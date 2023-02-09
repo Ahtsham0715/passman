@@ -22,6 +22,7 @@ import 'package:encrypt/encrypt.dart' as encryption;
 import 'package:passman/res/components/new_folder.dart';
 import '../constants.dart';
 import '../media files/controllers/media_controller.dart';
+import '../media files/folder_view.dart';
 import '../res/components/custom_formfield.dart';
 import '../res/components/custom_snackbar.dart';
 import '../res/components/loading_page.dart';
@@ -113,25 +114,25 @@ class _PasswordsPageState extends State<PasswordsPage> {
                           ),
                           textcolor: Colors.white, onchanged: (val) {
                         print(searchController.text);
-                        if (searchController.text.toString().isEmpty) {
-                          controller.box =
-                              Hive.box<PasswordModel>(logininfo.get('userid'))
-                                  .values
-                                  .toList();
+                        if (searchController.text.isEmpty) {
+                          controller.combinedata();
+                          controller.update();
                         } else {
-                          List<PasswordModel> passList = controller.box;
-
-                          controller.box.clear();
-                          for (var pass in passList) {
-                            if (pass.title!.toLowerCase().startsWith(
-                                searchController.text
-                                    .toString()
-                                    .toLowerCase())) {
-                              controller.box.add(pass);
+                          List templist = controller.box;
+                          controller.box = [];
+                          // print(templist);
+                          templist.forEach((element) {
+                            if (element['title']
+                                .toString()
+                                .toLowerCase()
+                                .startsWith(
+                                    searchController.text.toLowerCase())) {
+                              controller.box.add(element);
                             }
-                          }
+                          });
+                          // print(controller.box);
+                          controller.update();
                         }
-                        controller.update();
                       }),
                     )
                   : const Text(
@@ -157,12 +158,17 @@ class _PasswordsPageState extends State<PasswordsPage> {
             ),
           ),
           actions: [
-            GetBuilder<RecordsController>(builder: (controller) {
+            GetBuilder<RecordsController>(
+                // assignId: true,
+                // id: 'records_builder',
+                builder: (controller) {
               return recordscontroller.isSearchBarVisible
                   ? IconButton(
                       icon: Icon(Icons.close),
                       onPressed: () {
+                        searchController.clear();
                         controller.isSearchBarVisible = false;
+                        controller.combinedata();
                         controller.update();
                       },
                     )
@@ -251,7 +257,9 @@ class _PasswordsPageState extends State<PasswordsPage> {
                   if (value != null) {
                     Get.dialog(LoadingPage());
                     folderscontroller.createFolder(
-                        folderName: value.toString());
+                      folderName: value['name'].toString(),
+                      folderType: value['type'].toString(),
+                    );
                   }
                 });
               },
@@ -271,102 +279,128 @@ class _PasswordsPageState extends State<PasswordsPage> {
             ],
           )),
           child: GetBuilder<RecordsController>(builder: (controller) {
-            return ValueListenableBuilder(
-                valueListenable:
-                    Hive.box<PasswordModel>(logininfo.get('userid'))
-                        .listenable(),
-                builder: (context, passbox, _) {
-                  controller.box = passbox.values.toList();
-                  return controller.box.isEmpty
-                      ? Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              MdiIcons.flaskEmptyOutline,
-                              size: 50.0,
-                              color: Colors.white,
-                            ),
-                            CustomText(
-                                title: 'No Data Available',
-                                fontcolor: Colors.white,
-                                fontweight: FontWeight.w600,
-                                fontsize: 40.0),
-                          ],
-                        )
-                      : ListView.separated(
-                          controller: scrollcont,
-                          separatorBuilder: (context, index) {
-                            return const Divider(
-                              color: Colors.white,
-                              thickness: 0.5,
-                            );
-                          },
-                          itemCount: controller.box.length + 1,
-                          itemBuilder: (context, index) {
-                            // print(box.getAt(index)?.title.toString());
-                            // print(box.keyAt(index)?.toString());
-                            dynamic data;
+            // controller.combinedata();
+            return controller.box.isEmpty
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        MdiIcons.flaskEmptyOutline,
+                        size: 50.0,
+                        color: Colors.white,
+                      ),
+                      CustomText(
+                          title: 'No Data Available',
+                          fontcolor: Colors.white,
+                          fontweight: FontWeight.w600,
+                          fontsize: 40.0),
+                    ],
+                  )
+                : ListView.separated(
+                    controller: scrollcont,
+                    separatorBuilder: (context, index) {
+                      return const Divider(
+                        color: Colors.white,
+                        thickness: 0.5,
+                      );
+                    },
+                    itemCount: controller.box.length + 1,
+                    itemBuilder: (context, index) {
+                      // print(box.getAt(index)?.title.toString());
+                      // print(box.keyAt(index)?.toString());
+                      dynamic data;
 
-                            index == 0
-                                ? data = controller.box[index]
-                                : data = controller.box[index - 1];
-                            return index == 0
-                                ? Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 5.0, horizontal: 25.0),
-                                    child: CustomText(
-                                        fontcolor: Colors.white,
-                                        title:
-                                            'Total Records: ${controller.box.length.toString()}',
-                                        fontweight: FontWeight.w500,
-                                        fontsize: 27.0),
-                                  )
-                                : ListTile(
-                                    onTap: () {
+                      index == 0
+                          ? data = controller.box[index]
+                          : data = controller.box[index - 1];
+                      return index == 0
+                          ? Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 5.0, horizontal: 25.0),
+                              child: CustomText(
+                                  fontcolor: Colors.white,
+                                  title:
+                                      'Total Records: ${controller.box.length.toString()}',
+                                  fontweight: FontWeight.w500,
+                                  fontsize: 27.0),
+                            )
+                          : ListTile(
+                              onLongPress: data['isfolder']
+                                  ? () {
+                                      // foldersbox.delete(data['key']);
+                                      // print('deleted');
+                                    }
+                                  : () {},
+                              onTap: data['isfolder']
+                                  ? () {
+                                      Get.to(
+                                        () => FolderView(
+                                          folderKey: data['key'],
+                                          folderName: data['title'],
+                                          folderType: data['value']['type'],
+                                        ),
+                                      );
+                                    }
+                                  : () {
                                       Get.to(
                                         () => RecordDetails(
-                                          password: data,
-                                          passwordIndex:
-                                              index == 0 ? index : index - 1,
-                                          passwordKey: passbox
-                                              .keyAt(index == 0
-                                                  ? index
-                                                  : index - 1)
-                                              .toString(),
+                                          password: data['value'],
+                                          // passwordIndex:
+                                          //     index == 0 ? index : index - 1,
+                                          passwordKey: data['key'],
+                                          // controller.box
+                                          //     .keyAt(index == 0
+                                          //         ? index
+                                          //         : index - 1)
+                                          //     .toString(),
                                           img: websites.containsKey(
-                                                  data!.title.toString())
-                                              ? 'assets/icons/${data.title.toString().toLowerCase()}.svg'
+                                                  data['value']!
+                                                      .title
+                                                      .toString())
+                                              ? 'assets/icons/${data['value'].title.toString().toLowerCase()}.svg'
                                               : '',
                                         ),
                                       );
                                     },
-                                    dense: true,
-                                    leading: websites
-                                            .containsKey(data!.title.toString())
-                                        ? SizedBox(
-                                            height: 40,
-                                            width: 40,
-                                            child: SvgPicture.asset(
-                                                'assets/icons/${data.title.toString().toLowerCase()}.svg'))
-                                        : Icon(
-                                            FontAwesomeIcons.unlockKeyhole,
-                                            color: Colors.white,
-                                            size: 30.0,
-                                          ),
-                                    title: CustomText(
-                                        title: data.title.toString(),
-                                        fontcolor: Colors.white,
-                                        fontweight: FontWeight.w500,
-                                        fontsize: 23.0),
-                                    subtitle: CustomText(
-                                        title: encrypter.decrypt(
-                                            encryption.Encrypted.from64(
-                                                data.login.toString()),
-                                            iv: iv),
-                                        fontcolor: Colors.white,
-                                        fontweight: FontWeight.w500,
-                                        fontsize: 20.0),
-                                    trailing: InkWell(
+                              dense: true,
+                              leading: data['isfolder']
+                                  ? Icon(
+                                      FontAwesomeIcons.folder,
+                                      color: Colors.white,
+                                      size: 30.0,
+                                    )
+                                  : websites.containsKey(
+                                          data['value']!.title.toString())
+                                      ? SizedBox(
+                                          height: 40,
+                                          width: 40,
+                                          child: SvgPicture.asset(
+                                              'assets/icons/${data['value'].title.toString().toLowerCase()}.svg'))
+                                      : Icon(
+                                          FontAwesomeIcons.unlockKeyhole,
+                                          color: Colors.white,
+                                          size: 30.0,
+                                        ),
+                              title: CustomText(
+                                  title: data['isfolder']
+                                      ? data['title'].toString()
+                                      : data['value'].title.toString(),
+                                  fontcolor: Colors.white,
+                                  fontweight: FontWeight.w500,
+                                  fontsize: 23.0),
+                              subtitle: CustomText(
+                                  title: data['isfolder']
+                                      ? data['value']['type'].toString()
+                                      : encrypter.decrypt(
+                                          encryption.Encrypted.from64(
+                                              data['value'].login.toString()),
+                                          iv: iv),
+                                  fontcolor: Colors.white,
+                                  fontweight: FontWeight.w500,
+                                  fontsize: 20.0),
+                              trailing: data['isfolder']
+                                  ? null
+                                  : InkWell(
                                       onTap: () async {
                                         !logininfo.get(
                                                     'is_biometric_available') ||
@@ -388,7 +422,8 @@ class _PasswordsPageState extends State<PasswordsPage> {
                                                         ClipboardData(
                                                       text: encrypter.decrypt(
                                                           encryption.Encrypted
-                                                              .from64(data
+                                                              .from64(data[
+                                                                      'value']
                                                                   .password
                                                                   .toString()),
                                                           iv: iv),
@@ -416,7 +451,8 @@ class _PasswordsPageState extends State<PasswordsPage> {
                                                       ClipboardData(
                                                     text: encrypter.decrypt(
                                                         encryption.Encrypted
-                                                            .from64(data
+                                                            .from64(data[
+                                                                    'value']
                                                                 .password
                                                                 .toString()),
                                                         iv: iv),
@@ -434,10 +470,9 @@ class _PasswordsPageState extends State<PasswordsPage> {
                                         size: 25.0,
                                       ),
                                     ),
-                                  );
-                          },
-                        );
-                });
+                            );
+                    },
+                  );
           }),
         ),
         drawer: Drawer(

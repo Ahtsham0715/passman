@@ -21,13 +21,13 @@ import '../res/components/master_password_dialog.dart';
 
 class RecordDetails extends StatefulWidget {
   final PasswordModel password;
-  final int passwordIndex;
+  // final int passwordIndex;
   final String passwordKey;
   final String img;
   const RecordDetails(
       {Key? key,
       required this.password,
-      required this.passwordIndex,
+      // required this.passwordIndex,
       required this.passwordKey,
       required this.img})
       : super(key: key);
@@ -128,7 +128,7 @@ class _RecordDetailsState extends State<RecordDetails>
                   desc: 'Do you want to delete this data?',
                   btnOkOnPress: () async {
                     try {
-                      await passwordbox.deleteAt(widget.passwordIndex);
+                      await passwordbox.delete(widget.passwordKey);
                       Get.back();
 
                       styledsnackbar(

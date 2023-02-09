@@ -52,6 +52,7 @@ dependencies:
   flutter_bounceable: ^1.0.3
   smooth_page_indicator: ^1.0.0+2
   flutter_speed_dial: any
+  video_player: any
   
 
   # The following adds the Cupertino Icons font to your application.

@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -20,6 +21,12 @@ class NewRecordController extends GetxController {
   bool specialcharacters = true;
   bool autogenerate = false;
   // double progressvalue = 0.1;
+
+  String generateHiveKey() {
+    var rng = new Random.secure();
+    var values = new List<int>.generate(20, (_) => rng.nextInt(256));
+    return base64Url.encode(values);
+  }
 
   progressBarValue(String password) async {
     bool alphabetsval = password.contains(RegExp(r'[A-Z]'));

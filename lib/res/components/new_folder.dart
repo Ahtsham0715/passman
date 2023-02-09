@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:passman/media%20files/controllers/media_controller.dart';
 
 class showNewFolderDialog extends StatefulWidget {
   const showNewFolderDialog({super.key});
@@ -10,7 +12,7 @@ class showNewFolderDialog extends StatefulWidget {
 class _showNewFolderDialogState extends State<showNewFolderDialog> {
   TextEditingController _folderNameController = TextEditingController();
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
-
+  final MediaController controller = MediaController();
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -46,36 +48,99 @@ class _showNewFolderDialogState extends State<showNewFolderDialog> {
           ),
         ),
       ),
+      actionsPadding: EdgeInsets.all(0.0),
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: 20.0,
+        vertical: 8.0,
+      ),
       actions: [
-        TextButton(
-          child: Text(
-            "Cancel",
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18.0,
-              fontWeight: FontWeight.w400,
-              fontFamily: 'majalla',
-            ),
-          ),
-          onPressed: () {
-            Navigator.of(context).pop(null);
+        GetBuilder<MediaController>(
+          init: MediaController(),
+          builder: (_) {
+            return Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                RadioListTile(
+                  dense: true,
+                  value: 0,
+                  groupValue: _.selectedRadio,
+                  title: Text('Images'),
+                  onChanged: (value) {
+                    _.selectedRadio = value!;
+                    print(_.selectedRadio);
+
+                    _.update();
+                  },
+                ),
+                RadioListTile(
+                  dense: true,
+                  value: 1,
+                  groupValue: _.selectedRadio,
+                  title: Text('Videos'),
+                  onChanged: (value) {
+                    _.selectedRadio = value!;
+                    print(_.selectedRadio);
+
+                    _.update();
+                  },
+                ),
+                RadioListTile(
+                  dense: true,
+                  value: 2,
+                  groupValue: _.selectedRadio,
+                  title: Text('All'),
+                  onChanged: (value) {
+                    _.selectedRadio = value!;
+                    print(_.selectedRadio);
+
+                    _.update();
+                  },
+                ),
+              ],
+            );
           },
         ),
-        TextButton(
-          child: Text(
-            "Create",
-            style: TextStyle(
-              color: Colors.black,
-              fontSize: 18.0,
-              fontWeight: FontWeight.w400,
-              fontFamily: 'majalla',
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            TextButton(
+              child: Text(
+                "Cancel",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w400,
+                  fontFamily: 'majalla',
+                ),
+              ),
+              onPressed: () {
+                Navigator.of(context).pop(null);
+              },
             ),
-          ),
-          onPressed: () {
-            if (formkey.currentState!.validate()) {
-              Navigator.of(context).pop(_folderNameController.text);
-            }
-          },
+            TextButton(
+              child: Text(
+                "Create",
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.w400,
+                  fontFamily: 'majalla',
+                ),
+              ),
+              onPressed: () {
+                if (formkey.currentState!.validate()) {
+                  Navigator.of(context).pop({
+                    'name': _folderNameController.text,
+                    'type': controller.selectedRadio == 0
+                        ? 'Images'
+                        : controller.selectedRadio == 1
+                            ? 'Videos'
+                            : 'All',
+                  });
+                }
+              },
+            ),
+          ],
         ),
       ],
     );
