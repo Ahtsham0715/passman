@@ -17,9 +17,7 @@ class MediaController extends GetxController {
   void onInit() {
     super.onInit();
     foldersdatabox.listenable().addListener(() {
-      update([
-        'folder_view_builder',
-      ]);
+      update();
     });
     // passwordbox.listenable();
   }

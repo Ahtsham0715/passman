@@ -3,7 +3,10 @@ import 'package:get/get.dart';
 import 'package:passman/media%20files/controllers/media_controller.dart';
 
 class showNewFolderDialog extends StatefulWidget {
-  const showNewFolderDialog({super.key});
+  final String name;
+  final String type;
+  const showNewFolderDialog(
+      {super.key, required this.name, required this.type});
 
   @override
   State<showNewFolderDialog> createState() => _showNewFolderDialogState();
@@ -13,6 +16,19 @@ class _showNewFolderDialogState extends State<showNewFolderDialog> {
   TextEditingController _folderNameController = TextEditingController();
   GlobalKey<FormState> formkey = GlobalKey<FormState>();
   final MediaController controller = MediaController();
+  int selectedval = 0;
+  @override
+  void initState() {
+    _folderNameController.text = widget.name;
+    widget.type == 'Images'
+        ? controller.selectedRadio = 0
+        : widget.type == 'Videos'
+            ? controller.selectedRadio = 1
+            : controller.selectedRadio = 2;
+    selectedval = controller.selectedRadio;
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
@@ -67,6 +83,7 @@ class _showNewFolderDialogState extends State<showNewFolderDialog> {
                   title: Text('Images'),
                   onChanged: (value) {
                     _.selectedRadio = value!;
+                    selectedval = value;
                     print(_.selectedRadio);
 
                     _.update();
@@ -79,6 +96,8 @@ class _showNewFolderDialogState extends State<showNewFolderDialog> {
                   title: Text('Videos'),
                   onChanged: (value) {
                     _.selectedRadio = value!;
+                    selectedval = value;
+
                     print(_.selectedRadio);
 
                     _.update();
@@ -91,6 +110,8 @@ class _showNewFolderDialogState extends State<showNewFolderDialog> {
                   title: Text('All'),
                   onChanged: (value) {
                     _.selectedRadio = value!;
+                    selectedval = value;
+
                     print(_.selectedRadio);
 
                     _.update();
@@ -129,13 +150,16 @@ class _showNewFolderDialogState extends State<showNewFolderDialog> {
               ),
               onPressed: () {
                 if (formkey.currentState!.validate()) {
+                  print('selected radio: ${controller.selectedRadio}');
+                  print('selected radio: ${selectedval}');
+                  var type = selectedval == 0
+                      ? 'Images'
+                      : selectedval == 1
+                          ? 'Videos'
+                          : 'All';
                   Navigator.of(context).pop({
                     'name': _folderNameController.text,
-                    'type': controller.selectedRadio == 0
-                        ? 'Images'
-                        : controller.selectedRadio == 1
-                            ? 'Videos'
-                            : 'All',
+                    'type': type,
                   });
                 }
               },

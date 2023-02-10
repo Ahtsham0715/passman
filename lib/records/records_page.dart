@@ -252,14 +252,19 @@ class _PasswordsPageState extends State<PasswordsPage> {
               onTap: () {
                 showDialog(
                   context: context,
-                  builder: (context) => showNewFolderDialog(),
-                ).then((value) {
+                  builder: (context) => showNewFolderDialog(
+                    name: '',
+                    type: 'Images',
+                  ),
+                ).then((value) async {
                   if (value != null) {
                     Get.dialog(LoadingPage());
-                    folderscontroller.createFolder(
-                      folderName: value['name'].toString(),
-                      folderType: value['type'].toString(),
-                    );
+                    await folderscontroller
+                        .createFolder(
+                          folderName: value['name'].toString(),
+                          folderType: value['type'].toString(),
+                        )
+                        .then((value) {});
                   }
                 });
               },

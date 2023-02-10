@@ -7,7 +7,6 @@ import 'package:passman/Auth/login_page.dart';
 import 'package:passman/constants.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-
 import '../res/components/custom_text.dart';
 
 class onboardingPage extends GetView<OnboardingController> {

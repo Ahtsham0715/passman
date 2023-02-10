@@ -1,3 +1,4 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -6,8 +7,11 @@ import 'package:passman/constants.dart';
 import 'package:passman/media%20files/controllers/media_controller.dart';
 import 'package:passman/res/components/file_picker.dart';
 import 'package:passman/res/components/full_image_view.dart';
+import 'package:passman/res/components/loading_page.dart';
 
+import '../res/components/custom_snackbar.dart';
 import '../res/components/custom_text.dart';
+import '../res/components/new_folder.dart';
 
 class FolderView extends StatelessWidget {
   final String folderName;
@@ -49,6 +53,80 @@ class FolderView extends StatelessWidget {
             ),
           ),
         ),
+        actions: [
+          PopupMenuButton<String>(
+            itemBuilder: (_) {
+              return const [
+                PopupMenuItem<String>(
+                    value: "1",
+                    child: Text(
+                      "Edit",
+                      style: TextStyle(fontSize: 20.0),
+                    )),
+                PopupMenuItem<String>(
+                    value: "2",
+                    child: Text(
+                      "Delete",
+                      style: TextStyle(fontSize: 20.0),
+                    )),
+              ];
+            },
+            icon: const Icon(Icons.more_vert_rounded),
+            onSelected: (i) {
+              if (i == "1") {
+                showDialog(
+                  context: context,
+                  builder: (context) => showNewFolderDialog(
+                    name: folderName.toString(),
+                    type: folderType,
+                  ),
+                ).then((value) {
+                  if (value != null) {
+                    print(value);
+                    Get.dialog(LoadingPage());
+                    try {
+                      foldersbox.put(folderKey, {
+                        'name': value['name'].toString(),
+                        'type': value['type'].toString(),
+                      });
+
+                      Get.back();
+                      Get.back();
+                    } catch (e) {
+                      Get.back();
+                      Get.back();
+                      styledsnackbar(
+                          txt: 'Error occured. $e', icon: Icons.error);
+                    }
+                  }
+                });
+              } else if (i == "2") {
+                AwesomeDialog(
+                  context: context,
+                  animType: AnimType.topSlide,
+                  dialogType: DialogType.question,
+                  title: 'Are you sure?',
+                  desc: 'Do you want to delete this folder?',
+                  btnOkOnPress: () async {
+                    try {
+                      foldersbox.delete(folderKey);
+                      Get.back();
+                      styledsnackbar(
+                          txt: 'Folder Deleted Successfully',
+                          icon: Icons.delete);
+                    } catch (e) {
+                      styledsnackbar(
+                          txt: 'Error occured. $e', icon: Icons.error);
+                    }
+                  },
+                  btnCancelOnPress: () {
+                    // Get.back();
+                  },
+                )..show();
+              } else {}
+            },
+          ),
+        ],
       ),
       floatingActionButton: FloatingActionButton.extended(
         label: CustomText(
@@ -68,6 +146,8 @@ class FolderView extends StatelessWidget {
                     : FileType.any,
           );
           if (result != null) {
+            Get.dialog(LoadingPage());
+
             if (foldersdatabox.containsKey(folderKey)) {
               mediacontroller.pickedfiles = foldersdatabox.get(folderKey);
             } else {
@@ -85,7 +165,11 @@ class FolderView extends StatelessWidget {
                 });
               });
             });
-            foldersdatabox.put(folderKey, mediacontroller.pickedfiles);
+            foldersdatabox
+                .put(folderKey, mediacontroller.pickedfiles)
+                .then((value) {
+              Get.back();
+            });
             // print(foldersdatabox.get(folderKey));
           }
         },
@@ -139,18 +223,49 @@ class FolderView extends StatelessWidget {
                       ),
                       itemCount: controller.pickedfiles.length,
                       itemBuilder: (context, index) {
-                        // var file;
-
-                        //     .then((value) {
-                        //   print(value);
-                        //   file = value;
-                        // });
                         return InkWell(
+                          onLongPress: () {
+                            AwesomeDialog(
+                              context: context,
+                              animType: AnimType.topSlide,
+                              dialogType: DialogType.question,
+                              title: 'Are you sure?',
+                              desc: 'Do you want to delete this image?',
+                              btnOkOnPress: () async {
+                                Get.dialog(LoadingPage());
+                                try {
+                                  mediacontroller.pickedfiles =
+                                      foldersdatabox.get(folderKey);
+                                  mediacontroller.pickedfiles
+                                      .remove(controller.pickedfiles[index]);
+                                  foldersdatabox.put(
+                                      folderKey, mediacontroller.pickedfiles);
+
+                                  Get.back();
+                                  // Get.back();
+                                  styledsnackbar(
+                                      txt: 'Image Deleted Successfully.',
+                                      icon: Icons.check);
+                                } catch (e) {
+                                  Get.back();
+                                  styledsnackbar(
+                                      txt: 'Error occured.$e',
+                                      icon: Icons.error);
+                                }
+                              },
+                              btnCancelOnPress: () {
+                                // Get.back();
+                              },
+                            )..show();
+                          },
                           onTap: () {
                             Get.to(
                               () => FullScreenImagePage(
-                                  imageUrl: controller.decodeImageFromBase64(
-                                      controller.pickedfiles[index])),
+                                imageUrl: controller.decodeImageFromBase64(
+                                    controller.pickedfiles[index]),
+                                encodedimg: controller.pickedfiles[index],
+                                folderKey: this.folderKey,
+                              ),
                             );
                           },
                           child: Container(
