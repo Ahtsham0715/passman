@@ -7,15 +7,18 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'dart:convert';
 
 import 'package:passman/constants.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../res/components/custom_snackbar.dart';
 
 class MediaController extends GetxController {
   int selectedRadio = 0;
   List pickedfiles = [];
+
   @override
   void onInit() {
     super.onInit();
+
     foldersdatabox.listenable().addListener(() {
       update();
     });
@@ -26,6 +29,16 @@ class MediaController extends GetxController {
     var rng = new Random.secure();
     var values = new List<int>.generate(20, (_) => rng.nextInt(256));
     return base64Url.encode(values);
+  }
+
+  Future<File> uint8ListToFile(Uint8List data, String filename) async {
+    final buffer = data.buffer;
+    Directory tempDir = await getTemporaryDirectory();
+    String tempPath = tempDir.path;
+    File file = File('$tempPath/$filename');
+    await file.writeAsBytes(
+        buffer.asUint8List(data.offsetInBytes, data.lengthInBytes));
+    return file;
   }
 
   Future<Uint8List> readFileAsBytes(String filePath) async {

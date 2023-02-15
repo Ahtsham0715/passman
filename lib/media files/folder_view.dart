@@ -1,13 +1,19 @@
+import 'dart:io';
+import 'dart:typed_data';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:open_filex/open_filex.dart';
 import 'package:passman/constants.dart';
 import 'package:passman/media%20files/controllers/media_controller.dart';
-import 'package:passman/res/components/file_picker.dart';
+
 import 'package:passman/res/components/full_image_view.dart';
 import 'package:passman/res/components/loading_page.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../res/components/custom_snackbar.dart';
 import '../res/components/custom_text.dart';
@@ -22,6 +28,7 @@ class FolderView extends StatelessWidget {
       required this.folderName,
       required this.folderKey,
       required this.folderType});
+
   @override
   Widget build(BuildContext context) {
     final MediaController mediacontroller = MediaController();
@@ -79,6 +86,7 @@ class FolderView extends StatelessWidget {
                   builder: (context) => showNewFolderDialog(
                     name: folderName.toString(),
                     type: folderType,
+                    isEdit: true,
                   ),
                 ).then((value) {
                   if (value != null) {
@@ -155,12 +163,17 @@ class FolderView extends StatelessWidget {
             }
 
             result.files.forEach((file) async {
+              print(file.name);
               await mediacontroller
                   .readFileAsBytes(file.path!)
                   .then((val) async {
                 // print(value);
                 await mediacontroller.encodeImageToBase64(val).then((value) {
-                  mediacontroller.pickedfiles.add(value);
+                  mediacontroller.pickedfiles.add({
+                    'type': file.extension,
+                    'data': value.toString(),
+                    'name': file.name,
+                  });
                   // print(value);
                 });
               });
@@ -214,75 +227,281 @@ class FolderView extends StatelessWidget {
                             fontsize: 40.0),
                       ],
                     )
-                  : GridView.builder(
-                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        childAspectRatio: 1.0,
-                        crossAxisSpacing: 10.0,
-                        mainAxisSpacing: 10.0,
-                      ),
+                  : ListView.separated(
                       itemCount: controller.pickedfiles.length,
+                      separatorBuilder: (context, index) {
+                        return Divider(
+                          color: Colors.white,
+                          indent: 30.0,
+                        );
+                      },
                       itemBuilder: (context, index) {
-                        return InkWell(
-                          onLongPress: () {
-                            AwesomeDialog(
-                              context: context,
-                              animType: AnimType.topSlide,
-                              dialogType: DialogType.question,
-                              title: 'Are you sure?',
-                              desc: 'Do you want to delete this image?',
-                              btnOkOnPress: () async {
-                                Get.dialog(LoadingPage());
-                                try {
-                                  mediacontroller.pickedfiles =
-                                      foldersdatabox.get(folderKey);
-                                  mediacontroller.pickedfiles
-                                      .remove(controller.pickedfiles[index]);
-                                  foldersdatabox.put(
-                                      folderKey, mediacontroller.pickedfiles);
+                        return ListTile(
+                          dense: true,
+                          // onLongPress: () {
 
-                                  Get.back();
-                                  // Get.back();
-                                  styledsnackbar(
-                                      txt: 'Image Deleted Successfully.',
-                                      icon: Icons.check);
-                                } catch (e) {
-                                  Get.back();
-                                  styledsnackbar(
-                                      txt: 'Error occured.$e',
-                                      icon: Icons.error);
+                          // },
+                          onTap: !(controller.pickedfiles[index]['type'] ==
+                                      'jpg' ||
+                                  controller.pickedfiles[index]['type'] ==
+                                      'png' ||
+                                  controller.pickedfiles[index]['type'] ==
+                                      'jpeg')
+                              ? () async {
+                                  var data = controller.decodeImageFromBase64(
+                                      controller.pickedfiles[index]['data']);
+                                  final buffer = data.buffer;
+                                  Directory tempDir =
+                                      await getTemporaryDirectory();
+                                  String tempPath = tempDir.path;
+                                  File file = File(
+                                      '$tempPath/tempfile.${controller.pickedfiles[index]['type']}');
+                                  await file
+                                      .writeAsBytes(buffer.asUint8List(
+                                          data.offsetInBytes,
+                                          data.lengthInBytes))
+                                      .then((value) async {
+                                    OpenFilex.open(
+                                        '$tempPath/tempfile.${controller.pickedfiles[index]['type']}');
+                                  });
                                 }
-                              },
-                              btnCancelOnPress: () {
-                                // Get.back();
-                              },
-                            )..show();
-                          },
-                          onTap: () {
-                            Get.to(
-                              () => FullScreenImagePage(
-                                imageUrl: controller.decodeImageFromBase64(
-                                    controller.pickedfiles[index]),
-                                encodedimg: controller.pickedfiles[index],
-                                folderKey: this.folderKey,
-                              ),
-                            );
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(10),
-                              image: DecorationImage(
-                                image: MemoryImage(
-                                  controller.decodeImageFromBase64(
-                                      controller.pickedfiles[index]),
+                              : () {
+                                  Get.to(
+                                    () => FullScreenImagePage(
+                                      imageUrl:
+                                          controller.decodeImageFromBase64(
+                                              controller.pickedfiles[index]
+                                                  ['data']),
+                                      encodedimg: controller.pickedfiles[index]
+                                          ['data'],
+                                      folderKey: this.folderKey,
+                                    ),
+                                  );
+                                },
+                          leading: !(controller.pickedfiles[index]['type'] ==
+                                      'jpg' ||
+                                  controller.pickedfiles[index]['type'] ==
+                                      'png' ||
+                                  controller.pickedfiles[index]['type'] ==
+                                      'jpeg')
+                              ? CircleAvatar(
+                                  backgroundColor: Colors.white,
+                                  child: Text(
+                                    '${controller.pickedfiles[index]['type']}',
+                                    maxLines: 1,
+                                    overflow: TextOverflow.clip,
+                                    style: TextStyle(
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.w500,
+                                        color: Colors.black,
+                                        fontFamily: 'majalla'),
+                                  ),
+                                )
+                              : CircleAvatar(
+                                  foregroundImage: MemoryImage(
+                                    controller.decodeImageFromBase64(
+                                        controller.pickedfiles[index]['data']),
+                                  ),
                                 ),
-                                fit: BoxFit.cover,
-                              ),
+                          title: Text(
+                            '${controller.pickedfiles[index]['name']}',
+                            maxLines: 1,
+                            overflow: TextOverflow.clip,
+                            style: TextStyle(
+                                fontSize: 15.0,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                                fontFamily: 'majalla'),
+                          ),
+                          trailing: InkWell(
+                            onTap: () {
+                              AwesomeDialog(
+                                context: context,
+                                animType: AnimType.topSlide,
+                                dialogType: DialogType.question,
+                                title: 'Are you sure?',
+                                desc: 'Do you want to delete this image?',
+                                btnOkOnPress: () async {
+                                  Get.dialog(LoadingPage());
+                                  try {
+                                    mediacontroller.pickedfiles =
+                                        foldersdatabox.get(folderKey);
+                                    mediacontroller.pickedfiles
+                                        .remove(controller.pickedfiles[index]);
+                                    foldersdatabox.put(
+                                        folderKey, mediacontroller.pickedfiles);
+
+                                    Get.back();
+                                    // Get.back();
+                                    styledsnackbar(
+                                        txt: 'Image Deleted Successfully.',
+                                        icon: Icons.check);
+                                  } catch (e) {
+                                    Get.back();
+                                    styledsnackbar(
+                                        txt: 'Error occured.$e',
+                                        icon: Icons.error);
+                                  }
+                                },
+                                btnCancelOnPress: () {
+                                  // Get.back();
+                                },
+                              )..show();
+                            },
+                            child: Icon(
+                              MdiIcons.deleteForever,
+                              color: Colors.white,
+                              size: 25.0,
                             ),
                           ),
                         );
                       },
                     );
+              // GridView.builder(
+              //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              //       crossAxisCount: 3,
+              //       childAspectRatio: 1.0,
+              //       crossAxisSpacing: 10.0,
+              //       mainAxisSpacing: 10.0,
+              //     ),
+              //     itemCount: controller.pickedfiles.length,
+              //     itemBuilder: (context, index) {
+              //       return
+              //       InkWell(
+              //         onLongPress: () {
+              // AwesomeDialog(
+              //   context: context,
+              //   animType: AnimType.topSlide,
+              //   dialogType: DialogType.question,
+              //   title: 'Are you sure?',
+              //   desc: 'Do you want to delete this image?',
+              //   btnOkOnPress: () async {
+              //     Get.dialog(LoadingPage());
+              //     try {
+              //       mediacontroller.pickedfiles =
+              //           foldersdatabox.get(folderKey);
+              //       mediacontroller.pickedfiles
+              //           .remove(controller.pickedfiles[index]);
+              //       foldersdatabox.put(
+              //           folderKey, mediacontroller.pickedfiles);
+
+              //       Get.back();
+              //       // Get.back();
+              //       styledsnackbar(
+              //           txt: 'Image Deleted Successfully.',
+              //           icon: Icons.check);
+              //     } catch (e) {
+              //       Get.back();
+              //       styledsnackbar(
+              //           txt: 'Error occured.$e',
+              //           icon: Icons.error);
+              //     }
+              //   },
+              //   btnCancelOnPress: () {
+              //     // Get.back();
+              //   },
+              // )..show();
+              //         },
+              //         onTap: !(controller.pickedfiles[index]['type'] ==
+              //                     'jpg' ||
+              //                 controller.pickedfiles[index]['type'] ==
+              //                     'png' ||
+              //                 controller.pickedfiles[index]['type'] ==
+              //                     'jpeg')
+              //             ? () async {
+              //                 var data = controller.decodeImageFromBase64(
+              //                     controller.pickedfiles[index]['data']);
+              //                 final buffer = data.buffer;
+              //                 Directory tempDir =
+              //                     await getTemporaryDirectory();
+              //                 String tempPath = tempDir.path;
+              //                 File file = File(
+              //                     '$tempPath/tempfile.${controller.pickedfiles[index]['type']}');
+              //                 await file
+              //                     .writeAsBytes(buffer.asUint8List(
+              //                         data.offsetInBytes,
+              //                         data.lengthInBytes))
+              //                     .then((value) async {
+              //                   OpenFilex.open(
+              //                       '$tempPath/tempfile.${controller.pickedfiles[index]['type']}');
+              //                 });
+              //               }
+              //             : () {
+              //                 Get.to(
+              //                   () => FullScreenImagePage(
+              //                     imageUrl:
+              //                         controller.decodeImageFromBase64(
+              //                             controller.pickedfiles[index]
+              //                                 ['data']),
+              //                     encodedimg: controller.pickedfiles[index]
+              //                         ['data'],
+              //                     folderKey: this.folderKey,
+              //                   ),
+              //                 );
+              //               },
+              //         child:
+              //             controller.pickedfiles[index]['type'] == 'jpg' ||
+              //                     controller.pickedfiles[index]['type'] ==
+              //                         'png' ||
+              //                     controller.pickedfiles[index]['type'] ==
+              //                         'jpeg'
+              //                 ? Container(
+              //                     decoration: BoxDecoration(
+              //                       borderRadius: BorderRadius.circular(10),
+              //                       color: Colors.black45,
+              //                       border: Border.all(
+              //                         color: Colors.white,
+              //                         width: 1.0,
+              //                       ),
+              //                       image: DecorationImage(
+              //                         image: MemoryImage(
+              // controller.decodeImageFromBase64(
+              //     controller.pickedfiles[index]
+              //         ['data']),
+              //                         ),
+              //                         fit: BoxFit.cover,
+              //                       ),
+              //                     ),
+              //                   )
+              //                 : Container(
+              //                     decoration: BoxDecoration(
+              //                       color: Colors.black45,
+              //                       border: Border.all(
+              //                         color: Colors.white,
+              //                         width: 1.0,
+              //                       ),
+              //                       borderRadius: BorderRadius.circular(10),
+              //                     ),
+              //                     child: Column(
+              //                       mainAxisSize: MainAxisSize.min,
+              //                       mainAxisAlignment:
+              //                           MainAxisAlignment.spaceEvenly,
+              //                       children: [
+              //                         Container(
+              //                           decoration: BoxDecoration(
+              //                             borderRadius:
+              //                                 BorderRadius.circular(10),
+              //                           ),
+              //                           child: Icon(
+              //                             MdiIcons.file,
+              //                             color: Colors.white,
+              //                             size: 40.0,
+              //                           ),
+              //                         ),
+              //                         Text(
+              //                           '${controller.pickedfiles[index]['name']}',
+              //                           style: TextStyle(
+              //                               fontSize: 15.0,
+              //                               fontWeight: FontWeight.w500,
+              //                               color: Colors.white,
+              //                               fontFamily: 'majalla'),
+              //                         ),
+              //                       ],
+              //                     ),
+              //                   ),
+              //       );
+              //     },
+              //   );
             }),
       ),
     );

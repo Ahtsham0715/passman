@@ -5,8 +5,12 @@ import 'package:passman/media%20files/controllers/media_controller.dart';
 class showNewFolderDialog extends StatefulWidget {
   final String name;
   final String type;
+  final bool isEdit;
   const showNewFolderDialog(
-      {super.key, required this.name, required this.type});
+      {super.key,
+      required this.name,
+      required this.type,
+      required this.isEdit});
 
   @override
   State<showNewFolderDialog> createState() => _showNewFolderDialogState();
@@ -70,57 +74,59 @@ class _showNewFolderDialogState extends State<showNewFolderDialog> {
         vertical: 8.0,
       ),
       actions: [
-        GetBuilder<MediaController>(
-          init: MediaController(),
-          builder: (_) {
-            return Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                RadioListTile(
-                  dense: true,
-                  value: 0,
-                  groupValue: _.selectedRadio,
-                  title: Text('Images'),
-                  onChanged: (value) {
-                    _.selectedRadio = value!;
-                    selectedval = value;
-                    print(_.selectedRadio);
+        widget.isEdit
+            ? const Center()
+            : GetBuilder<MediaController>(
+                init: MediaController(),
+                builder: (_) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      RadioListTile(
+                        dense: true,
+                        value: 0,
+                        groupValue: _.selectedRadio,
+                        title: Text('Images'),
+                        onChanged: (value) {
+                          _.selectedRadio = value!;
+                          selectedval = value;
+                          print(_.selectedRadio);
 
-                    _.update();
-                  },
-                ),
-                RadioListTile(
-                  dense: true,
-                  value: 1,
-                  groupValue: _.selectedRadio,
-                  title: Text('Videos'),
-                  onChanged: (value) {
-                    _.selectedRadio = value!;
-                    selectedval = value;
+                          _.update();
+                        },
+                      ),
+                      RadioListTile(
+                        dense: true,
+                        value: 1,
+                        groupValue: _.selectedRadio,
+                        title: Text('Videos'),
+                        onChanged: (value) {
+                          _.selectedRadio = value!;
+                          selectedval = value;
 
-                    print(_.selectedRadio);
+                          print(_.selectedRadio);
 
-                    _.update();
-                  },
-                ),
-                RadioListTile(
-                  dense: true,
-                  value: 2,
-                  groupValue: _.selectedRadio,
-                  title: Text('All'),
-                  onChanged: (value) {
-                    _.selectedRadio = value!;
-                    selectedval = value;
+                          _.update();
+                        },
+                      ),
+                      RadioListTile(
+                        dense: true,
+                        value: 2,
+                        groupValue: _.selectedRadio,
+                        title: Text('All'),
+                        onChanged: (value) {
+                          _.selectedRadio = value!;
+                          selectedval = value;
 
-                    print(_.selectedRadio);
+                          print(_.selectedRadio);
 
-                    _.update();
-                  },
-                ),
-              ],
-            );
-          },
-        ),
+                          _.update();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              ),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [

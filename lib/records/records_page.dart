@@ -255,6 +255,7 @@ class _PasswordsPageState extends State<PasswordsPage> {
                   builder: (context) => showNewFolderDialog(
                     name: '',
                     type: 'Images',
+                    isEdit: false,
                   ),
                 ).then((value) async {
                   if (value != null) {
