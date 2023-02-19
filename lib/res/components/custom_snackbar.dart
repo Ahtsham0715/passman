@@ -18,6 +18,6 @@ void styledsnackbar({required txt, icon = Icons.wifi_sharp}) {
       color: Colors.white,
       size: 25.0,
     ),
-    duration: const Duration(seconds: 3),
+    duration: const Duration(seconds: 1),
   );
 }

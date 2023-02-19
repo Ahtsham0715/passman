@@ -309,7 +309,7 @@ class FolderView extends StatelessWidget {
                                     // Get.back();
                                     // Get.back();
                                     styledsnackbar(
-                                        txt: 'Image Deleted Successfully.',
+                                        txt: 'Deleted Successfully.',
                                         icon: Icons.check);
                                     // controller.update();
                                   } catch (e) {
