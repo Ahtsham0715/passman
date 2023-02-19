@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -15,6 +17,17 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   var directory = await getApplicationDocumentsDirectory();
+  // Directory privateDir = Directory('${directory.path}/private');
+
+  // if (!await privateDir.exists()) {
+  //   await privateDir.create();
+  // }
+
+  // // Create a .nomedia file in the private directory
+  // File nomediaFile = File('${privateDir.path}/.nomedia');
+  // if (!await nomediaFile.exists()) {
+  //   await nomediaFile.create();
+  // }
   await Hive.initFlutter(directory.path);
   Hive.registerAdapter(PasswordModelAdapter());
   // await Hive.openBox<PasswordModel>('my_data');

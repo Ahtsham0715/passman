@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:io';
 import 'dart:typed_data';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -10,17 +11,18 @@ import 'package:passman/constants.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../res/components/custom_snackbar.dart';
+import '../../res/components/loading_page.dart';
 
 class MediaController extends GetxController {
   int selectedRadio = 0;
   List pickedfiles = [];
-
   @override
   void onInit() {
     super.onInit();
 
     foldersdatabox.listenable().addListener(() {
       update();
+      print('updated data');
     });
     // passwordbox.listenable();
   }
@@ -53,6 +55,50 @@ class MediaController extends GetxController {
 
   Uint8List decodeImageFromBase64(String base64String) {
     return base64Decode(base64String);
+  }
+
+  Future<void> uploadFiles(
+      {required FilePickerResult result, required String folderKey}) async {
+    Get.dialog(LoadingPage());
+
+    if (foldersdatabox.containsKey(folderKey)) {
+      pickedfiles = foldersdatabox.get(folderKey);
+    } else {
+      pickedfiles = [];
+    }
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    print(appDocDir.path);
+    result.files.forEach((file) async {
+      print(file.name);
+      File(file.path!).copy('${appDocDir.path}/${file.name}');
+      pickedfiles.add({
+        'type': file.extension,
+        'data': '${appDocDir.path}/${file.name}'.toString(),
+        'name': file.name,
+      });
+      // readFileAsBytes(file.path!).then((val) async {
+      //   // print(value);
+      //   encodeImageToBase64(val).then((value) {
+      //     pickedfiles.add({
+      //       'type': file.extension,
+      //       'data': value.toString(),
+      //       'name': file.name,
+      //     });
+      //     // print(value);
+      //   });
+      // });
+    });
+    try {
+      await foldersdatabox.put(folderKey, pickedfiles);
+      // print('updated');
+
+      Get.back();
+
+      // update();
+    } catch (e) {
+      Get.back();
+      styledsnackbar(txt: 'Error occured> $e', icon: Icons.error);
+    }
   }
 
   Future<void> createFolder(

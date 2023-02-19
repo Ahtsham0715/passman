@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
@@ -11,12 +12,9 @@ import '../../media files/controllers/media_controller.dart';
 
 class FullScreenImagePage extends StatelessWidget {
   final imageUrl;
-  final String encodedimg;
+
   final String folderKey;
-  const FullScreenImagePage(
-      {required this.imageUrl,
-      required this.encodedimg,
-      required this.folderKey});
+  const FullScreenImagePage({required this.imageUrl, required this.folderKey});
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +37,7 @@ class FullScreenImagePage extends StatelessWidget {
                   ],
                 ),
                 image: DecorationImage(
-                  image: MemoryImage(imageUrl),
+                  image: FileImage(File(imageUrl)),
                   // fit: BoxFit.fill,
                 ),
               ),
@@ -49,51 +47,54 @@ class FullScreenImagePage extends StatelessWidget {
                 onTap: () {
                   Navigator.pop(context);
                 },
-                child: Icon(
-                  Icons.close,
-                  color: Colors.white,
-                  size: 30.0,
+                child: CircleAvatar(
+                  backgroundColor: Colors.black87.withOpacity(0.8),
+                  child: Icon(
+                    Icons.close,
+                    color: Colors.white,
+                    size: 25.0,
+                  ),
                 ),
               ),
-              leading: InkWell(
-                onTap: () {
-                  AwesomeDialog(
-                    context: context,
-                    animType: AnimType.topSlide,
-                    dialogType: DialogType.question,
-                    title: 'Are you sure?',
-                    desc: 'Do you want to delete this image?',
-                    btnOkOnPress: () async {
-                      Get.dialog(LoadingPage());
-                      try {
-                        mediacontroller.pickedfiles =
-                            foldersdatabox.get(folderKey);
-                        mediacontroller.pickedfiles.remove(encodedimg);
-                        foldersdatabox.put(
-                            folderKey, mediacontroller.pickedfiles);
+              // leading: InkWell(
+              //   onTap: () {
+              //     AwesomeDialog(
+              //       context: context,
+              //       animType: AnimType.topSlide,
+              //       dialogType: DialogType.question,
+              //       title: 'Are you sure?',
+              //       desc: 'Do you want to delete this image?',
+              //       btnOkOnPress: () async {
+              //         Get.dialog(LoadingPage());
+              //         try {
+              //           mediacontroller.pickedfiles =
+              //               foldersdatabox.get(folderKey);
+              //           mediacontroller.pickedfiles.remove(encodedimg);
+              //           foldersdatabox.put(
+              //               folderKey, mediacontroller.pickedfiles);
 
-                        Get.back();
-                        Get.back();
-                        styledsnackbar(
-                            txt: 'Image Deleted Successfully.',
-                            icon: Icons.check);
-                      } catch (e) {
-                        Get.back();
-                        styledsnackbar(
-                            txt: 'Error occured.$e', icon: Icons.error);
-                      }
-                    },
-                    btnCancelOnPress: () {
-                      // Get.back();
-                    },
-                  )..show();
-                },
-                child: Icon(
-                  Icons.delete,
-                  color: Colors.white,
-                  size: 30.0,
-                ),
-              ),
+              //           Get.back();
+              //           Get.back();
+              //           styledsnackbar(
+              //               txt: 'Image Deleted Successfully.',
+              //               icon: Icons.check);
+              //         } catch (e) {
+              //           Get.back();
+              //           styledsnackbar(
+              //               txt: 'Error occured.$e', icon: Icons.error);
+              //         }
+              //       },
+              //       btnCancelOnPress: () {
+              //         // Get.back();
+              //       },
+              //     )..show();
+              //   },
+              //   child: Icon(
+              //     Icons.delete,
+              //     color: Colors.white,
+              //     size: 30.0,
+              //   ),
+              // ),
             ),
           ],
         ),
