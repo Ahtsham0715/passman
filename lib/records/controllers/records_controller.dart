@@ -13,7 +13,6 @@ class RecordsController extends GetxController {
   final LocalAuthentication auth = LocalAuthentication();
   RxBool isauthenticated = false.obs;
   bool isSearchBarVisible = false;
-
   List box = [];
 
   void combinedata() {

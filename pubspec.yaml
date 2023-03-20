@@ -52,7 +52,8 @@ dependencies:
   flutter_bounceable: ^1.0.3
   smooth_page_indicator: ^1.0.0+2
   flutter_speed_dial: any
-
+  showcaseview: ^2.0.2
+  shimmer: ^2.0.0
   open_filex: ^4.3.2
 
   
