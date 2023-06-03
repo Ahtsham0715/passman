@@ -273,7 +273,7 @@ class _CreateRecordState extends State<CreateRecord>
                       width: Get.width * 0.9,
                       child: customTextField(
                         'Password',
-                        false,
+                        widget.edit,
                         null,
                         _password,
                         (val) {

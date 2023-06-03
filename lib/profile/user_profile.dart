@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:passman/constants.dart';
 import 'package:passman/profile/controller/user_profile_controller.dart';
+import 'package:passman/res/components/change_email.dart';
 import 'package:passman/res/components/custom_formfield.dart';
 import 'package:passman/res/components/loading_page.dart';
 import 'package:encrypt/encrypt.dart' as encryption;
@@ -48,15 +49,32 @@ class _UserProfileState extends State<UserProfile> {
         foregroundColor: Colors.white,
         // backgroundColor: Colors.green,
         elevation: 0.0,
+        leading: GetBuilder<ProfileController>(builder: (controller) {
+          return InkWell(
+            onTap: controller.isedit
+                ? () {
+                    controller.isedit = false;
+                    controller.update();
+                  }
+                : () {
+                    Get.back();
+                  },
+            child: Icon(
+              controller.isedit ? Icons.close : Icons.arrow_back,
+            ),
+          );
+        }),
         centerTitle: true,
-        title: const Text(
-          'My Profile',
-          style: TextStyle(
-              fontSize: 30.0,
-              fontWeight: FontWeight.w500,
-              color: Colors.white,
-              fontFamily: 'majalla'),
-        ),
+        title: GetBuilder<ProfileController>(builder: (controller) {
+          return Text(
+            controller.isedit ? 'Edit Profile' : 'My Profile',
+            style: TextStyle(
+                fontSize: 30.0,
+                fontWeight: FontWeight.w500,
+                color: Colors.white,
+                fontFamily: 'majalla'),
+          );
+        }),
         flexibleSpace: Container(
           decoration: BoxDecoration(
             gradient: LinearGradient(
@@ -213,7 +231,20 @@ class _UserProfileState extends State<UserProfile> {
                       customTextField(
                         "Email",
                         false,
-                        null,
+                        controller.isedit
+                            ? null
+                            : InkWell(
+                                onTap: () {
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) => changeEmailDialog(),
+                                  );
+                                },
+                                child: Icon(
+                                  Icons.edit,
+                                  color: Colors.white,
+                                ),
+                              ),
                         email,
                         (value) {
                           if (value!.isEmpty) {
@@ -239,6 +270,7 @@ class _UserProfileState extends State<UserProfile> {
                         //     :
                         InputBorder.none,
                         pIcon: Icons.email_outlined,
+
                         piconcolor: Colors.white,
                         textcolor: Colors.white,
                         readonly: true,

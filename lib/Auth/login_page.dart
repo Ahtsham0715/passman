@@ -23,9 +23,9 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
   final TextEditingController _email =
-      TextEditingController(text: 'ahtsham50743@gmail.com');
+      TextEditingController(text: ''); //ahtsham50743@gmail.com
   final TextEditingController _password =
-      TextEditingController(text: 'shami1123');
+      TextEditingController(text: ''); //shami1123
   final FocusNode _emailfocusNode = FocusNode();
   final FocusNode _passwordfocusNode = FocusNode();
   AuthController controller = Get.put(AuthController());

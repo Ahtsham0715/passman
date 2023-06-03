@@ -96,28 +96,74 @@ class _RecordDetailsState extends State<RecordDetails>
               ];
             },
             icon: const Icon(Icons.more_vert_rounded),
-            onSelected: (i) {
+            onSelected: (i) async {
               if (i == "1") {
-                Get.to(
-                  () => CreateRecord(
-                    passwordData: PasswordModel(
-                      title: widget.password.title.toString(),
-                      login: encrypter.decrypt(
-                          encryption.Encrypted.from64(
-                              widget.password.login.toString()),
-                          iv: iv),
-                      password: encrypter.decrypt(
-                          encryption.Encrypted.from64(
-                              widget.password.password.toString()),
-                          iv: iv),
-                      website: widget.password.website.toString(),
-                      notes: widget.password.notes.toString(),
-                      length: widget.password.length,
-                    ),
-                    passwordIndex: widget.passwordKey.toString(),
-                    edit: true,
-                  ),
-                );
+                !logininfo.get('is_biometric_available') ||
+                        !logininfo.get('bio_auth')
+                    ? showDialog(
+                        context: context,
+                        builder: (context) => MasterPasswordDialog(),
+                      ).then((value) async {
+                        if (value != null) {
+                          if (value ==
+                              encrypter.decrypt(
+                                  encryption.Encrypted.from64(
+                                      logininfo.get('password')),
+                                  iv: iv)) {
+                            Get.to(
+                              () => CreateRecord(
+                                passwordData: PasswordModel(
+                                  title: widget.password.title.toString(),
+                                  login: encrypter.decrypt(
+                                      encryption.Encrypted.from64(
+                                          widget.password.login.toString()),
+                                      iv: iv),
+                                  password: encrypter.decrypt(
+                                      encryption.Encrypted.from64(
+                                          widget.password.password.toString()),
+                                      iv: iv),
+                                  website: widget.password.website.toString(),
+                                  notes: widget.password.notes.toString(),
+                                  length: widget.password.length,
+                                ),
+                                passwordIndex: widget.passwordKey.toString(),
+                                edit: true,
+                              ),
+                            );
+                          } else {
+                            styledsnackbar(
+                                txt: 'Incorrect master password',
+                                icon: Icons.error_outlined);
+                          }
+                        }
+                      })
+                    : await recordscontroller
+                        .authenticateWithBiometrics()
+                        .then((value) async {
+                        if (recordscontroller.isauthenticated.value) {
+                          Get.to(
+                            () => CreateRecord(
+                              passwordData: PasswordModel(
+                                title: widget.password.title.toString(),
+                                login: encrypter.decrypt(
+                                    encryption.Encrypted.from64(
+                                        widget.password.login.toString()),
+                                    iv: iv),
+                                password: encrypter.decrypt(
+                                    encryption.Encrypted.from64(
+                                        widget.password.password.toString()),
+                                    iv: iv),
+                                website: widget.password.website.toString(),
+                                notes: widget.password.notes.toString(),
+                                length: widget.password.length,
+                              ),
+                              passwordIndex: widget.passwordKey.toString(),
+                              edit: true,
+                            ),
+                          );
+                        }
+                      });
+
                 //  displayBar(context, i);
               } else if (i == "2") {
                 AwesomeDialog(
@@ -127,19 +173,59 @@ class _RecordDetailsState extends State<RecordDetails>
                   title: 'Are you sure?',
                   desc: 'Do you want to delete this data?',
                   btnOkOnPress: () async {
-                    try {
-                      await passwordbox.delete(widget.passwordKey);
-                      Get.back();
+                    !logininfo.get('is_biometric_available') ||
+                            !logininfo.get('bio_auth')
+                        ? showDialog(
+                            context: context,
+                            builder: (context) => MasterPasswordDialog(),
+                          ).then((value) async {
+                            if (value != null) {
+                              if (value ==
+                                  encrypter.decrypt(
+                                      encryption.Encrypted.from64(
+                                          logininfo.get('password')),
+                                      iv: iv)) {
+                                try {
+                                  await passwordbox.delete(widget.passwordKey);
+                                  Get.back();
 
-                      styledsnackbar(
-                          txt: 'Password Deleted Successfully.',
-                          icon: MdiIcons.check);
-                    } catch (e) {
-                      //  Get.back();
+                                  styledsnackbar(
+                                      txt: 'Password Deleted Successfully.',
+                                      icon: MdiIcons.check);
+                                } catch (e) {
+                                  //  Get.back();
 
-                      styledsnackbar(
-                          txt: 'Error Occured. $e', icon: Icons.error);
-                    }
+                                  styledsnackbar(
+                                      txt: 'Error Occured. $e',
+                                      icon: Icons.error);
+                                }
+                              } else {
+                                styledsnackbar(
+                                    txt: 'Incorrect master password',
+                                    icon: Icons.error_outlined);
+                              }
+                            }
+                          })
+                        : await recordscontroller
+                            .authenticateWithBiometrics()
+                            .then((value) async {
+                            if (recordscontroller.isauthenticated.value) {
+                              try {
+                                await passwordbox.delete(widget.passwordKey);
+                                Get.back();
+
+                                styledsnackbar(
+                                    txt: 'Password Deleted Successfully.',
+                                    icon: MdiIcons.check);
+                              } catch (e) {
+                                //  Get.back();
+
+                                styledsnackbar(
+                                    txt: 'Error Occured. $e',
+                                    icon: Icons.error);
+                              }
+                            }
+                          });
                   },
                   btnCancelOnPress: () {
                     // Get.back();
