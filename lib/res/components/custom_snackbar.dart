@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-void styledsnackbar({required txt, icon = Icons.wifi_sharp}) {
+void styledsnackbar({required txt, icon = Icons.wifi_sharp, int sec = 2}) {
   Get.rawSnackbar(
     margin: const EdgeInsets.all(15.0),
     messageText: Text(
@@ -18,6 +18,6 @@ void styledsnackbar({required txt, icon = Icons.wifi_sharp}) {
       color: Colors.white,
       size: 25.0,
     ),
-    duration: const Duration(seconds: 2),
+    duration: Duration(seconds: sec),
   );
 }

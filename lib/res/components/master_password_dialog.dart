@@ -49,7 +49,7 @@ class _MasterPasswordDialogState extends State<MasterPasswordDialog> {
           child: Text(
             "Cancel",
             style: TextStyle(
-              color: Colors.black,
+              color: Colors.red,
               fontSize: 18.0,
               fontWeight: FontWeight.w400,
               fontFamily: 'majalla',
@@ -63,7 +63,7 @@ class _MasterPasswordDialogState extends State<MasterPasswordDialog> {
           child: Text(
             "Submit",
             style: TextStyle(
-              color: Colors.black,
+              color: Colors.green.shade800,
               fontSize: 18.0,
               fontWeight: FontWeight.w400,
               fontFamily: 'majalla',

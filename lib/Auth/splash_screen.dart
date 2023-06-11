@@ -1,9 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:passman/Auth/login_page.dart';
 import 'package:passman/Auth/onbaording_screen.dart';
 import 'package:passman/constants.dart';
+import 'package:passman/records/records_page.dart';
+
+import '../records/models/password_model.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -30,12 +34,25 @@ class _SplashScreenState extends State<SplashScreen>
     );
     _animation.addStatusListener((status) async {
       if (status == AnimationStatus.completed) {
-        await FirebaseAuth.instance.signOut();
+        // await FirebaseAuth.instance.signOut();
         if (logininfo.containsKey('istutorial') &&
             logininfo.get('istutorial')) {
-          Get.to(
-            () => LoginPage(),
-          );
+          if (FirebaseAuth.instance.currentUser != null) {
+            if (!Hive.isBoxOpen(logininfo.get('userid'))) {
+              await Hive.openBox<PasswordModel>(logininfo.get('userid'));
+            }
+            if (!Hive.isBoxOpen('folders${logininfo.get('userid')}')) {
+              await Hive.openBox('folders${logininfo.get('userid')}');
+            }
+            if (!Hive.isBoxOpen('foldersdata${logininfo.get('userid')}')) {
+              await Hive.openBox('foldersdata${logininfo.get('userid')}');
+            }
+            Get.to(() => PasswordsPage());
+          } else {
+            Get.to(
+              () => LoginPage(),
+            );
+          }
         } else {
           Get.to(
             () => onboardingPage(),

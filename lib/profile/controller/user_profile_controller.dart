@@ -12,6 +12,7 @@ import '../../res/components/custom_snackbar.dart';
 class ProfileController extends GetxController {
   bool isedit = false;
   bool isselected = false;
+  bool isWorking = false;
   String path = '';
   String imgurl = logininfo.get('img');
   Future<void> uploadFile(
