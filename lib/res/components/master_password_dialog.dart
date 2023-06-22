@@ -25,7 +25,7 @@ class _MasterPasswordDialogState extends State<MasterPasswordDialog> {
         ),
       ),
       content: Container(
-        width: double.maxFinite,
+        // width: double.maxFinite,
         child: Form(
           key: formkey,
           child: TextFormField(

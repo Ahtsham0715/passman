@@ -16,6 +16,7 @@ import 'package:passman/records/models/password_model.dart';
 import 'package:passman/res/components/custom_snackbar.dart';
 import 'package:passman/res/components/custom_text.dart';
 import 'package:encrypt/encrypt.dart' as encryption;
+import 'package:passman/res/extensions.dart';
 
 import '../res/components/master_password_dialog.dart';
 
@@ -72,8 +73,12 @@ class _RecordDetailsState extends State<RecordDetails>
                 Color(0XFFd66d75),
                 Color(0XFFe29587),
               ],
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
+              begin: MediaQuery.of(context).orientation == Orientation.portrait
+                  ? Alignment.bottomCenter
+                  : Alignment.bottomLeft,
+              end: MediaQuery.of(context).orientation == Orientation.portrait
+                  ? Alignment.topCenter
+                  : Alignment.bottomCenter,
             ),
           ),
         ),
@@ -98,71 +103,26 @@ class _RecordDetailsState extends State<RecordDetails>
             icon: const Icon(Icons.more_vert_rounded),
             onSelected: (i) async {
               if (i == "1") {
-                !logininfo.get('is_biometric_available') ||
-                        !logininfo.get('bio_auth')
-                    ? showDialog(
-                        context: context,
-                        builder: (context) => MasterPasswordDialog(),
-                      ).then((value) async {
-                        if (value != null) {
-                          if (value ==
-                              encrypter.decrypt(
-                                  encryption.Encrypted.from64(
-                                      logininfo.get('password')),
-                                  iv: iv)) {
-                            Get.to(
-                              () => CreateRecord(
-                                passwordData: PasswordModel(
-                                  title: widget.password.title.toString(),
-                                  login: encrypter.decrypt(
-                                      encryption.Encrypted.from64(
-                                          widget.password.login.toString()),
-                                      iv: iv),
-                                  password: encrypter.decrypt(
-                                      encryption.Encrypted.from64(
-                                          widget.password.password.toString()),
-                                      iv: iv),
-                                  website: widget.password.website.toString(),
-                                  notes: widget.password.notes.toString(),
-                                  length: widget.password.length,
-                                ),
-                                passwordIndex: widget.passwordKey.toString(),
-                                edit: true,
-                              ),
-                            );
-                          } else {
-                            styledsnackbar(
-                                txt: 'Incorrect master password',
-                                icon: Icons.error_outlined);
-                          }
-                        }
-                      })
-                    : await recordscontroller
-                        .authenticateWithBiometrics()
-                        .then((value) async {
-                        if (recordscontroller.isauthenticated.value) {
-                          Get.to(
-                            () => CreateRecord(
-                              passwordData: PasswordModel(
-                                title: widget.password.title.toString(),
-                                login: encrypter.decrypt(
-                                    encryption.Encrypted.from64(
-                                        widget.password.login.toString()),
-                                    iv: iv),
-                                password: encrypter.decrypt(
-                                    encryption.Encrypted.from64(
-                                        widget.password.password.toString()),
-                                    iv: iv),
-                                website: widget.password.website.toString(),
-                                notes: widget.password.notes.toString(),
-                                length: widget.password.length,
-                              ),
-                              passwordIndex: widget.passwordKey.toString(),
-                              edit: true,
-                            ),
-                          );
-                        }
-                      });
+                Get.to(
+                  () => CreateRecord(
+                    passwordData: PasswordModel(
+                      title: widget.password.title.toString(),
+                      login: encrypter.decrypt(
+                          encryption.Encrypted.from64(
+                              widget.password.login.toString()),
+                          iv: iv),
+                      password: encrypter.decrypt(
+                          encryption.Encrypted.from64(
+                              widget.password.password.toString()),
+                          iv: iv),
+                      website: widget.password.website.toString(),
+                      notes: widget.password.notes.toString(),
+                      length: widget.password.length,
+                    ),
+                    passwordIndex: widget.passwordKey.toString(),
+                    edit: true,
+                  ),
+                );
 
                 //  displayBar(context, i);
               } else if (i == "2") {
@@ -173,59 +133,19 @@ class _RecordDetailsState extends State<RecordDetails>
                   title: 'Are you sure?',
                   desc: 'Do you want to delete this data?',
                   btnOkOnPress: () async {
-                    !logininfo.get('is_biometric_available') ||
-                            !logininfo.get('bio_auth')
-                        ? showDialog(
-                            context: context,
-                            builder: (context) => MasterPasswordDialog(),
-                          ).then((value) async {
-                            if (value != null) {
-                              if (value ==
-                                  encrypter.decrypt(
-                                      encryption.Encrypted.from64(
-                                          logininfo.get('password')),
-                                      iv: iv)) {
-                                try {
-                                  await passwordbox.delete(widget.passwordKey);
-                                  Get.back();
+                    try {
+                      await passwordbox.delete(widget.passwordKey);
+                      Get.back();
 
-                                  styledsnackbar(
-                                      txt: 'Password Deleted Successfully.',
-                                      icon: MdiIcons.check);
-                                } catch (e) {
-                                  //  Get.back();
+                      styledsnackbar(
+                          txt: 'Password Deleted Successfully.',
+                          icon: MdiIcons.check);
+                    } catch (e) {
+                      //  Get.back();
 
-                                  styledsnackbar(
-                                      txt: 'Error Occured. $e',
-                                      icon: Icons.error);
-                                }
-                              } else {
-                                styledsnackbar(
-                                    txt: 'Incorrect master password',
-                                    icon: Icons.error_outlined);
-                              }
-                            }
-                          })
-                        : await recordscontroller
-                            .authenticateWithBiometrics()
-                            .then((value) async {
-                            if (recordscontroller.isauthenticated.value) {
-                              try {
-                                await passwordbox.delete(widget.passwordKey);
-                                Get.back();
-
-                                styledsnackbar(
-                                    txt: 'Password Deleted Successfully.',
-                                    icon: MdiIcons.check);
-                              } catch (e) {
-                                //  Get.back();
-
-                                styledsnackbar(
-                                    txt: 'Error Occured. $e',
-                                    icon: Icons.error);
-                              }
-                            }
-                          });
+                      styledsnackbar(
+                          txt: 'Error Occured. $e', icon: Icons.error);
+                    }
                   },
                   btnCancelOnPress: () {
                     // Get.back();
@@ -237,8 +157,8 @@ class _RecordDetailsState extends State<RecordDetails>
         ],
       ),
       body: Container(
-        width: width,
-        height: height,
+        // width: width,
+        // height: height,
         decoration: BoxDecoration(
             gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -252,8 +172,8 @@ class _RecordDetailsState extends State<RecordDetails>
           opacity: _animation,
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: ListView(
+              // crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 CustomTile(
                   title: widget.password.title.toString(),
@@ -444,7 +364,7 @@ class CustomDivider extends StatelessWidget {
     return Divider(
       color: Colors.white,
       thickness: 1.0,
-      indent: width * 0.15,
+      indent: context.blockSizeHorizontal * 20,
       endIndent: 0,
     );
   }

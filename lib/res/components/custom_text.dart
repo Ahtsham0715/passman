@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:passman/res/extensions.dart';
 
 class CustomText extends StatelessWidget {
   final String title;
@@ -25,7 +26,7 @@ class CustomText extends StatelessWidget {
       style: TextStyle(
         fontWeight: fontweight,
         color: fontcolor,
-        fontSize: fontsize,
+        fontSize: fontsize * context.textScaleFactorResponsive,
         textBaseline: TextBaseline.alphabetic,
         fontFamily: 'majalla',
         decoration: underline ? TextDecoration.underline : TextDecoration.none,

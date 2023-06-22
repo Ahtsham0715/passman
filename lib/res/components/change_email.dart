@@ -35,7 +35,7 @@ class _changeEmailDialogState extends State<changeEmailDialog> {
         ),
       ),
       content: Container(
-        width: double.maxFinite,
+        // width: double.maxFinite,
         // height: MediaQuery.of(context).size.height * 0.33,
         child: Form(
           key: formkey,

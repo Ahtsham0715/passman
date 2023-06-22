@@ -53,8 +53,12 @@ class FolderView extends StatelessWidget {
                 Color(0XFFd66d75),
                 Color(0XFFe29587),
               ],
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
+              begin: MediaQuery.of(context).orientation == Orientation.portrait
+                  ? Alignment.bottomCenter
+                  : Alignment.bottomLeft,
+              end: MediaQuery.of(context).orientation == Orientation.portrait
+                  ? Alignment.topCenter
+                  : Alignment.bottomCenter,
             ),
           ),
         ),
@@ -163,8 +167,8 @@ class FolderView extends StatelessWidget {
       ),
       body: Container(
         padding: EdgeInsets.all(10.0),
-        height: height,
-        width: width,
+        // height: height,
+        // width: width,
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [

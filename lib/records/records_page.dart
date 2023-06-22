@@ -20,6 +20,7 @@ import 'package:passman/records/record_details_page.dart';
 import 'package:passman/res/components/custom_text.dart';
 import 'package:encrypt/encrypt.dart' as encryption;
 import 'package:passman/res/components/new_folder.dart';
+import 'package:passman/res/extensions.dart';
 import '../constants.dart';
 import '../media files/controllers/media_controller.dart';
 import '../media files/folder_view.dart';
@@ -85,6 +86,7 @@ class _PasswordsPageState extends State<PasswordsPage> {
       },
       child: Scaffold(
         backgroundColor: Colors.white.withOpacity(0.9),
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           // automaticallyImplyLeading: false,
           foregroundColor: Colors.white,
@@ -152,8 +154,13 @@ class _PasswordsPageState extends State<PasswordsPage> {
                   Color(0XFFd66d75),
                   Color(0XFFe29587),
                 ],
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter,
+                begin:
+                    MediaQuery.of(context).orientation == Orientation.portrait
+                        ? Alignment.bottomCenter
+                        : Alignment.bottomLeft,
+                end: MediaQuery.of(context).orientation == Orientation.portrait
+                    ? Alignment.topCenter
+                    : Alignment.bottomCenter,
               ),
             ),
           ),
@@ -273,8 +280,8 @@ class _PasswordsPageState extends State<PasswordsPage> {
           ],
         ),
         body: Container(
-          height: height,
-          width: width,
+          // height: context.blockSizeVertical * 100,
+          // width: context.blockSizeHorizontal * 100,
           decoration: BoxDecoration(
               gradient: LinearGradient(
             begin: Alignment.topLeft,
@@ -290,16 +297,20 @@ class _PasswordsPageState extends State<PasswordsPage> {
                 ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(
-                        MdiIcons.flaskEmptyOutline,
-                        size: 50.0,
-                        color: Colors.white,
+                      Center(
+                        child: Icon(
+                          MdiIcons.flaskEmptyOutline,
+                          size: 50.0,
+                          color: Colors.white,
+                        ),
                       ),
-                      CustomText(
-                          title: 'No Data Available',
-                          fontcolor: Colors.white,
-                          fontweight: FontWeight.w600,
-                          fontsize: 40.0),
+                      Center(
+                        child: CustomText(
+                            title: 'No Data Available',
+                            fontcolor: Colors.white,
+                            fontweight: FontWeight.w600,
+                            fontsize: 40.0),
+                      ),
                     ],
                   )
                 : ListView.separated(
@@ -337,37 +348,93 @@ class _PasswordsPageState extends State<PasswordsPage> {
                                       // print('deleted');
                                     }
                                   : () {},
-                              onTap: data['isfolder']
-                                  ? () {
-                                      Get.to(
-                                        () => FolderView(
-                                          folderKey: data['key'],
-                                          folderName: data['title'],
-                                          folderType: data['value']['type'],
-                                        ),
-                                      );
-                                    }
-                                  : () {
-                                      Get.to(
-                                        () => RecordDetails(
-                                          password: data['value'],
-                                          // passwordIndex:
-                                          //     index == 0 ? index : index - 1,
-                                          passwordKey: data['key'],
-                                          // controller.box
-                                          //     .keyAt(index == 0
-                                          //         ? index
-                                          //         : index - 1)
-                                          //     .toString(),
-                                          img: websites.containsKey(
-                                                  data['value']!
-                                                      .title
-                                                      .toString())
-                                              ? 'assets/icons/${data['value'].title.toString().toLowerCase()}.svg'
-                                              : '',
-                                        ),
-                                      );
-                                    },
+                              onTap: () async {
+                                !logininfo.get('is_biometric_available') ||
+                                        !logininfo.get('bio_auth')
+                                    ? showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            MasterPasswordDialog(),
+                                      ).then((value) async {
+                                        if (value != null) {
+                                          if (value ==
+                                              encrypter.decrypt(
+                                                  encryption.Encrypted.from64(
+                                                      logininfo
+                                                          .get('password')),
+                                                  iv: iv)) {
+                                            data['isfolder']
+                                                ? Get.to(
+                                                    () => FolderView(
+                                                      folderKey: data['key'],
+                                                      folderName: data['title'],
+                                                      folderType: data['value']
+                                                          ['type'],
+                                                    ),
+                                                  )
+                                                : Get.to(
+                                                    () => RecordDetails(
+                                                      password: data['value'],
+                                                      // passwordIndex:
+                                                      //     index == 0 ? index : index - 1,
+                                                      passwordKey: data['key'],
+                                                      // controller.box
+                                                      //     .keyAt(index == 0
+                                                      //         ? index
+                                                      //         : index - 1)
+                                                      //     .toString(),
+                                                      img: websites.containsKey(
+                                                              data['value']!
+                                                                  .title
+                                                                  .toString())
+                                                          ? 'assets/icons/${data['value'].title.toString().toLowerCase()}.svg'
+                                                          : '',
+                                                    ),
+                                                  );
+                                          } else {
+                                            styledsnackbar(
+                                                txt:
+                                                    'Incorrect master password',
+                                                icon: Icons.error_outlined);
+                                          }
+                                        }
+                                      })
+                                    : await recordscontroller
+                                        .authenticateWithBiometrics()
+                                        .then((value) async {
+                                        if (recordscontroller
+                                            .isauthenticated.value) {
+                                          data['isfolder']
+                                              ? Get.to(
+                                                  () => FolderView(
+                                                    folderKey: data['key'],
+                                                    folderName: data['title'],
+                                                    folderType: data['value']
+                                                        ['type'],
+                                                  ),
+                                                )
+                                              : Get.to(
+                                                  () => RecordDetails(
+                                                    password: data['value'],
+                                                    // passwordIndex:
+                                                    //     index == 0 ? index : index - 1,
+                                                    passwordKey: data['key'],
+                                                    // controller.box
+                                                    //     .keyAt(index == 0
+                                                    //         ? index
+                                                    //         : index - 1)
+                                                    //     .toString(),
+                                                    img: websites.containsKey(
+                                                            data['value']!
+                                                                .title
+                                                                .toString())
+                                                        ? 'assets/icons/${data['value'].title.toString().toLowerCase()}.svg'
+                                                        : '',
+                                                  ),
+                                                );
+                                        }
+                                      });
+                              },
                               dense: true,
                               leading: data['isfolder']
                                   ? Icon(
@@ -501,123 +568,125 @@ class _PasswordsPageState extends State<PasswordsPage> {
                         Color(0XFFe29587),
                       ],
                     )),
-                    child: Column(
-                      children: [
-                        UserAccountsDrawerHeader(
-                          decoration: BoxDecoration(
-                            // borderRadius: BorderRadius.vertical(
-                            //   bottom: Radius.circular(20.0),
-                            // ),
-                            color: Colors.black26,
-                          ),
-                          accountName: Text(
-                            box.get('name') ?? '',
-                            style: TextStyle(fontSize: 20.0),
-                          ),
-                          accountEmail: Text(
-                            encrypter.decrypt(
-                                encryption.Encrypted.from64(box.get('email')),
-                                iv: iv),
-                            style: TextStyle(fontSize: 20.0),
-                          ),
-                          currentAccountPicture: CircleAvatar(
-                            // radius: 30.0,
-                            foregroundImage: CachedNetworkImageProvider(
-                                box.get('img') ?? ''),
-                            backgroundColor: Colors.transparent,
-                            child: Icon(
-                              CupertinoIcons.profile_circled,
-                              size: 70.0,
-                              color: Colors.white,
+                    child: SingleChildScrollView(
+                      child: Column(
+                        children: [
+                          UserAccountsDrawerHeader(
+                            decoration: BoxDecoration(
+                              // borderRadius: BorderRadius.vertical(
+                              //   bottom: Radius.circular(20.0),
+                              // ),
+                              color: Colors.black26,
                             ),
+                            accountName: Text(
+                              box.get('name') ?? '',
+                              style: TextStyle(fontSize: 20.0),
+                            ),
+                            accountEmail: Text(
+                              encrypter.decrypt(
+                                  encryption.Encrypted.from64(box.get('email')),
+                                  iv: iv),
+                              style: TextStyle(fontSize: 20.0),
+                            ),
+                            currentAccountPicture: CircleAvatar(
+                              // radius: 30.0,
+                              foregroundImage: CachedNetworkImageProvider(
+                                  box.get('img') ?? ''),
+                              backgroundColor: Colors.transparent,
+                              child: Icon(
+                                CupertinoIcons.profile_circled,
+                                size: 70.0,
+                                color: Colors.white,
+                              ),
+                            ),
+                            currentAccountPictureSize: Size.square(70.0),
                           ),
-                          currentAccountPictureSize: Size.square(70.0),
-                        ),
-                        !logininfo.get('is_biometric_available')
-                            ? const Center()
-                            : SwitchListTile(
-                                value: bioauth,
-                                inactiveTrackColor:
-                                    Color.fromARGB(255, 228, 151, 157),
-                                activeColor: Colors.green,
-                                title: CustomText(
-                                    fontcolor: Colors.white,
-                                    title: 'Fingerprint Auth',
-                                    fontweight: FontWeight.w500,
-                                    fontsize: 22.0),
-                                onChanged: (value) {
-                                  // print(
-                                  //     'bio ${logininfo.get('is_biometric_available')}');
-                                  logininfo.put('bio_auth', value);
+                          !logininfo.get('is_biometric_available')
+                              ? const Center()
+                              : SwitchListTile(
+                                  value: bioauth,
+                                  inactiveTrackColor:
+                                      Color.fromARGB(255, 228, 151, 157),
+                                  activeColor: Colors.green,
+                                  title: CustomText(
+                                      fontcolor: Colors.white,
+                                      title: 'Fingerprint Auth',
+                                      fontweight: FontWeight.w500,
+                                      fontsize: 22.0),
+                                  onChanged: (value) {
+                                    // print(
+                                    //     'bio ${logininfo.get('is_biometric_available')}');
+                                    logininfo.put('bio_auth', value);
 
-                                  print(logininfo.get('bio_auth'));
-                                  setState(() {
-                                    bioauth = value;
-                                  });
-                                  if (value) {
+                                    print(logininfo.get('bio_auth'));
+                                    setState(() {
+                                      bioauth = value;
+                                    });
+                                    if (value) {
+                                      styledsnackbar(
+                                          txt:
+                                              'You can now use fingerprint authentication',
+                                          icon: Icons.login);
+                                    }
+                                  },
+                                ),
+                          CustomDivider(),
+
+                          customDrawerTile(
+                            title: 'Profile',
+                            leading: Icons.group,
+                            onpressed: () {
+                              Get.to(
+                                () => UserProfile(),
+                              );
+                            },
+                          ),
+                          CustomDivider(),
+
+                          // customDrawerTile(
+                          //   title: 'Start Match',
+                          //   leading: Icons.arrow_right,
+                          //   onpressed: () {},
+                          // ),
+                          customDrawerTile(
+                            title: 'Logout',
+                            leading: Icons.power_settings_new,
+                            onpressed: () async {
+                              // logout(context);
+                              AwesomeDialog(
+                                context: context,
+                                animType: AnimType.topSlide,
+                                dialogType: DialogType.question,
+                                // body: Center(child: Text(
+                                //         'If the body is specified, then title and description will be ignored, this allows to 											further customize the dialogue.',
+                                //         style: TextStyle(fontStyle: FontStyle.italic),
+                                //       ),),
+                                title: 'Are you sure?',
+                                desc: 'Do you want to logout?',
+                                btnOkOnPress: () async {
+                                  try {
+                                    // Get.back();
+                                    await FirebaseAuth.instance.signOut();
                                     styledsnackbar(
-                                        txt:
-                                            'You can now use fingerprint authentication',
-                                        icon: Icons.login);
+                                        txt: 'user logged out.',
+                                        icon: Icons.logout_outlined);
+                                  } catch (e) {
+                                    //  Get.back();
+
+                                    styledsnackbar(
+                                        txt: 'Error Occured. $e',
+                                        icon: Icons.error);
                                   }
                                 },
-                              ),
-                        CustomDivider(),
-
-                        customDrawerTile(
-                          title: 'Profile',
-                          leading: Icons.group,
-                          onpressed: () {
-                            Get.to(
-                              () => UserProfile(),
-                            );
-                          },
-                        ),
-                        CustomDivider(),
-
-                        // customDrawerTile(
-                        //   title: 'Start Match',
-                        //   leading: Icons.arrow_right,
-                        //   onpressed: () {},
-                        // ),
-                        customDrawerTile(
-                          title: 'Logout',
-                          leading: Icons.power_settings_new,
-                          onpressed: () async {
-                            // logout(context);
-                            AwesomeDialog(
-                              context: context,
-                              animType: AnimType.topSlide,
-                              dialogType: DialogType.question,
-                              // body: Center(child: Text(
-                              //         'If the body is specified, then title and description will be ignored, this allows to 											further customize the dialogue.',
-                              //         style: TextStyle(fontStyle: FontStyle.italic),
-                              //       ),),
-                              title: 'Are you sure?',
-                              desc: 'Do you want to logout?',
-                              btnOkOnPress: () async {
-                                try {
+                                btnCancelOnPress: () {
                                   // Get.back();
-                                  await FirebaseAuth.instance.signOut();
-                                  styledsnackbar(
-                                      txt: 'user logged out.',
-                                      icon: Icons.logout_outlined);
-                                } catch (e) {
-                                  //  Get.back();
-
-                                  styledsnackbar(
-                                      txt: 'Error Occured. $e',
-                                      icon: Icons.error);
-                                }
-                              },
-                              btnCancelOnPress: () {
-                                // Get.back();
-                              },
-                            )..show();
-                            // logout_func();
-                          },
-                        )
-                      ],
+                                },
+                              )..show();
+                              // logout_func();
+                            },
+                          )
+                        ],
+                      ),
                     ));
               }),
           // backgroundColor: Colors.white.withOpacity(0.9),

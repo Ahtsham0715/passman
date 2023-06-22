@@ -25,8 +25,8 @@ class FullScreenImagePage extends StatelessWidget {
         body: Stack(
           children: [
             Container(
-              height: height,
-              width: width,
+              // height: height,
+              // width: width,
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   begin: Alignment.topLeft,

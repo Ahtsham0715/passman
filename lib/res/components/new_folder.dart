@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:passman/media%20files/controllers/media_controller.dart';
+import 'package:passman/res/extensions.dart';
 
 class showNewFolderDialog extends StatefulWidget {
   final String name;
@@ -39,6 +40,7 @@ class _showNewFolderDialogState extends State<showNewFolderDialog> {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
       ),
+      scrollable: true,
       title: Text(
         "Enter Folder Name",
         style: TextStyle(
@@ -49,84 +51,93 @@ class _showNewFolderDialogState extends State<showNewFolderDialog> {
         ),
       ),
       content: Container(
-        width: double.maxFinite,
-        child: Form(
-          key: formkey,
-          child: TextFormField(
-            controller: _folderNameController,
-            obscureText: false,
-            validator: (value) {
-              if (value!.isEmpty) {
-                return "Folder name required";
-              }
-              return null;
-            },
-            decoration: InputDecoration(
-              hintText: "Folder Name",
-              prefixIcon: Icon(Icons.folder_open),
+        // width: double.maxFinite,
+        // height: context.blockSizeVertical * 120,
+        child: Column(
+          children: [
+            Form(
+              key: formkey,
+              child: TextFormField(
+                controller: _folderNameController,
+                obscureText: false,
+                validator: (value) {
+                  if (value!.isEmpty) {
+                    return "Folder name required";
+                  }
+                  return null;
+                },
+                decoration: InputDecoration(
+                  hintText: "Folder Name",
+                  prefixIcon: Icon(Icons.folder_open),
+                ),
+              ),
             ),
-          ),
+            widget.isEdit
+                ? const Center()
+                : GetBuilder<MediaController>(
+                    init: MediaController(),
+                    builder: (_) {
+                      return Column(
+                        mainAxisSize: MainAxisSize.min,
+                        // crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          RadioListTile(
+                            dense: true,
+                            contentPadding: EdgeInsets.symmetric(vertical: 2.0),
+                            value: 0,
+                            groupValue: _.selectedRadio,
+                            title: Text('Images'),
+                            onChanged: (value) {
+                              _.selectedRadio = value!;
+                              selectedval = value;
+                              print(_.selectedRadio);
+
+                              _.update();
+                            },
+                          ),
+                          RadioListTile(
+                            dense: true,
+                            contentPadding: EdgeInsets.symmetric(vertical: 2.0),
+                            value: 1,
+                            groupValue: _.selectedRadio,
+                            title: Text('Videos'),
+                            onChanged: (value) {
+                              _.selectedRadio = value!;
+                              selectedval = value;
+
+                              print(_.selectedRadio);
+
+                              _.update();
+                            },
+                          ),
+                          RadioListTile(
+                            dense: true,
+                            contentPadding: EdgeInsets.symmetric(vertical: 2.0),
+                            value: 2,
+                            groupValue: _.selectedRadio,
+                            title: Text('All'),
+                            onChanged: (value) {
+                              _.selectedRadio = value!;
+                              selectedval = value;
+
+                              print(_.selectedRadio);
+
+                              _.update();
+                            },
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+          ],
         ),
       ),
       actionsPadding: EdgeInsets.all(0.0),
       contentPadding: EdgeInsets.symmetric(
         horizontal: 20.0,
-        vertical: 8.0,
+        vertical: 0.0,
       ),
       actions: [
-        widget.isEdit
-            ? const Center()
-            : GetBuilder<MediaController>(
-                init: MediaController(),
-                builder: (_) {
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      RadioListTile(
-                        dense: true,
-                        value: 0,
-                        groupValue: _.selectedRadio,
-                        title: Text('Images'),
-                        onChanged: (value) {
-                          _.selectedRadio = value!;
-                          selectedval = value;
-                          print(_.selectedRadio);
-
-                          _.update();
-                        },
-                      ),
-                      RadioListTile(
-                        dense: true,
-                        value: 1,
-                        groupValue: _.selectedRadio,
-                        title: Text('Videos'),
-                        onChanged: (value) {
-                          _.selectedRadio = value!;
-                          selectedval = value;
-
-                          print(_.selectedRadio);
-
-                          _.update();
-                        },
-                      ),
-                      RadioListTile(
-                        dense: true,
-                        value: 2,
-                        groupValue: _.selectedRadio,
-                        title: Text('All'),
-                        onChanged: (value) {
-                          _.selectedRadio = value!;
-                          selectedval = value;
-
-                          print(_.selectedRadio);
-
-                          _.update();
-                        },
-                      ),
-                    ],
-                  );
-                },
-              ),
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -134,7 +145,7 @@ class _showNewFolderDialogState extends State<showNewFolderDialog> {
               child: Text(
                 "Cancel",
                 style: TextStyle(
-                  color: Colors.black,
+                  color: Colors.red,
                   fontSize: 18.0,
                   fontWeight: FontWeight.w400,
                   fontFamily: 'majalla',
@@ -148,7 +159,7 @@ class _showNewFolderDialogState extends State<showNewFolderDialog> {
               child: Text(
                 "Create",
                 style: TextStyle(
-                  color: Colors.black,
+                  color: Colors.green.shade800,
                   fontSize: 18.0,
                   fontWeight: FontWeight.w400,
                   fontFamily: 'majalla',

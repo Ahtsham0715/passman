@@ -12,6 +12,7 @@ import 'package:passman/res/components/change_email.dart';
 import 'package:passman/res/components/custom_formfield.dart';
 import 'package:passman/res/components/loading_page.dart';
 import 'package:encrypt/encrypt.dart' as encryption;
+import 'package:passman/res/extensions.dart';
 import '../res/components/custom_snackbar.dart';
 import '../res/components/file_picker.dart';
 
@@ -82,8 +83,12 @@ class _UserProfileState extends State<UserProfile> {
                 Color(0XFFd66d75),
                 Color(0XFFe29587),
               ],
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
+              begin: MediaQuery.of(context).orientation == Orientation.portrait
+                  ? Alignment.bottomCenter
+                  : Alignment.bottomLeft,
+              end: MediaQuery.of(context).orientation == Orientation.portrait
+                  ? Alignment.topCenter
+                  : Alignment.bottomCenter,
             ),
           ),
         ),
@@ -130,8 +135,8 @@ class _UserProfileState extends State<UserProfile> {
           valueListenable: logininfo.listenable(),
           builder: (context, box, _) {
             return Container(
-              height: height,
-              width: width,
+              // height: height,
+              // width: width,
               decoration: BoxDecoration(
                   gradient: LinearGradient(
                 begin: Alignment.topLeft,
@@ -144,9 +149,9 @@ class _UserProfileState extends State<UserProfile> {
               child: GetBuilder<ProfileController>(builder: (controller) {
                 return Form(
                   key: formkey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.start,
+                  child: ListView(
+                    // crossAxisAlignment: CrossAxisAlignment.center,
+                    // mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 20.0),
@@ -274,6 +279,9 @@ class _UserProfileState extends State<UserProfile> {
                         piconcolor: Colors.white,
                         textcolor: Colors.white,
                         readonly: true,
+                      ),
+                      SizedBox(
+                        height: context.blockSizeVertical * 2.5,
                       ),
                     ],
                   ),
