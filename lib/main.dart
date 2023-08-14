@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -27,6 +26,7 @@ void main() async {
   // if (!await nomediaFile.exists()) {
   //   await nomediaFile.create();
   // }
+  
   await Hive.initFlutter(directory.path);
   Hive.registerAdapter(PasswordModelAdapter());
   // await Hive.openBox<PasswordModel>('my_data');

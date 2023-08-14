@@ -8,7 +8,6 @@ import 'package:passman/Auth/privacy_policy_screen.dart';
 import 'package:passman/Auth/register_page.dart';
 import 'package:passman/constants.dart';
 import 'package:passman/res/components/custom_formfield.dart';
-import 'package:passman/records/records_page.dart';
 import 'package:passman/res/components/custom_shape.dart';
 import 'package:passman/res/components/loading_page.dart';
 import 'package:passman/res/components/onwillpop.dart';

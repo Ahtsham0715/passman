@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 
 class TermsAndPrivacyPolicyPage extends StatefulWidget {
   @override
@@ -87,7 +86,7 @@ class _TermsAndPrivacyPolicyPageState extends State<TermsAndPrivacyPolicyPage>
             children: [
               Text(
                 'Terms of Service',
-                style: Theme.of(context).textTheme.headline5,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
               SizedBox(height: 8),
               Text(
@@ -100,7 +99,7 @@ class _TermsAndPrivacyPolicyPageState extends State<TermsAndPrivacyPolicyPage>
               SizedBox(height: 16),
               Text(
                 'Modification of These Terms',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               SizedBox(height: 8),
               Text(
@@ -109,7 +108,7 @@ class _TermsAndPrivacyPolicyPageState extends State<TermsAndPrivacyPolicyPage>
               SizedBox(height: 16),
               Text(
                 'Contact Us',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               SizedBox(height: 8),
               Text(
@@ -137,7 +136,7 @@ class _TermsAndPrivacyPolicyPageState extends State<TermsAndPrivacyPolicyPage>
             children: [
               Text(
                 'Privacy Policy',
-                style: Theme.of(context).textTheme.headline5,
+                style: Theme.of(context).textTheme.headlineSmall,
               ),
               SizedBox(height: 8),
               Text(
@@ -146,7 +145,7 @@ class _TermsAndPrivacyPolicyPageState extends State<TermsAndPrivacyPolicyPage>
               SizedBox(height: 16),
               Text(
                 'Information We Collect',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               SizedBox(height: 8),
               Text(
@@ -159,7 +158,7 @@ class _TermsAndPrivacyPolicyPageState extends State<TermsAndPrivacyPolicyPage>
               SizedBox(height: 16),
               Text(
                 'How We Use Your Information',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               SizedBox(height: 8),
               Text(
@@ -168,7 +167,7 @@ class _TermsAndPrivacyPolicyPageState extends State<TermsAndPrivacyPolicyPage>
               SizedBox(height: 16),
               Text(
                 'Sharing Your Information',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               SizedBox(height: 8),
               Text(
@@ -181,7 +180,7 @@ class _TermsAndPrivacyPolicyPageState extends State<TermsAndPrivacyPolicyPage>
               SizedBox(height: 16),
               Text(
                 'Data Security',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               SizedBox(height: 8),
               Text(
@@ -190,7 +189,7 @@ class _TermsAndPrivacyPolicyPageState extends State<TermsAndPrivacyPolicyPage>
               SizedBox(height: 16),
               Text(
                 'Changes to this Privacy Policy',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               SizedBox(height: 8),
               Text(
@@ -199,7 +198,7 @@ class _TermsAndPrivacyPolicyPageState extends State<TermsAndPrivacyPolicyPage>
               SizedBox(height: 16),
               Text(
                 'Contact Us',
-                style: Theme.of(context).textTheme.headline6,
+                style: Theme.of(context).textTheme.titleLarge,
               ),
               SizedBox(height: 8),
               Text(

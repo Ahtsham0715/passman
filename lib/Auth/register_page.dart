@@ -1,10 +1,8 @@
 import 'dart:io';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:passman/Auth/controllers/auth_controller.dart';
 import 'package:passman/Auth/privacy_policy_screen.dart';
 import 'package:passman/constants.dart';

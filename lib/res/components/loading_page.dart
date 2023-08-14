@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:passman/constants.dart';
-import 'package:shimmer/shimmer.dart';
 
 class LoadingPage extends StatelessWidget {
   const LoadingPage({super.key});
@@ -14,9 +13,8 @@ class LoadingPage extends StatelessWidget {
       child: Container(
           height: height,
           width: width,
-          color: Colors.black.withOpacity(0.2),
-          child: Shimmer(
-            gradient: LinearGradient(colors: [
+          decoration: BoxDecoration(
+              gradient: LinearGradient(colors: [
              
               Colors.teal,
               Colors.blueAccent,
@@ -30,12 +28,14 @@ class LoadingPage extends StatelessWidget {
               Color(0xFFF44336),
               
             ]),
-            child: Center(
+          ),
+          // color: Colors.black.withOpacity(0.2),
+
+          child: Center(
               child: CircularProgressIndicator(
                 color: Colors.white,
               ),
-            ),
-          )),
+            ),),
     );
   }
 }

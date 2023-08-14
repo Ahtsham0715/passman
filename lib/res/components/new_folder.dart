@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:passman/media%20files/controllers/media_controller.dart';
-import 'package:passman/res/extensions.dart';
 
 class showNewFolderDialog extends StatefulWidget {
   final String name;

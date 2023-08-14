@@ -20,7 +20,6 @@ import 'package:passman/records/record_details_page.dart';
 import 'package:passman/res/components/custom_text.dart';
 import 'package:encrypt/encrypt.dart' as encryption;
 import 'package:passman/res/components/new_folder.dart';
-import 'package:passman/res/extensions.dart';
 import '../constants.dart';
 import '../media files/controllers/media_controller.dart';
 import '../media files/folder_view.dart';

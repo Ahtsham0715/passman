@@ -5,11 +5,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:passman/Auth/fingerprint_page.dart';
-import 'package:passman/Auth/login_page.dart';
 import 'package:passman/constants.dart';
 import 'package:passman/records/records_page.dart';
 import 'package:passman/res/components/custom_snackbar.dart';
-import 'package:passman/res/components/logout_widget.dart';
 
 class verifyemail extends StatefulWidget {
   const verifyemail({Key? key}) : super(key: key);

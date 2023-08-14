@@ -1,13 +1,7 @@
 import 'dart:io';
-import 'dart:typed_data';
 
-import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:passman/res/components/custom_snackbar.dart';
-import 'package:passman/res/components/loading_page.dart';
 
-import '../../constants.dart';
 import '../../media files/controllers/media_controller.dart';
 
 class FullScreenImagePage extends StatelessWidget {

@@ -1,14 +1,11 @@
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:local_auth/local_auth.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:passman/Auth/controllers/auth_controller.dart';
 import 'package:passman/constants.dart';
 import 'package:passman/records/controllers/records_controller.dart';
 import 'package:passman/records/create_new_record_page.dart';
