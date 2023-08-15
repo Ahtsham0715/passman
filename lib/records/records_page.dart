@@ -25,6 +25,7 @@ import '../media files/controllers/media_controller.dart';
 import '../media files/folder_view.dart';
 import '../res/components/custom_formfield.dart';
 import '../res/components/custom_snackbar.dart';
+import '../res/components/gallery_view.dart';
 import '../res/components/loading_page.dart';
 import '../res/components/master_password_dialog.dart';
 
@@ -600,9 +601,10 @@ class _PasswordsPageState extends State<PasswordsPage> {
                             ),
                             currentAccountPictureSize: Size.square(70.0),
                           ),
-                          !logininfo.get('is_biometric_available')
-                              ? const Center()
-                              : SwitchListTile(
+                          if(logininfo.get('is_biometric_available'))
+                              // ? const Center()
+                              // : 
+                              SwitchListTile(
                                   value: bioauth,
                                   inactiveTrackColor:
                                       Color.fromARGB(255, 228, 151, 157),
@@ -629,6 +631,7 @@ class _PasswordsPageState extends State<PasswordsPage> {
                                     }
                                   },
                                 ),
+                         if(logininfo.get('is_biometric_available'))
                           CustomDivider(),
 
                           customDrawerTile(
@@ -637,6 +640,16 @@ class _PasswordsPageState extends State<PasswordsPage> {
                             onpressed: () {
                               Get.to(
                                 () => UserProfile(),
+                              );
+                            },
+                          ),
+                          CustomDivider(),
+                          customDrawerTile(
+                            title: 'Hide Gallery',
+                            leading: Icons.browse_gallery,
+                            onpressed: () {
+                              Get.to(
+                                () => GalleryView(),
                               );
                             },
                           ),

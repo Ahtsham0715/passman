@@ -25,6 +25,32 @@ var logininfo = Hive.box('logininfo');
 var foldersbox = Hive.box('folders${logininfo.get('userid')}');
 var foldersdatabox = Hive.box('foldersdata${logininfo.get('userid')}');
 
+Gradient bodyGradient(context){
+  return LinearGradient(
+            colors: [
+              Color(0XFFd66d75),
+              Color(0XFFe29587),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomCenter,
+          );
+}
+
+Gradient appBarGradient(context) {
+  return LinearGradient(
+              colors: [
+                Color(0XFFd66d75),
+                Color(0XFFe29587),
+              ],
+              begin: MediaQuery.of(context).orientation == Orientation.portrait
+                  ? Alignment.bottomCenter
+                  : Alignment.bottomLeft,
+              end: MediaQuery.of(context).orientation == Orientation.portrait
+                  ? Alignment.topCenter
+                  : Alignment.bottomCenter,
+            );
+}
+
 List<String> apps = [
   "Facebook",
   "Twitter",

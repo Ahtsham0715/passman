@@ -1,145 +1,149 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:passman/constants.dart';
 import 'package:passman/res/components/folder_assets_page.dart';
 import 'package:photo_manager/photo_manager.dart';
+import 'package:skeletonizer/skeletonizer.dart';
 
-class GalleryView extends StatefulWidget {
-  const GalleryView({super.key});
+import '../../media files/controllers/gallery_controller.dart';
 
-  @override
-  State<GalleryView> createState() => _GalleryViewState();
-}
+// class GalleryView extends StatefulWidget {
+//   const GalleryView({super.key});
 
-class _GalleryViewState extends State<GalleryView> {
-  List<AssetPathEntity> folders = [];
-  Map foldersThumbnail = {};
-List selectedAssets = [];
-  @override
-  void initState() {
-    super.initState();
-    fetchFolders();
-  }
+//   @override
+//   State<GalleryView> createState() => _GalleryViewState();
+// }
 
-  Future<void> fetchFolders() async {
-    
-    final albums = await PhotoManager.getAssetPathList(
-      type: RequestType.image,
-      hasAll: false,
-      // onlyAll: true,
-    );
-   
-    setState(() {
-      folders = albums;
-       albums.forEach((element) async {
-      var albumData = await element.getAssetListRange(start: 0, end: 10);
-      foldersThumbnail[element.id.toString()] = albumData.last;
-    });
-    });
-  }
-
-  void toggleAssetSelection( asset) {
-    if (selectedAssets.contains(asset)) {
-      setState(() {
-        selectedAssets.remove(asset);
-      });
-    } else {
-      setState(() {
-        selectedAssets.add(asset);
-      });
-    }
-  }
-
-
+class GalleryView extends GetView<GalleryController> {
   @override
   Widget build(BuildContext context) {
+    Get.put(GalleryController());
     return Scaffold(
       appBar: AppBar(
-        title: Text('Gallery Folders'),
-      ),
-      body: GridView.builder(
-        itemCount: folders.length,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
+        // automaticallyImplyLeading: false,
+        foregroundColor: Colors.white,
+        // backgroundColor: Colors.green,
+        elevation: 0.0,
+        centerTitle: true,
+        title: Text(
+          'Gallery Folders',
+          style: TextStyle(
+              fontSize: 30.0,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
+              fontFamily: 'majalla'),
         ),
-        itemBuilder: (context, index) {
-          final folder = folders[index];
-final isSelected = selectedAssets.contains(folder);
-          return InkWell(
-            onTap: () {
-              Get.to(() => FolderAssetsPage(folder: folder));
-              // Handle folder selection
-            },
-            onLongPress: (){
-              toggleAssetSelection(folder);
-            },
-            child: Stack(
-              children: [
-                Container(
-                  width: 200,
-                  margin: EdgeInsets.all(10.0),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    image: DecorationImage(
-                        image: AssetEntityImageProvider(
-                          foldersThumbnail[folder.id.toString()],
-                          isOriginal: true,
-                        ),
-                        fit: BoxFit.fill),
-                    color: Colors.blueGrey,
-                  ),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
+
+        flexibleSpace: Container(
+          decoration: BoxDecoration(
+            gradient: appBarGradient(context),
+          ),
+        ),
+      ),
+      body: Container(
+        padding: EdgeInsets.all(5.0),
+        // height: height,
+        // width: width,
+        decoration: BoxDecoration(
+          gradient: bodyGradient(context),
+        ),
+        child: Obx(
+          () => Skeletonizer(
+            enabled: controller.isLoading.value,
+            child: GridView.builder(
+              itemCount: controller.folders.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 10,
+                mainAxisSpacing: 10,
+              ),
+              itemBuilder: (context, index) {
+                final folder = controller.folders[index];
+                // final isSelected = controller.selectedAssets.contains(folder);
+                print('building... ');
+                return InkWell(
+                  onLongPress: () {
+                    Get.to(() => FolderAssetsPage(folder: folder));
+                    // Handle folder selection
+                  },
+                  onTap: () {
+                    print('toggle');
+                    controller.toggleAssetSelection(folder);
+                  },
+                  child: Stack(
                     children: [
-                      // Icon(
-                      //   Icons.folder,
-                      //   size: 50,
-                      //   color: Colors.white,
-                      // ),
-                      // SizedBox(height: 10),
                       Container(
                         width: 200,
+                        height: 200,
+                        margin: EdgeInsets.all(10.0),
                         decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          image: DecorationImage(
+                              image: AssetEntityImageProvider(
+                                controller
+                                    .foldersThumbnail[folder.id.toString()],
+                                isOriginal: true,
+                              ),
+                              fit: BoxFit.fill),
                           color: Colors.blueGrey,
-                          borderRadius: BorderRadius.only(
-                            bottomLeft: Radius.circular(10.0),
-                            bottomRight: Radius.circular(10.0),
-                            
-                            ),
                         ),
-                        child: Text(
-                          folder.name,
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 22.0,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            // Icon(
+                            //   Icons.folder,
+                            //   size: 50,
+                            //   color: Colors.white,
+                            // ),
+                            // SizedBox(height: 10),
+                            Container(
+                              width: 200,
+                              decoration: BoxDecoration(
+                                color: Colors.blueGrey,
+                                borderRadius: BorderRadius.only(
+                                  bottomLeft: Radius.circular(10.0),
+                                  bottomRight: Radius.circular(10.0),
+                                ),
+                              ),
+                              child: Text(
+                                folder.name,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                    fontSize: 22.0,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                    fontFamily: 'majalla'),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
+                      GetBuilder<GalleryController>(
+                        builder: (cont) {
+                          return controller.selectedAssets.contains(folder)
+                              ? Positioned(
+                                  top: 10,
+                                  right: 10,
+                                  child: Icon(
+                                    Icons.check_circle,
+                                    color: Colors.green,
+                                    size: 30.0,
+                                  ),
+                                )
+                              : Center();
+                        },
+                      )
                     ],
                   ),
-                ),
-              if (isSelected)
-                  Positioned(
-                    top: 10,
-                    right: 10,
-                    child: Icon(
-                      Icons.check_circle,
-                      color: Colors.green,
-                      size: 30.0,
-                    ),
-                  ),
-              ],
+                );
+              },
             ),
-          );
-        },
+          ),
+        ),
       ),
     );
   }
 }
-
 
 class FolderImageClipper extends CustomClipper<Path> {
   @override

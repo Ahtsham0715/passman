@@ -9,13 +9,8 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:open_filex/open_filex.dart';
 import 'package:passman/constants.dart';
 import 'package:passman/media%20files/controllers/media_controller.dart';
-
 import 'package:passman/res/components/full_image_view.dart';
-import 'package:passman/res/components/gallery_view.dart';
 import 'package:passman/res/components/loading_page.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:photo_manager/photo_manager.dart';
-
 import '../res/components/custom_snackbar.dart';
 import '../res/components/custom_text.dart';
 import '../res/components/new_folder.dart';
@@ -51,18 +46,7 @@ class FolderView extends StatelessWidget {
 
         flexibleSpace: Container(
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: [
-                Color(0XFFd66d75),
-                Color(0XFFe29587),
-              ],
-              begin: MediaQuery.of(context).orientation == Orientation.portrait
-                  ? Alignment.bottomCenter
-                  : Alignment.bottomLeft,
-              end: MediaQuery.of(context).orientation == Orientation.portrait
-                  ? Alignment.topCenter
-                  : Alignment.bottomCenter,
-            ),
+            gradient: appBarGradient(context),
           ),
         ),
         actions: [
@@ -151,42 +135,23 @@ class FolderView extends StatelessWidget {
         ),
         icon: Icon(Icons.add),
         onPressed: () async {
-//           final PermissionState ps = await PhotoManager.requestPermissionExtend();
-// if (ps.isAuth) {
-//   print('granted');
-//  List<AssetEntity> videoAssets = [];
-//    final album = await PhotoManager.getAssetPathList(
-//         onlyAll: true, type: RequestType.all);
-//     final recent = album.elementAt(0);
-//     final recents = await recent.getAssetListRange(start: 0, end: 100000);
- 
-//       videoAssets = recents;
 
-//       for(var asset in videoAssets){
-//         log(asset.type.name);
-//       }
- 
-// } else {
-//   PhotoManager.openSetting();
-//   // Limited(iOS) or Rejected, use `==` for more precise judgements.
-//   // You can call `PhotoManager.openSetting()` to open settings for further steps.
-// }
-Get.to(() => GalleryView());
-          // FilePickerResult? result = await FilePicker.platform.pickFiles(
-          //   allowMultiple: true,
-          //   type: folderType == 'Images'
-          //       ? FileType.image
-          //       : folderType == 'Videos'
-          //           ? FileType.video
-          //           : FileType.any,
-          // );
-          // if (result != null) {
-          //   await mediacontroller
-          //       .uploadFiles(result: result, folderKey: this.folderKey)
-          //       .then((value) {});
 
-          //   // print(foldersdatabox.get(folderKey));
-          // }
+          FilePickerResult? result = await FilePicker.platform.pickFiles(
+            allowMultiple: true,
+            type: folderType == 'Images'
+                ? FileType.image
+                : folderType == 'Videos'
+                    ? FileType.video
+                    : FileType.any,
+          );
+          if (result != null) {
+            await mediacontroller
+                .uploadFiles(result: result, folderKey: this.folderKey)
+                .then((value) {});
+
+            // print(foldersdatabox.get(folderKey));
+          }
         },
       ),
       body: Container(
@@ -194,14 +159,7 @@ Get.to(() => GalleryView());
         // height: height,
         // width: width,
         decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0XFFd66d75),
-              Color(0XFFe29587),
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomCenter,
-          ),
+          gradient: bodyGradient(context),
         ),
         child: GetBuilder<MediaController>(
             // assignId: true,
