@@ -61,7 +61,13 @@ class _RecordDetailsState extends State<RecordDetails>
     final RecordsController recordscontroller = Get.put(RecordsController());
     return Scaffold(
       appBar: AppBar(
-        title: Text('Password Details'),
+        centerTitle: true,
+        title: CustomText(
+          title: 'Password Details',
+          fontcolor: Colors.white,
+          fontweight: FontWeight.w500,
+          fontsize: 30,
+        ),
         elevation: 0.0,
         flexibleSpace: Container(
           decoration: BoxDecoration(
@@ -198,7 +204,7 @@ class _RecordDetailsState extends State<RecordDetails>
                                       widget.password.password.toString()),
                                   iv: iv)
                               .substring(0, 2) +
-                          ('*' * (widget.password.length!.toInt() - 2)),
+                          ('*' * (widget.password.password!.length - 2)),
                       fontweight: FontWeight.w500,
                       fontsize: 25.0),
                   trailing: ButtonBar(

@@ -127,16 +127,18 @@ class FolderView extends StatelessWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
+        backgroundColor: Colors.green,
         label: CustomText(
           title: 'Add',
           fontcolor: Colors.white,
           fontsize: 25.0,
           fontweight: FontWeight.w500,
         ),
-        icon: Icon(Icons.add),
+        icon: Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
         onPressed: () async {
-
-
           FilePickerResult? result = await FilePicker.platform.pickFiles(
             allowMultiple: true,
             type: folderType == 'Images'
@@ -156,8 +158,8 @@ class FolderView extends StatelessWidget {
       ),
       body: Container(
         padding: EdgeInsets.all(10.0),
-        // height: height,
-        // width: width,
+        height: double.infinity,
+        width: double.infinity,
         decoration: BoxDecoration(
           gradient: bodyGradient(context),
         ),
@@ -189,133 +191,186 @@ class FolderView extends StatelessWidget {
                             fontsize: 40.0),
                       ],
                     )
-                  : ListView.separated(
+                  : GridView.builder(
                       itemCount: controller.pickedfiles.length,
-                      separatorBuilder: (context, index) {
-                        return Divider(
-                          color: Colors.white,
-                          indent: 30.0,
-                        );
-                      },
+                      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: 2,
+                        crossAxisSpacing: 10,
+                        mainAxisSpacing: 10,
+                      ),
                       itemBuilder: (context, index) {
-                        return ListTile(
-                          dense: true,
-                          // onLongPress: () {
+                        // final folder = controller.availableFolders[index];
+                        // final isSelected = controller.selectedAssets.contains(folder);
+                        print('building... ');
+                        return Stack(
+                          children: [
+                            InkWell(
+                              onTap: !(controller.pickedfiles[index]['type'] ==
+                                          'jpg' ||
+                                      controller.pickedfiles[index]['type'] ==
+                                          'png' ||
+                                      controller.pickedfiles[index]['type'] ==
+                                          'jpeg')
+                                  ? () async {
+                                      // var data = controller.decodeImageFromBase64(
+                                      //     controller.pickedfiles[index]['data']);
+                                      // final buffer = data.buffer;
+                                      // Directory tempDir =
+                                      //     await getTemporaryDirectory();
+                                      // String tempPath = tempDir.path;
+                                      // File file = File(
+                                      //     '$tempPath/tempfile.${controller.pickedfiles[index]['type']}');
+                                      // await file
+                                      //     .writeAsBytes(buffer.asUint8List(
+                                      //         data.offsetInBytes,
+                                      //         data.lengthInBytes))
+                                      //     .then((value) async {
+                                      //   OpenFilex.open(
+                                      //       '$tempPath/tempfile.${controller.pickedfiles[index]['type']}');
+                                      // });
+                                      OpenFilex.open(controller
+                                          .pickedfiles[index]['data']);
+                                    }
+                                  : () {
+                                      Get.to(
+                                        () => FullScreenImagePage(
+                                          imageUrl: controller
+                                              .pickedfiles[index]['data'],
+                                        ),
+                                      );
+                                    },
+                              child: Container(
+                                width: 200,
+                                height: 200,
+                                margin: EdgeInsets.all(10.0),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  image: (controller.pickedfiles[index]
+                                                  ['type'] ==
+                                              'jpg' ||
+                                          controller.pickedfiles[index]
+                                                  ['type'] ==
+                                              'png' ||
+                                          controller.pickedfiles[index]
+                                                  ['type'] ==
+                                              'jpeg')
+                                      ? DecorationImage(
+                                          image: FileImage(File(controller
+                                              .pickedfiles[index]['data'])),
+                                          // AssetEntityImageProvider(
+                                          //   controller
+                                          //       .foldersThumbnail[folder.id.toString()],
+                                          //   isOriginal: true,
+                                          // ),
 
-                          // },
-                          onTap: !(controller.pickedfiles[index]['type'] ==
-                                      'jpg' ||
-                                  controller.pickedfiles[index]['type'] ==
-                                      'png' ||
-                                  controller.pickedfiles[index]['type'] ==
-                                      'jpeg')
-                              ? () async {
-                                  // var data = controller.decodeImageFromBase64(
-                                  //     controller.pickedfiles[index]['data']);
-                                  // final buffer = data.buffer;
-                                  // Directory tempDir =
-                                  //     await getTemporaryDirectory();
-                                  // String tempPath = tempDir.path;
-                                  // File file = File(
-                                  //     '$tempPath/tempfile.${controller.pickedfiles[index]['type']}');
-                                  // await file
-                                  //     .writeAsBytes(buffer.asUint8List(
-                                  //         data.offsetInBytes,
-                                  //         data.lengthInBytes))
-                                  //     .then((value) async {
-                                  //   OpenFilex.open(
-                                  //       '$tempPath/tempfile.${controller.pickedfiles[index]['type']}');
-                                  // });
-                                  OpenFilex.open(
-                                      controller.pickedfiles[index]['data']);
-                                }
-                              : () {
-                                  Get.to(
-                                    () => FullScreenImagePage(
-                                      imageUrl: controller.pickedfiles[index]
-                                          ['data'],
-                                      folderKey: this.folderKey,
-                                    ),
-                                  );
+                                          fit: BoxFit.fill)
+                                      : null,
+                                  color: Colors.blueGrey,
+                                ),
+                                child: !(controller.pickedfiles[index]
+                                                ['type'] ==
+                                            'jpg' ||
+                                        controller.pickedfiles[index]['type'] ==
+                                            'png' ||
+                                        controller.pickedfiles[index]['type'] ==
+                                            'jpeg')
+                                    ? Center(
+                                        // backgroundColor: Colors.white,
+                                        child: Text(
+                                          '${controller.pickedfiles[index]['name']}',
+                                          maxLines: 1,
+                                          overflow: TextOverflow.clip,
+                                          style: TextStyle(
+                                              fontSize: 18.0,
+                                              fontWeight: FontWeight.w500,
+                                              color: Colors.black,
+                                              fontFamily: 'majalla'),
+                                        ),
+                                      )
+                                    : Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.end,
+                                        children: [
+                                          Container(
+                                            width: 200,
+                                            decoration: BoxDecoration(
+                                              color: Colors.blueGrey,
+                                              borderRadius: BorderRadius.only(
+                                                bottomLeft:
+                                                    Radius.circular(10.0),
+                                                bottomRight:
+                                                    Radius.circular(10.0),
+                                              ),
+                                            ),
+                                            child: Text(
+                                              '${controller.pickedfiles[index]['name']}',
+                                              maxLines: 1,
+                                              overflow: TextOverflow.clip,
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontSize: 15.0,
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Colors.white,
+                                                  fontFamily: 'majalla'),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                              ),
+                            ),
+                            Positioned(
+                              top: 15,
+                              right: 15,
+                              child: InkWell(
+                                onTap: () {
+                                  AwesomeDialog(
+                                    context: context,
+                                    animType: AnimType.topSlide,
+                                    dialogType: DialogType.question,
+                                    title: 'Are you sure?',
+                                    desc: 'Do you want to delete this image?',
+                                    btnOkOnPress: () async {
+                                      // Get.dialog(LoadingPage());
+                                      try {
+                                        mediacontroller.pickedfiles =
+                                            foldersdatabox.get(folderKey);
+                                        mediacontroller.pickedfiles.remove(
+                                            controller.pickedfiles[index]);
+                                        foldersdatabox.put(folderKey,
+                                            mediacontroller.pickedfiles);
+                                        mediacontroller.pickedfiles =
+                                            foldersdatabox.get(folderKey);
+
+                                        // Get.back();
+                                        // Get.back();
+                                        styledsnackbar(
+                                            txt: 'Deleted Successfully.',
+                                            icon: Icons.check);
+                                        // controller.update();
+                                      } catch (e) {
+                                        // Get.back();
+                                        styledsnackbar(
+                                            txt: 'Error occured.$e',
+                                            icon: Icons.error);
+                                      }
+                                    },
+                                    btnCancelOnPress: () {
+                                      // Get.back();
+                                    },
+                                  )..show();
                                 },
-                          leading: !(controller.pickedfiles[index]['type'] ==
-                                      'jpg' ||
-                                  controller.pickedfiles[index]['type'] ==
-                                      'png' ||
-                                  controller.pickedfiles[index]['type'] ==
-                                      'jpeg')
-                              ? CircleAvatar(
-                                  backgroundColor: Colors.white,
-                                  child: Text(
-                                    '${controller.pickedfiles[index]['type']}',
-                                    maxLines: 1,
-                                    overflow: TextOverflow.clip,
-                                    style: TextStyle(
-                                        fontSize: 18.0,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.black,
-                                        fontFamily: 'majalla'),
-                                  ),
-                                )
-                              : CircleAvatar(
-                                  foregroundImage: FileImage(
-                                    File(controller.pickedfiles[index]['data']),
+                                child: CircleAvatar(
+                                  radius: 20.0,
+                                  backgroundColor: appDarkColor,
+                                  child: Icon(
+                                    MdiIcons.deleteForever,
+                                    color: Colors.white,
+                                    size: 25.0,
                                   ),
                                 ),
-                          title: Text(
-                            '${controller.pickedfiles[index]['name']}',
-                            maxLines: 1,
-                            overflow: TextOverflow.clip,
-                            style: TextStyle(
-                                fontSize: 15.0,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white,
-                                fontFamily: 'majalla'),
-                          ),
-                          trailing: InkWell(
-                            onTap: () {
-                              AwesomeDialog(
-                                context: context,
-                                animType: AnimType.topSlide,
-                                dialogType: DialogType.question,
-                                title: 'Are you sure?',
-                                desc: 'Do you want to delete this image?',
-                                btnOkOnPress: () async {
-                                  // Get.dialog(LoadingPage());
-                                  try {
-                                    mediacontroller.pickedfiles =
-                                        foldersdatabox.get(folderKey);
-                                    mediacontroller.pickedfiles
-                                        .remove(controller.pickedfiles[index]);
-                                    foldersdatabox.put(
-                                        folderKey, mediacontroller.pickedfiles);
-                                    mediacontroller.pickedfiles =
-                                        foldersdatabox.get(folderKey);
-
-                                    // Get.back();
-                                    // Get.back();
-                                    styledsnackbar(
-                                        txt: 'Deleted Successfully.',
-                                        icon: Icons.check);
-                                    // controller.update();
-                                  } catch (e) {
-                                    // Get.back();
-                                    styledsnackbar(
-                                        txt: 'Error occured.$e',
-                                        icon: Icons.error);
-                                  }
-                                },
-                                btnCancelOnPress: () {
-                                  // Get.back();
-                                },
-                              )..show();
-                            },
-                            child: Icon(
-                              MdiIcons.deleteForever,
-                              color: Colors.white,
-                              size: 25.0,
+                              ),
                             ),
-                          ),
+                          ],
                         );
                       },
                     );

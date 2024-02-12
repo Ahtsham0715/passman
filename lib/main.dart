@@ -1,4 +1,3 @@
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -7,13 +6,20 @@ import 'package:passman/firebase_options.dart';
 import 'package:passman/records/models/password_model.g.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:screen_protector/screen_protector.dart';
 import 'Auth/splash_screen.dart';
+import 'package:logging/logging.dart';
+import 'package:logging_appenders/logging_appenders.dart';
+
+final _logger = Logger('main');
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // await ScreenProtector.protectDataLeakageOn();
   var directory = await getApplicationDocumentsDirectory();
   // Directory privateDir = Directory('${directory.path}/private');
 
@@ -26,12 +32,14 @@ void main() async {
   // if (!await nomediaFile.exists()) {
   //   await nomediaFile.create();
   // }
-  
+
   await Hive.initFlutter(directory.path);
   Hive.registerAdapter(PasswordModelAdapter());
   // await Hive.openBox<PasswordModel>('my_data');
   await Hive.openBox('logininfo');
-
+  Logger.root.level = Level.ALL;
+  PrintAppender().attachToLogger(Logger.root);
+  _logger.info('Initialized logger.');
   runApp(const MyApp());
 }
 
@@ -44,12 +52,16 @@ class MyApp extends StatelessWidget {
     return ResponsiveSizer(builder: (context, orientation, screenType) {
       return GetMaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Flutter Demo',
+        title: 'Passman',
         theme: ThemeData(
-          primarySwatch: Colors.green,
-          primaryColor: Color(0XFFd66d75),
-          fontFamily: 'majalla',
-        ),
+            primarySwatch: Colors.green,
+            primaryColor: Color(0XFFd66d75),
+            fontFamily: 'majalla',
+            iconTheme: IconThemeData(
+              color: Colors.white,
+            ),
+            appBarTheme:
+                AppBarTheme(iconTheme: IconThemeData(color: Colors.white))),
         home: const SplashScreen(),
       );
     });

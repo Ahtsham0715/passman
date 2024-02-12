@@ -34,25 +34,25 @@ class _SplashScreenState extends State<SplashScreen>
     );
     _animation.addStatusListener((status) async {
       if (status == AnimationStatus.completed) {
-        // await FirebaseAuth.instance.signOut();
+        await FirebaseAuth.instance.signOut();
         if (logininfo.containsKey('istutorial') &&
             logininfo.get('istutorial')) {
-          if (FirebaseAuth.instance.currentUser != null) {
-            if (!Hive.isBoxOpen(logininfo.get('userid'))) {
-              await Hive.openBox<PasswordModel>(logininfo.get('userid'));
-            }
-            if (!Hive.isBoxOpen('folders${logininfo.get('userid')}')) {
-              await Hive.openBox('folders${logininfo.get('userid')}');
-            }
-            if (!Hive.isBoxOpen('foldersdata${logininfo.get('userid')}')) {
-              await Hive.openBox('foldersdata${logininfo.get('userid')}');
-            }
-            Get.to(() => PasswordsPage());
-          } else {
-            Get.to(
-              () => LoginPage(),
-            );
-          }
+          // if (FirebaseAuth.instance.currentUser != null) {
+          //   if (!Hive.isBoxOpen(logininfo.get('userid'))) {
+          //     await Hive.openBox<PasswordModel>(logininfo.get('userid'));
+          //   }
+          //   if (!Hive.isBoxOpen('folders${logininfo.get('userid')}')) {
+          //     await Hive.openBox('folders${logininfo.get('userid')}');
+          //   }
+          //   if (!Hive.isBoxOpen('foldersdata${logininfo.get('userid')}')) {
+          //     await Hive.openBox('foldersdata${logininfo.get('userid')}');
+          //   }
+          //   Get.to(() => PasswordsPage());
+          // } else {
+          Get.to(
+            () => LoginPage(),
+          );
+          // }
         } else {
           Get.to(
             () => onboardingPage(),
@@ -71,59 +71,62 @@ class _SplashScreenState extends State<SplashScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      // backgroundColor: Colors.green.shade300,
-      body: Container(
-        decoration: BoxDecoration(
-            gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color(0XFFd66d75),
-            Color(0XFFe29587),
-          ],
-        )),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            FadeTransition(
-              // sizeFactor: _animation,
-              // axis: Axis.vertical,
-              opacity: _animation,
-              child: Container(
-                  // decoration: BoxDecoration(
-                  //     gradient: LinearGradient(
-                  //   begin: Alignment.topLeft,
-                  //   end: Alignment.bottomCenter,
-                  //   colors: [
-                  //     Color(0XFFd66d75),
-                  //     Color(0XFFe29587),
-                  //   ],
-                  // )),
-                  margin: const EdgeInsets.symmetric(
-                    horizontal: 50.0,
-                    vertical: 5.0,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        // backgroundColor: Colors.green.shade300,
+        body: Container(
+          decoration: BoxDecoration(
+              gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomCenter,
+            colors: [
+              Color(0XFFd66d75),
+              Color(0XFFe29587),
+            ],
+          )),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              FadeTransition(
+                // sizeFactor: _animation,
+                // axis: Axis.vertical,
+                opacity: _animation,
+                child: Container(
+                    // decoration: BoxDecoration(
+                    //     gradient: LinearGradient(
+                    //   begin: Alignment.topLeft,
+                    //   end: Alignment.bottomCenter,
+                    //   colors: [
+                    //     Color(0XFFd66d75),
+                    //     Color(0XFFe29587),
+                    //   ],
+                    // )),
+                    margin: const EdgeInsets.symmetric(
+                      horizontal: 50.0,
+                      vertical: 5.0,
+                    ),
+                    child: Image.asset('assets/icon.png')),
+              ),
+              SizeTransition(
+                sizeFactor: _animation,
+                axis: Axis.horizontal,
+                child: Text(
+                  'Secure your passwords secure your life',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 45.0,
+                    fontWeight: FontWeight.w500,
+                    fontFamily: 'majalla',
                   ),
-                  child: Image.asset('assets/icon.png')),
-            ),
-            SizeTransition(
-              sizeFactor: _animation,
-              axis: Axis.horizontal,
-              child: Text(
-                'Secure your passwords secure your life',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 45.0,
-                  fontWeight: FontWeight.w500,
-                  fontFamily: 'majalla',
                 ),
               ),
-            ),
-            SizedBox(
-              height: Get.height * 0.05,
-            ),
-          ],
+              SizedBox(
+                height: Get.height * 0.05,
+              ),
+            ],
+          ),
         ),
       ),
     );

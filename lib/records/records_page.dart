@@ -1,7 +1,11 @@
+import 'dart:developer';
+import 'dart:io';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -13,19 +17,24 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:passman/Auth/controllers/user_data_controller.dart';
 import 'package:passman/Auth/login_page.dart';
 import 'package:passman/profile/user_profile.dart';
+
 import 'package:passman/records/controllers/records_controller.dart';
 import 'package:passman/records/create_new_record_page.dart';
 import 'package:passman/records/models/password_model.dart';
 import 'package:passman/records/record_details_page.dart';
+import 'package:passman/records/settings_page.dart';
+import 'package:passman/res/components/awesome_custom_dialog.dart';
 import 'package:passman/res/components/custom_text.dart';
 import 'package:encrypt/encrypt.dart' as encryption;
 import 'package:passman/res/components/new_folder.dart';
+
+import 'package:screen_protector/screen_protector.dart';
 import '../constants.dart';
 import '../media files/controllers/media_controller.dart';
 import '../media files/folder_view.dart';
 import '../res/components/custom_formfield.dart';
 import '../res/components/custom_snackbar.dart';
-import '../res/components/gallery_view.dart';
+
 import '../res/components/loading_page.dart';
 import '../res/components/master_password_dialog.dart';
 
@@ -38,8 +47,7 @@ class PasswordsPage extends StatefulWidget {
 
 class _PasswordsPageState extends State<PasswordsPage> {
   final ScrollController scrollcont = ScrollController();
-  bool bioauth = logininfo.get('bio_auth') ?? false;
-  bool allow_screenshots = true;
+
   final searchController = TextEditingController();
 
   // ValueNotifier<bool> isScrolling = ValueNotifier(true);
@@ -65,24 +73,12 @@ class _PasswordsPageState extends State<PasswordsPage> {
     // final UserDataController userdata = UserDataController();
     final RecordsController recordscontroller = Get.put(RecordsController());
     final MediaController folderscontroller = Get.put(MediaController());
-    return WillPopScope(
-      onWillPop: () async {
-        AwesomeDialog(
-          context: context,
-          animType: AnimType.topSlide,
-          dialogType: DialogType.question,
-          title: 'Are you sure?',
-          desc: 'Do you want to exit the app?',
-          btnOkOnPress: () async {
-            try {
-              SystemNavigator.pop();
-            } catch (e) {
-              styledsnackbar(txt: 'Error Occured. $e', icon: Icons.error);
-            }
-          },
-          btnCancelOnPress: () {},
-        )..show();
-        return false;
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (val) {
+        customAwesomeDialog(
+            details: 'Do you want to exit the App',
+            okpress: () => SystemNavigator.pop());
       },
       child: Scaffold(
         backgroundColor: Colors.white.withOpacity(0.9),
@@ -193,7 +189,10 @@ class _PasswordsPageState extends State<PasswordsPage> {
           backgroundColor: Colors.green,
           activeBackgroundColor: Colors.red,
           elevation: 0.0,
-          activeChild: Icon(Icons.close),
+          activeChild: Icon(
+            Icons.close,
+            color: Colors.white,
+          ),
           closeDialOnPop: true,
           spaceBetweenChildren: 20.0,
           tooltip: 'Create New Folder/Password',
@@ -210,7 +209,7 @@ class _PasswordsPageState extends State<PasswordsPage> {
               fontsize: 22.0),
           child: Icon(
             Icons.add,
-            // color: Colors.black,
+            color: Colors.white,
           ),
           children: [
             SpeedDialChild(
@@ -448,7 +447,15 @@ class _PasswordsPageState extends State<PasswordsPage> {
                                           height: 40,
                                           width: 40,
                                           child: SvgPicture.asset(
-                                              'assets/icons/${data['value'].title.toString().toLowerCase()}.svg'))
+                                            'assets/icons/${data['value'].title.toString().toLowerCase()}.svg',
+                                            placeholderBuilder: (context) {
+                                              return Icon(
+                                                FontAwesomeIcons.unlockKeyhole,
+                                                color: Colors.white,
+                                                size: 30.0,
+                                              );
+                                            },
+                                          ))
                                       : Icon(
                                           FontAwesomeIcons.unlockKeyhole,
                                           color: Colors.white,
@@ -583,6 +590,7 @@ class _PasswordsPageState extends State<PasswordsPage> {
                               style: TextStyle(fontSize: 20.0),
                             ),
                             accountEmail: Text(
+                              // box.get('email'),
                               encrypter.decrypt(
                                   encryption.Encrypted.from64(box.get('email')),
                                   iv: iv),
@@ -601,38 +609,6 @@ class _PasswordsPageState extends State<PasswordsPage> {
                             ),
                             currentAccountPictureSize: Size.square(70.0),
                           ),
-                          if(logininfo.get('is_biometric_available'))
-                              // ? const Center()
-                              // : 
-                              SwitchListTile(
-                                  value: bioauth,
-                                  inactiveTrackColor:
-                                      Color.fromARGB(255, 228, 151, 157),
-                                  activeColor: Colors.green,
-                                  title: CustomText(
-                                      fontcolor: Colors.white,
-                                      title: 'Fingerprint Auth',
-                                      fontweight: FontWeight.w500,
-                                      fontsize: 22.0),
-                                  onChanged: (value) {
-                                    // print(
-                                    //     'bio ${logininfo.get('is_biometric_available')}');
-                                    logininfo.put('bio_auth', value);
-
-                                    print(logininfo.get('bio_auth'));
-                                    setState(() {
-                                      bioauth = value;
-                                    });
-                                    if (value) {
-                                      styledsnackbar(
-                                          txt:
-                                              'You can now use fingerprint authentication',
-                                          icon: Icons.login);
-                                    }
-                                  },
-                                ),
-                         if(logininfo.get('is_biometric_available'))
-                          CustomDivider(),
 
                           customDrawerTile(
                             title: 'Profile',
@@ -644,38 +620,53 @@ class _PasswordsPageState extends State<PasswordsPage> {
                             },
                           ),
                           CustomDivider(),
+
                           customDrawerTile(
-                            title: 'Hide Gallery',
-                            leading: Icons.browse_gallery,
+                            title: 'Preferences',
+                            leading: Icons.settings,
                             onpressed: () {
                               Get.to(
-                                () => GalleryView(),
+                                () => PreferencesPage(),
                               );
                             },
                           ),
                           CustomDivider(),
+                          // customDrawerTile(
+                          //   title: 'Hide Gallery',
+                          //   leading: Icons.browse_gallery,
+                          //   onpressed: () async {
+                          //     Get.to(
+                          //       () => GalleryView(),
+                          //     );
+
+                          //   },
+                          // ),
+                          // CustomDivider(),
+                          // customDrawerTile(
+                          //   title: 'Enable Autofill',
+                          //   leading: Icons.hdr_auto_outlined,
+                          //   onpressed: () async {
+                          //     Get.to(
+                          //       () => AutofillPage(),
+                          //     );
+                          //   },
+                          // ),
+                          // CustomDivider(),
 
                           // customDrawerTile(
                           //   title: 'Start Match',
                           //   leading: Icons.arrow_right,
                           //   onpressed: () {},
                           // ),
+
                           customDrawerTile(
                             title: 'Logout',
                             leading: Icons.power_settings_new,
                             onpressed: () async {
                               // logout(context);
-                              AwesomeDialog(
-                                context: context,
-                                animType: AnimType.topSlide,
-                                dialogType: DialogType.question,
-                                // body: Center(child: Text(
-                                //         'If the body is specified, then title and description will be ignored, this allows to 											further customize the dialogue.',
-                                //         style: TextStyle(fontStyle: FontStyle.italic),
-                                //       ),),
-                                title: 'Are you sure?',
-                                desc: 'Do you want to logout?',
-                                btnOkOnPress: () async {
+                              customAwesomeDialog(
+                                details: 'Do you want to logout?',
+                                okpress: () async {
                                   try {
                                     // Get.back();
                                     await FirebaseAuth.instance.signOut();
@@ -690,11 +681,7 @@ class _PasswordsPageState extends State<PasswordsPage> {
                                         icon: Icons.error);
                                   }
                                 },
-                                btnCancelOnPress: () {
-                                  // Get.back();
-                                },
-                              )..show();
-                              // logout_func();
+                              );
                             },
                           )
                         ],

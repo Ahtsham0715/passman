@@ -90,7 +90,7 @@ class AuthController extends GetxController {
                   encryption.Encrypted.from64(logininfo.get('password')),
                   iv: iv));
         } else {
-          styledsnackbar(txt: 'Unable to authenticate', icon: Icons.error);
+          // styledsnackbar(txt: 'Unable to authenticate', icon: Icons.error);
         }
       });
     } on PlatformException catch (e) {
@@ -151,11 +151,11 @@ class AuthController extends GetxController {
 
       logininfo.put(
         'email',
-        emailencrypt.base64,
+        emailencrypt.base64.toString(),
       );
       logininfo.put(
         'password',
-        passwordencrypt.base64,
+        passwordencrypt.base64.toString(),
       );
       if (usercredentials.user!.emailVerified) {
         if (logininfo.get('bio_auth') == null &&
@@ -187,7 +187,7 @@ class AuthController extends GetxController {
         // print('Wrong password provided for that user.');
       }
     } catch (e) {
-      // print(e);
+      print(e);
       Get.back();
 
       styledsnackbar(txt: 'Error occured. $e', icon: Icons.error_outlined);

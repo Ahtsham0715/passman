@@ -1,3 +1,4 @@
+import 'package:autofill_service/autofill_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -118,6 +119,12 @@ class _CreateRecordState extends State<CreateRecord>
                   if (passwordbox.containsKey(randomKey)) {
                     randomKey = recordcontroller.generateHiveKey();
                   } else {}
+                  //  final response = await AutofillService().resultWithDataset(
+                  //   label: _title.text.toString(),
+                  //   username: 'shami@gmail.com',
+                  //   password: 'shami123',
+                  // );
+                  // print('resultWithDataset $response');
                   try {
                     await widget.edit
                         ? passwordbox.put(widget.passwordIndex, passworddata)

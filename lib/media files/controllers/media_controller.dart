@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'dart:io';
 import 'dart:typed_data';
@@ -61,34 +62,34 @@ class MediaController extends GetxController {
       {required FilePickerResult result, required String folderKey}) async {
     Get.dialog(LoadingPage());
 
-    if (foldersdatabox.containsKey(folderKey)) {
-      pickedfiles = foldersdatabox.get(folderKey);
-    } else {
-      pickedfiles = [];
-    }
-    Directory appDocDir = await getApplicationDocumentsDirectory();
-    print(appDocDir.path);
-    result.files.forEach((file) async {
-      print(file.name);
-      File(file.path!).copy('${appDocDir.path}/${file.name}');
-      pickedfiles.add({
-        'type': file.extension,
-        'data': '${appDocDir.path}/${file.name}'.toString(),
-        'name': file.name,
-      });
-      // readFileAsBytes(file.path!).then((val) async {
-      //   // print(value);
-      //   encodeImageToBase64(val).then((value) {
-      //     pickedfiles.add({
-      //       'type': file.extension,
-      //       'data': value.toString(),
-      //       'name': file.name,
-      //     });
-      //     // print(value);
-      //   });
-      // });
-    });
     try {
+      if (foldersdatabox.containsKey(folderKey)) {
+        pickedfiles = foldersdatabox.get(folderKey);
+      } else {
+        pickedfiles = [];
+      }
+      Directory appDocDir = await getApplicationDocumentsDirectory();
+      print(appDocDir.path);
+      result.files.forEach((file) async {
+        print(file.name);
+        File(file.path!).copy('${appDocDir.path}/${file.name}');
+        pickedfiles.add({
+          'type': file.extension,
+          'data': '${appDocDir.path}/${file.name}'.toString(),
+          'name': file.name,
+        });
+        // readFileAsBytes(file.path!).then((val) async {
+        //   // print(value);
+        //   encodeImageToBase64(val).then((value) {
+        //     pickedfiles.add({
+        //       'type': file.extension,
+        //       'data': value.toString(),
+        //       'name': file.name,
+        //     });
+        //     // print(value);
+        //   });
+        // });
+      });
       await foldersdatabox.put(folderKey, pickedfiles);
       // print('updated');
 

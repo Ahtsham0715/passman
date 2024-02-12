@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/state_manager.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:passman/records/models/progressbarmodel.dart';
 
 class NewRecordController extends GetxController {
@@ -24,7 +25,7 @@ class NewRecordController extends GetxController {
 
   String generateHiveKey() {
     var rng = new Random.secure();
-    var values = new List<int>.generate(20, (_) => rng.nextInt(256));
+    var values = new List<int>.generate(50, (_) => rng.nextInt(256));
     return base64Url.encode(values);
   }
 

@@ -19,10 +19,12 @@ android:maxSdkVersion="33"
    <application
         android:label="passMan"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
+        android:icon="@mipmap/launcher_icon"
+        
+        android:requestLegacyExternalStorage="true">
         <activity
             android:name=".MainActivity"
-            android:requestLegacyExternalStorage="true"
+            
             android:exported="true"
             android:launchMode="singleTop"
             android:theme="@style/LaunchTheme"
@@ -33,15 +35,31 @@ android:maxSdkVersion="33"
                  the Android process has started. This theme is visible to the user
                  while the Flutter UI initializes. After that, this theme continues
                  to determine the Window background behind the Flutter UI. -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
             <meta-data
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"
               />
-            <intent-filter>
+            <!-- <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
-            </intent-filter>
+            </intent-filter> -->
         </activity>
+
+
+ <service
+            android:name="design.codeux.autofill_service.FlutterMyAutofillService"
+            android:label="Passman Autofill"
+            tools:replace="label">
+
+            <meta-data
+                android:name="design.codeux.autofill_service.unlock_label"
+                android:value="Autofill with Passman" />
+        </service>
+
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

@@ -1,16 +1,17 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:passman/Auth/controllers/auth_controller.dart';
 import 'package:passman/Auth/forgot_password.dart';
 import 'package:passman/Auth/privacy_policy_screen.dart';
 import 'package:passman/Auth/register_page.dart';
 import 'package:passman/constants.dart';
+import 'package:passman/res/components/awesome_custom_dialog.dart';
 import 'package:passman/res/components/custom_formfield.dart';
 import 'package:passman/res/components/custom_shape.dart';
 import 'package:passman/res/components/loading_page.dart';
-import 'package:passman/res/components/onwillpop.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -51,6 +52,7 @@ class _LoginPageState extends State<LoginPage> {
         print('User is signed in!');
       }
     });
+    controller.authenticateWithBiometrics();
     // controller.checkBiometrics();
     // controller.update();
   }
@@ -66,9 +68,10 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     AuthController controller = Get.put(AuthController());
 
-    return WillPopScope(
-      onWillPop: () async {
-        return onWillPop(context);
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (val){
+         customAwesomeDialog(details: 'Do you want to exit the App', okpress: () => SystemNavigator.pop());
       },
       child: Scaffold(
         backgroundColor: Colors.white.withOpacity(1.0),

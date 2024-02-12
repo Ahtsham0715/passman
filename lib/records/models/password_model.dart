@@ -41,5 +41,6 @@ class PasswordModel {
         "password": password,
         "website": website,
         "notes": notes,
+        'length': length
       };
 }
