@@ -52,7 +52,10 @@ class _LoginPageState extends State<LoginPage> {
         print('User is signed in!');
       }
     });
-    controller.authenticateWithBiometrics();
+    Future.delayed(Duration(seconds: 1), () {
+      controller.authenticateWithBiometrics();
+    });
+
     // controller.checkBiometrics();
     // controller.update();
   }
@@ -70,8 +73,10 @@ class _LoginPageState extends State<LoginPage> {
 
     return PopScope(
       canPop: false,
-      onPopInvoked: (val){
-         customAwesomeDialog(details: 'Do you want to exit the App', okpress: () => SystemNavigator.pop());
+      onPopInvoked: (val) {
+        customAwesomeDialog(
+            details: 'Do you want to exit the App',
+            okpress: () => SystemNavigator.pop());
       },
       child: Scaffold(
         backgroundColor: Colors.white.withOpacity(1.0),

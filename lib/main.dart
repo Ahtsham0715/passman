@@ -6,7 +6,6 @@ import 'package:passman/firebase_options.dart';
 import 'package:passman/records/models/password_model.g.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
-import 'package:screen_protector/screen_protector.dart';
 import 'Auth/splash_screen.dart';
 import 'package:logging/logging.dart';
 import 'package:logging_appenders/logging_appenders.dart';

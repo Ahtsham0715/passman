@@ -48,7 +48,7 @@ class _CreateRecordState extends State<CreateRecord>
   @override
   void initState() {
     super.initState();
-
+    _title.text = widget.passwordData.title.toString();
     _login.text = widget.passwordData.login.toString();
     _password.text = widget.passwordData.password.toString();
     _websiteaddress.text = widget.passwordData.website.toString();
@@ -181,7 +181,7 @@ class _CreateRecordState extends State<CreateRecord>
               Autocomplete<String>(
                 fieldViewBuilder:
                     (context, title, titlefocusNode, onFieldSubmitted) {
-                  title.text = widget.passwordData.title.toString();
+                  title.text = _title.text;
                   return customTextField(
                     'Title',
                     false,

@@ -17,7 +17,6 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:passman/Auth/controllers/user_data_controller.dart';
 import 'package:passman/Auth/login_page.dart';
 import 'package:passman/profile/user_profile.dart';
-
 import 'package:passman/records/controllers/records_controller.dart';
 import 'package:passman/records/create_new_record_page.dart';
 import 'package:passman/records/models/password_model.dart';
@@ -27,14 +26,11 @@ import 'package:passman/res/components/awesome_custom_dialog.dart';
 import 'package:passman/res/components/custom_text.dart';
 import 'package:encrypt/encrypt.dart' as encryption;
 import 'package:passman/res/components/new_folder.dart';
-
-import 'package:screen_protector/screen_protector.dart';
 import '../constants.dart';
 import '../media files/controllers/media_controller.dart';
 import '../media files/folder_view.dart';
 import '../res/components/custom_formfield.dart';
 import '../res/components/custom_snackbar.dart';
-
 import '../res/components/loading_page.dart';
 import '../res/components/master_password_dialog.dart';
 
@@ -54,8 +50,8 @@ class _PasswordsPageState extends State<PasswordsPage> {
   @override
   void initState() {
     super.initState();
-    Get.put(UserDataController());
 
+    Get.put(UserDataController());
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (user == null || user.isAnonymous) {
         print('User is currently signed out!');

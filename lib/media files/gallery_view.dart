@@ -4,17 +4,17 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:passman/constants.dart';
 import 'package:passman/res/components/folder_assets_page.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
-// import 'package:photo_manager/photo_manager.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
 import 'controllers/gallery_controller.dart';
 
 class GalleryView extends GetView<GalleryController> {
+  final String folderKey;
+  GalleryView({Key? key, required this.folderKey});
+
   @override
   Widget build(BuildContext context) {
-   Get.put(GalleryController());
+    Get.put(GalleryController());
     return Scaffold(
       appBar: AppBar(
         // automaticallyImplyLeading: false,
@@ -23,7 +23,7 @@ class GalleryView extends GetView<GalleryController> {
         elevation: 0.0,
         centerTitle: true,
         title: Text(
-          'Gallery Folders',
+          'Select Picture', // 'Gallery Folders',
           style: TextStyle(
               fontSize: 30.0,
               fontWeight: FontWeight.w500,
@@ -37,59 +37,56 @@ class GalleryView extends GetView<GalleryController> {
           ),
         ),
         actions: [
-          GetBuilder<GalleryController>(
-            builder: (cont) {
-              return 
-              
-              Padding(
-                padding: const EdgeInsets.only(right: 10.0),
-                child: 
-                cont.isHidingDirectories ?
-                CircularProgressIndicator():
-                GestureDetector(
-                  onTap: () {
-                    cont.isHidingDirectories = true;
-                    cont.update();
-                    cont.selectedAssets.forEach((asset) async {
-                      FileSystemEntity thisAsset = asset['folder'];
+          // GetBuilder<GalleryController>(builder: (cont) {
+          //   return Padding(
+          //     padding: const EdgeInsets.only(right: 10.0),
+          //     child: cont.isHidingDirectories
+          //         ? CircularProgressIndicator()
+          //         : GestureDetector(
+          //             onTap: () {
+          //               cont.isHidingDirectories = true;
+          //               cont.update();
+          //               cont.selectedAssets.forEach((asset) async {
+          //                 FileSystemEntity thisAsset = asset['folder'];
 
-                      Directory source = await Directory(thisAsset.path);
-                      Directory myAppDir = await getApplicationDocumentsDirectory();
-                      // // thisAsset.rename(myAppDir.path + '/' + thisAsset.path.split('/').last);
-                      // Directory destinationDir = Directory(
-                      //     myAppDir.path + '/' + thisAsset.path.split('/').last);
-                      // await for (var entity in source.list()) {
-                      //   if (entity is Directory) {
-                      //     await cont.copyDirectory(
-                      //         Directory(destinationDir.path));
+          //                 Directory source = await Directory(thisAsset.path);
+          //                 Directory myAppDir =
+          //                     await getApplicationDocumentsDirectory();
+          //                 // // thisAsset.rename(myAppDir.path + '/' + thisAsset.path.split('/').last);
+          //                 // Directory destinationDir = Directory(
+          //                 //     myAppDir.path + '/' + thisAsset.path.split('/').last);
+          //                 // await for (var entity in source.list()) {
+          //                 //   if (entity is Directory) {
+          //                 //     await cont.copyDirectory(
+          //                 //         Directory(destinationDir.path));
 
-                      //   } else if (entity is File) {
-                      //     await entity.copy(destinationDir.path);
-                      //     source.delete();
-                      //   }
-                      // }
-                      var storageStatus = await Permission.storage.status;
-                      var externalStorageStatus = await Permission.manageExternalStorage.status;
-                      var cameraStatus = await Permission.camera.status;
-                      await Permission.camera.request();
-                      print(storageStatus);
-                      print(externalStorageStatus);
-                      print(cameraStatus);
-                      // cont.createNoMediaFile(source.path );
-                    });
-                    // print('task completed');
-                    cont.isHidingDirectories = false;
-                    cont.update();
-                  },
-                  child: Icon(
-                    Icons.check,
-                    color: Colors.white,
-                    size: 28.0,
-                  ),
-                ),
-              );
-            }
-          ),
+          //                 //   } else if (entity is File) {
+          //                 //     await entity.copy(destinationDir.path);
+          //                 //     source.delete();
+          //                 //   }
+          //                 // }
+          //                 var storageStatus = await Permission.storage.status;
+          //                 var externalStorageStatus =
+          //                     await Permission.manageExternalStorage.status;
+          //                 var cameraStatus = await Permission.camera.status;
+          //                 await Permission.camera.request();
+          //                 print(storageStatus);
+          //                 print(externalStorageStatus);
+          //                 print(cameraStatus);
+          //                 // cont.createNoMediaFile(source.path );
+          //               });
+          //               // print('task completed');
+          //               cont.isHidingDirectories = false;
+          //               cont.update();
+          //             },
+          //             child: Icon(
+          //               Icons.check,
+          //               color: Colors.white,
+          //               size: 28.0,
+          //             ),
+          //           ),
+          //   );
+          // }),
         ],
       ),
       body: GetBuilder<GalleryController>(
@@ -121,24 +118,30 @@ class GalleryView extends GetView<GalleryController> {
                   // final isSelected = controller.selectedAssets.contains(folder);
                   print('building... ');
                   return InkWell(
-                    onLongPress: () {
-                      Get.to(() => FolderAssetsPage(folder: folder['folder']));
+                    onTap: () {
+                      Get.to(() => FolderAssetsPage(
+                            folder: folder['folder'],
+                            folderKey: this.folderKey,
+                          ));
                       // Handle folder selection
                     },
-                    onTap: () {
-                      print('toggle');
-                      controller.toggleAssetSelection(folder);
-                    },
+                    // onTap: () {
+                    //   print('toggle');
+                    //   controller.toggleAssetSelection(folder);
+                    // },
                     child: Stack(
                       children: [
                         Skeletonizer(
                           enabled: controller.isLoading,
                           justifyMultiLineText: true,
+
                           //  textBoneBorderRadius: TextBoneBorderRadius.fromHeightFactor(0.8),
-                          effect: ShimmerEffect(
-                            baseColor: appDarkColor.withOpacity(0.75),
-                            highlightColor: appLightColor.withOpacity(0.75),
-                          ),
+                          // effect: PulseEffect(
+                          //   // duration: Duration(seconds: 5),
+                          //   from: Colors.black,
+                          //   to: Colors.pinkAccent.withOpacity(0.75),
+                          // ),
+
                           child: Container(
                             width: 200,
                             height: 200,
@@ -148,8 +151,7 @@ class GalleryView extends GetView<GalleryController> {
                               image: controller.isLoading
                                   ? null
                                   : DecorationImage(
-                                      image:
-                                          FileImage(File(folder['thumbnail'])),
+                                      image: MemoryImage(folder['thumbnail']),
                                       // AssetEntityImageProvider(
                                       //   controller
                                       //       .foldersThumbnail[folder.id.toString()],

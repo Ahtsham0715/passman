@@ -76,11 +76,17 @@ class RecordsController extends GetxController {
               PasswordModel.fromJson(value as Map<String, dynamic>);
         }
       });
-      passwordbox.putAll(modelData);
-      // }
       Get.back();
-      styledsnackbar(
-          txt: 'Backup Imported Successfully', icon: Icons.check_box);
+      if (modelData.isNotEmpty) {
+        passwordbox.putAll(modelData);
+        styledsnackbar(
+            txt: 'Backup Imported Successfully', icon: Icons.check_box);
+      } else {
+        styledsnackbar(
+            txt: 'All Passwords already available locally',
+            icon: Icons.warning);
+      }
+      // }
     }).catchError((e) {
       Get.back();
       print(e);

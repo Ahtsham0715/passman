@@ -1,16 +1,17 @@
-import 'dart:developer';
 import 'dart:io';
-
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:passman/constants.dart';
 import 'package:passman/media%20files/controllers/media_controller.dart';
+import 'package:passman/media%20files/gallery_view.dart';
+
 import 'package:passman/res/components/full_image_view.dart';
 import 'package:passman/res/components/loading_page.dart';
+
 import '../res/components/custom_snackbar.dart';
 import '../res/components/custom_text.dart';
 import '../res/components/new_folder.dart';
@@ -139,21 +140,32 @@ class FolderView extends StatelessWidget {
           color: Colors.white,
         ),
         onPressed: () async {
-          FilePickerResult? result = await FilePicker.platform.pickFiles(
-            allowMultiple: true,
-            type: folderType == 'Images'
-                ? FileType.image
-                : folderType == 'Videos'
-                    ? FileType.video
-                    : FileType.any,
-          );
-          if (result != null) {
-            await mediacontroller
-                .uploadFiles(result: result, folderKey: this.folderKey)
-                .then((value) {});
+          Get.to(() => GalleryView(
+                folderKey: this.folderKey,
+              ));
+          // showModalBottomSheet(
+          //   context: context,
+          //   enableDrag: true,
+          //   isScrollControlled: true,
+          //   builder: (context) {
+          //     return SafeArea(child: GalleryView());
+          //   },
+          // );
+          // FilePickerResult? result = await FilePicker.platform.pickFiles(
+          //   allowMultiple: true,
+          //   type: folderType == 'Images'
+          //       ? FileType.image
+          //       : folderType == 'Videos'
+          //           ? FileType.video
+          //           : FileType.any,
+          // );
+          // if (result != null) {
+          //   await mediacontroller
+          //       .uploadFiles(result: result, folderKey: this.folderKey)
+          //       .then((value) {});
 
-            // print(foldersdatabox.get(folderKey));
-          }
+          //   // print(foldersdatabox.get(folderKey));
+          // }
         },
       ),
       body: Container(
@@ -205,11 +217,22 @@ class FolderView extends StatelessWidget {
                         return Stack(
                           children: [
                             InkWell(
-                              onTap: !(controller.pickedfiles[index]['type'] ==
+                              onTap: !(controller.pickedfiles[index]['type']
+                                              .toString()
+                                              .toLowerCase() ==
                                           'jpg' ||
-                                      controller.pickedfiles[index]['type'] ==
+                                      controller.pickedfiles[index]
+                                                  ['type']
+                                              .toString()
+                                              .toLowerCase() ==
                                           'png' ||
-                                      controller.pickedfiles[index]['type'] ==
+                                      controller.pickedfiles[index]['type']
+                                              .toString()
+                                              .toLowerCase() ==
+                                          'webp' ||
+                                      controller.pickedfiles[index]['type']
+                                              .toString()
+                                              .toLowerCase() ==
                                           'jpeg')
                                   ? () async {
                                       // var data = controller.decodeImageFromBase64(
@@ -234,8 +257,10 @@ class FolderView extends StatelessWidget {
                                   : () {
                                       Get.to(
                                         () => FullScreenImagePage(
-                                          imageUrl: controller
-                                              .pickedfiles[index]['data'],
+                                          imageUrl: controller.decryptFile(
+                                              controller.pickedfiles[index]
+                                                  ['data']),
+                                          memoryImage: true,
                                         ),
                                       );
                                     },
@@ -246,17 +271,26 @@ class FolderView extends StatelessWidget {
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(10),
                                   image: (controller.pickedfiles[index]
-                                                  ['type'] ==
+                                                      ['type']
+                                                  .toString()
+                                                  .toLowerCase() ==
                                               'jpg' ||
-                                          controller.pickedfiles[index]
-                                                  ['type'] ==
+                                          controller.pickedfiles[index]['type']
+                                                  .toString()
+                                                  .toLowerCase() ==
                                               'png' ||
-                                          controller.pickedfiles[index]
-                                                  ['type'] ==
+                                          controller.pickedfiles[index]['type']
+                                                  .toString()
+                                                  .toLowerCase() ==
+                                              'webp' ||
+                                          controller.pickedfiles[index]['type']
+                                                  .toString()
+                                                  .toLowerCase() ==
                                               'jpeg')
                                       ? DecorationImage(
-                                          image: FileImage(File(controller
-                                              .pickedfiles[index]['data'])),
+                                          image: MemoryImage(
+                                              controller.decryptFile(controller
+                                                  .pickedfiles[index]['data'])),
                                           // AssetEntityImageProvider(
                                           //   controller
                                           //       .foldersThumbnail[folder.id.toString()],
@@ -265,27 +299,68 @@ class FolderView extends StatelessWidget {
 
                                           fit: BoxFit.fill)
                                       : null,
-                                  color: Colors.blueGrey,
+                                  color: Colors.black45,
                                 ),
-                                child: !(controller.pickedfiles[index]
-                                                ['type'] ==
+                                child: !(controller.pickedfiles[index]['type']
+                                                .toString()
+                                                .toLowerCase() ==
                                             'jpg' ||
-                                        controller.pickedfiles[index]['type'] ==
+                                        controller.pickedfiles[index]
+                                                    ['type']
+                                                .toString()
+                                                .toLowerCase() ==
                                             'png' ||
-                                        controller.pickedfiles[index]['type'] ==
+                                        controller.pickedfiles[index]['type']
+                                                .toString()
+                                                .toLowerCase() ==
+                                            'webp' ||
+                                        controller.pickedfiles[index]['type']
+                                                .toString()
+                                                .toLowerCase() ==
                                             'jpeg')
-                                    ? Center(
-                                        // backgroundColor: Colors.white,
-                                        child: Text(
-                                          '${controller.pickedfiles[index]['name']}',
-                                          maxLines: 1,
-                                          overflow: TextOverflow.clip,
-                                          style: TextStyle(
-                                              fontSize: 18.0,
-                                              fontWeight: FontWeight.w500,
-                                              color: Colors.black,
-                                              fontFamily: 'majalla'),
-                                        ),
+                                    ? Column(
+                                        // mainAxisSize: MainAxisSize.max,
+                                        // mainAxisAlignment:
+                                        //     MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          // SizedBox(
+                                          //   height: 40,
+                                          // ),
+                                          Expanded(
+                                            flex: 4,
+                                            child: Center(
+                                              child: Icon(
+                                                mediacontroller.fileIconDecider(
+                                                    controller
+                                                            .pickedfiles[index]
+                                                        ['type']),
+                                                color: Colors.white,
+                                                size: 35,
+                                              ),
+                                            ),
+                                          ),
+                                          Expanded(
+                                            flex: 1,
+                                            // alignment: Alignment.bottomCenter,
+                                            // backgroundColor: Colors.white,
+                                            child: Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 5.0,
+                                                      vertical: 5.0),
+                                              child: Text(
+                                                '${controller.pickedfiles[index]['name']}',
+                                                maxLines: 1,
+                                                overflow: TextOverflow.ellipsis,
+                                                style: TextStyle(
+                                                    fontSize: 15.0,
+                                                    fontWeight: FontWeight.w500,
+                                                    color: Colors.white,
+                                                    fontFamily: 'majalla'),
+                                              ),
+                                            ),
+                                          ),
+                                        ],
                                       )
                                     : Column(
                                         mainAxisAlignment:
@@ -293,8 +368,9 @@ class FolderView extends StatelessWidget {
                                         children: [
                                           Container(
                                             width: 200,
+                                            padding: EdgeInsets.all(5.0),
                                             decoration: BoxDecoration(
-                                              color: Colors.blueGrey,
+                                              color: Colors.black54,
                                               borderRadius: BorderRadius.only(
                                                 bottomLeft:
                                                     Radius.circular(10.0),
@@ -305,7 +381,7 @@ class FolderView extends StatelessWidget {
                                             child: Text(
                                               '${controller.pickedfiles[index]['name']}',
                                               maxLines: 1,
-                                              overflow: TextOverflow.clip,
+                                              overflow: TextOverflow.ellipsis,
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   fontSize: 15.0,
@@ -361,7 +437,7 @@ class FolderView extends StatelessWidget {
                                 },
                                 child: CircleAvatar(
                                   radius: 20.0,
-                                  backgroundColor: appDarkColor,
+                                  backgroundColor: Colors.black45,
                                   child: Icon(
                                     MdiIcons.deleteForever,
                                     color: Colors.white,
