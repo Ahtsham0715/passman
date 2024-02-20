@@ -1,6 +1,7 @@
 import 'package:autofill_service/autofill_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:passman/constants.dart';
 import 'package:passman/records/controllers/new_record_controller.dart';
@@ -14,10 +15,12 @@ class CreateRecord extends StatefulWidget {
   final bool edit;
   final PasswordModel passwordData;
   final String passwordIndex;
+  final String folderKey;
   const CreateRecord(
       {super.key,
       this.edit = false,
       required this.passwordData,
+      this.folderKey = '',
       this.passwordIndex = ''});
 
   @override
@@ -48,6 +51,8 @@ class _CreateRecordState extends State<CreateRecord>
   @override
   void initState() {
     super.initState();
+    print(widget.passwordIndex);
+    print(widget.folderKey);
     _title.text = widget.passwordData.title.toString();
     _login.text = widget.passwordData.login.toString();
     _password.text = widget.passwordData.password.toString();
@@ -115,20 +120,32 @@ class _CreateRecordState extends State<CreateRecord>
                     length: _password.text.length,
                   );
                   String randomKey = recordcontroller.generateHiveKey();
-
-                  if (passwordbox.containsKey(randomKey)) {
+                  Box<PasswordModel> passwordBox;
+                  if (widget.folderKey.isNotEmpty) {
+                    passwordBox = foldersPasswordBox(widget.folderKey);
+                  } else {
+                    passwordBox = passwordbox;
+                  }
+                  if (passwordBox.containsKey(randomKey)) {
                     randomKey = recordcontroller.generateHiveKey();
-                  } else {}
+                  }
+                  // else {
+                  //   if (passwordbox.containsKey(randomKey)) {
+                  //     randomKey = recordcontroller.generateHiveKey();
+                  //   }
+                  // }
+
                   //  final response = await AutofillService().resultWithDataset(
                   //   label: _title.text.toString(),
                   //   username: 'shami@gmail.com',
                   //   password: 'shami123',
                   // );
                   // print('resultWithDataset $response');
+                  print('current password box: ${passwordBox.name}');
                   try {
                     await widget.edit
-                        ? passwordbox.put(widget.passwordIndex, passworddata)
-                        : passwordbox.put(randomKey.toString(), passworddata);
+                        ? passwordBox.put(widget.passwordIndex, passworddata)
+                        : passwordBox.put(randomKey.toString(), passworddata);
                     Get.back();
                     if (widget.edit) {
                       Get.back();

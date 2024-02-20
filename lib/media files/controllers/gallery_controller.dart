@@ -46,11 +46,11 @@ class GalleryController extends GetxController {
   );
   @override
   void onInit() {
-    getFoldersUsingPhotoManager().then((value) {
-      // log(availableFolders.toString());
-      isLoading = false;
-      update(['GalleryView', true]);
-    });
+    // getFoldersUsingPhotoManager().then((value) {
+    //   // log(availableFolders.toString());
+    //   isLoading = false;
+    //   update(['GalleryView', true]);
+    // });
     // getFolders().then((value) {
     //   log(availableFolders.toString());
     //   isLoading = false;
@@ -60,8 +60,8 @@ class GalleryController extends GetxController {
   }
 
   Future getFoldersUsingPhotoManager() async {
-    isLoading = true;
-    update(['GalleryView', true]);
+    // isLoading = true;
+    // update(['GalleryView', true]);
     availableFolders.clear();
     //  availableFolders.add({
     //           'folder': element,
@@ -84,11 +84,12 @@ class GalleryController extends GetxController {
 
         var subpathlist = await dir.getSubPathList();
         if (subpathlist.isEmpty) {
-          int assetsCount = await dir.assetCountAsync;
-
-          if (assetsCount > 0) {
-            var assetlistrange = await dir.getAssetListRange(start: 0, end: 10);
-            var assetlistrangefirstthumbnail = await assetlistrange.first.file;
+          // int assetsCount = await dir.assetCountAsync;
+          var assetlistrange = await dir.getAssetListRange(start: 0, end: 10);
+          if (assetlistrange.isNotEmpty) {
+            var assetlistrangefirstthumbnail = assetlistrange.isEmpty
+                ? File('')
+                : await assetlistrange.first.file;
             availableFolders.add({
               'folder': dir,
               'name': dir.name,
@@ -120,13 +121,16 @@ class GalleryController extends GetxController {
         //     name: 'firstitemgetassetlistrange');
         // log(assetlistpaged.toString(), name: 'getassetlistpaged');
       }
+      update(['GalleryView']);
     } else {
       styledsnackbar(
           txt: 'Allow storage permission to use this featue',
           icon: Icons.warning);
       // openAppSettings();
       await PhotoManager.requestPermissionExtend();
+      update(['GalleryView', true]);
     }
+    return availableFolders;
   }
 
   Future getFolders() async {
@@ -204,10 +208,10 @@ class GalleryController extends GetxController {
   }
 
   Future getFilesUsingPathManager(AssetPathEntity folder) async {
-    isLoadingFiles = true;
-    update(
-      ['FilesView', true],
-    );
+    // isLoadingFiles = true;
+    // update(
+    //   ['FilesView', true],
+    // );
     availableFiles.clear();
     var files = await folder.getAssetListRange(start: 0, end: 5000);
     if (files.isNotEmpty) {
@@ -220,6 +224,10 @@ class GalleryController extends GetxController {
         });
       }
     }
+    update(
+      ['FilesView', true],
+    );
+    return availableFiles;
   }
 
   Future<void> deleteFile(String filePath) async {
@@ -304,10 +312,16 @@ class GalleryController extends GetxController {
   void toggleFileSelection(file) {
     if (selectedFiles.contains(file)) {
       selectedFiles.remove(file);
-      update(['FilesView', true]);
+
+      // update(['FilesView', true]);
     } else {
       selectedFiles.add(file);
-      update(['FilesView', true]);
+      // update(['FilesView', true]);
+    }
+    if (selectedFiles.isEmpty || selectedFiles.length < 2) {
+      update(['selectedIcon', 'showCheckButton', 'selectedFilesCount'], true);
+    } else {
+      update(['selectedIcon', 'selectedFilesCount'], true);
     }
   }
 }

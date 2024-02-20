@@ -24,11 +24,13 @@ class _showNewFolderDialogState extends State<showNewFolderDialog> {
   @override
   void initState() {
     _folderNameController.text = widget.name;
+    // controller.selectedRadio = 0;
     widget.type == 'Images'
         ? controller.selectedRadio = 0
-        : widget.type == 'Videos'
-            ? controller.selectedRadio = 1
-            : controller.selectedRadio = 2;
+        : controller.selectedRadio = 1;
+    //     : widget.type == 'Videos'
+    //         ? controller.selectedRadio = 1
+    //         : controller.selectedRadio = 2;
     selectedval = controller.selectedRadio;
     super.initState();
   }
@@ -99,7 +101,7 @@ class _showNewFolderDialogState extends State<showNewFolderDialog> {
                             contentPadding: EdgeInsets.symmetric(vertical: 2.0),
                             value: 1,
                             groupValue: _.selectedRadio,
-                            title: Text('Videos'),
+                            title: Text('Passwords'),
                             onChanged: (value) {
                               _.selectedRadio = value!;
                               selectedval = value;
@@ -109,21 +111,36 @@ class _showNewFolderDialogState extends State<showNewFolderDialog> {
                               _.update();
                             },
                           ),
-                          RadioListTile(
-                            dense: true,
-                            contentPadding: EdgeInsets.symmetric(vertical: 2.0),
-                            value: 2,
-                            groupValue: _.selectedRadio,
-                            title: Text('All'),
-                            onChanged: (value) {
-                              _.selectedRadio = value!;
-                              selectedval = value;
+                          // RadioListTile(
+                          //   dense: true,
+                          //   contentPadding: EdgeInsets.symmetric(vertical: 2.0),
+                          //   value: 1,
+                          //   groupValue: _.selectedRadio,
+                          //   title: Text('Videos'),
+                          //   onChanged: (value) {
+                          //     _.selectedRadio = value!;
+                          //     selectedval = value;
 
-                              print(_.selectedRadio);
+                          //     print(_.selectedRadio);
 
-                              _.update();
-                            },
-                          ),
+                          //     _.update();
+                          //   },
+                          // ),
+                          // RadioListTile(
+                          //   dense: true,
+                          //   contentPadding: EdgeInsets.symmetric(vertical: 2.0),
+                          //   value: 2,
+                          //   groupValue: _.selectedRadio,
+                          //   title: Text('All'),
+                          //   onChanged: (value) {
+                          //     _.selectedRadio = value!;
+                          //     selectedval = value;
+
+                          //     print(_.selectedRadio);
+
+                          //     _.update();
+                          //   },
+                          // ),
                         ],
                       );
                     },
@@ -168,11 +185,10 @@ class _showNewFolderDialogState extends State<showNewFolderDialog> {
                 if (formkey.currentState!.validate()) {
                   print('selected radio: ${controller.selectedRadio}');
                   print('selected radio: ${selectedval}');
-                  var type = selectedval == 0
-                      ? 'Images'
-                      : selectedval == 1
-                          ? 'Videos'
-                          : 'All';
+                  var type = selectedval == 0 ? 'Images' : 'Passwords';
+                  // selectedval == 1
+                  //     ? 'Videos'
+                  //     : 'All';
                   Navigator.of(context).pop({
                     'name': _folderNameController.text,
                     'type': type,

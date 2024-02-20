@@ -7,6 +7,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:passman/constants.dart';
+import 'package:passman/media%20files/controllers/media_controller.dart';
 import 'package:passman/records/controllers/records_controller.dart';
 import 'package:passman/records/create_new_record_page.dart';
 import 'package:passman/records/models/password_model.dart';
@@ -22,9 +23,11 @@ class RecordDetails extends StatefulWidget {
   // final int passwordIndex;
   final String passwordKey;
   final String img;
+  final String folderKey;
   const RecordDetails(
       {Key? key,
       required this.password,
+      this.folderKey = '',
       // required this.passwordIndex,
       required this.passwordKey,
       required this.img})
@@ -42,6 +45,7 @@ class _RecordDetailsState extends State<RecordDetails>
   @override
   void initState() {
     super.initState();
+    print(widget.passwordKey);
     _animationController =
         AnimationController(vsync: this, duration: Duration(seconds: 1));
     _animation = Tween<double>(begin: 0, end: 1).animate(_animationController);
@@ -108,6 +112,7 @@ class _RecordDetailsState extends State<RecordDetails>
               if (i == "1") {
                 Get.to(
                   () => CreateRecord(
+                    folderKey: widget.folderKey,
                     passwordData: PasswordModel(
                       title: widget.password.title.toString(),
                       login: encrypter.decrypt(
@@ -137,7 +142,14 @@ class _RecordDetailsState extends State<RecordDetails>
                   desc: 'Do you want to delete this data?',
                   btnOkOnPress: () async {
                     try {
-                      await passwordbox.delete(widget.passwordKey);
+                      if (widget.folderKey.isNotEmpty) {
+                        MediaController cont = Get.find();
+                        foldersPasswordBox(widget.folderKey)
+                            .delete(widget.passwordKey);
+                        cont.update();
+                      } else {
+                        await passwordbox.delete(widget.passwordKey);
+                      }
                       Get.back();
 
                       styledsnackbar(

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:passman/constants.dart';
+import 'package:passman/media%20files/custom_future_builder_widget.dart';
 import 'package:passman/res/components/folder_assets_page.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
@@ -89,63 +90,55 @@ class GalleryView extends GetView<GalleryController> {
           // }),
         ],
       ),
-      body: GetBuilder<GalleryController>(
-          assignId: true,
-          id: 'GalleryView',
-          autoRemove: false,
-          builder: (cont) {
-            return Container(
-              padding: EdgeInsets.all(5.0),
-              // height: height,
-              // width: width,
-              decoration: BoxDecoration(
-                gradient: bodyGradient(context),
-              ),
-              child: GridView.builder(
-                // shrinkWrap: true,
-                itemCount: controller.isLoading
-                    ? controller.dummyAvailableFolders.length
-                    : controller.availableFolders.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 5,
-                  mainAxisSpacing: 5,
-                ),
-                itemBuilder: (context, index) {
-                  final folder = controller.isLoading
-                      ? controller.dummyAvailableFolders[index]
-                      : controller.availableFolders[index];
-                  // final isSelected = controller.selectedAssets.contains(folder);
-                  print('building... ');
-                  return InkWell(
-                    onTap: () {
-                      Get.to(() => FolderAssetsPage(
-                            folder: folder['folder'],
-                            folderKey: this.folderKey,
-                          ));
-                      // Handle folder selection
-                    },
-                    // onTap: () {
-                    //   print('toggle');
-                    //   controller.toggleAssetSelection(folder);
-                    // },
-                    child: Stack(
-                      children: [
-                        Skeletonizer(
-                          enabled: controller.isLoading,
-                          justifyMultiLineText: true,
-
-                          //  textBoneBorderRadius: TextBoneBorderRadius.fromHeightFactor(0.8),
-                          // effect: PulseEffect(
-                          //   // duration: Duration(seconds: 5),
-                          //   from: Colors.black,
-                          //   to: Colors.pinkAccent.withOpacity(0.75),
-                          // ),
-
-                          child: Container(
+      body: Container(
+        padding: EdgeInsets.all(5.0),
+        // height: height,
+        // width: width,
+        decoration: BoxDecoration(
+          gradient: bodyGradient(context),
+        ),
+        child: FutureBuilderGridView(
+          gridCount: 7,
+          future: controller.getFoldersUsingPhotoManager(),
+          itemBuilder: GetBuilder<GalleryController>(
+              assignId: true,
+              id: 'GalleryView',
+              autoRemove: false,
+              builder: (cont) {
+                return GridView.builder(
+                  // shrinkWrap: true,
+                  itemCount: controller.isLoading
+                      ? controller.dummyAvailableFolders.length
+                      : controller.availableFolders.length,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 5,
+                    mainAxisSpacing: 5,
+                  ),
+                  itemBuilder: (context, index) {
+                    final folder = controller.isLoading
+                        ? controller.dummyAvailableFolders[index]
+                        : controller.availableFolders[index];
+                    // final isSelected = controller.selectedAssets.contains(folder);
+                    print('building... ');
+                    return InkWell(
+                      onTap: () {
+                        Get.to(() => FolderAssetsPage(
+                              folder: folder['folder'],
+                              folderKey: this.folderKey,
+                            ));
+                        // Handle folder selection
+                      },
+                      // onTap: () {
+                      //   print('toggle');
+                      //   controller.toggleAssetSelection(folder);
+                      // },
+                      child: Stack(
+                        children: [
+                          Container(
                             width: 200,
-                            height: 200,
-                            margin: EdgeInsets.all(10.0),
+                            height: 250,
+                            margin: EdgeInsets.all(5.0),
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(10),
                               image: controller.isLoading
@@ -193,30 +186,31 @@ class GalleryView extends GetView<GalleryController> {
                               ],
                             ),
                           ),
-                        ),
-                        if (controller.isLoading == false)
-                          GetBuilder<GalleryController>(
-                            builder: (cont) {
-                              return controller.selectedAssets.contains(folder)
-                                  ? Positioned(
-                                      top: 10,
-                                      right: 10,
-                                      child: Icon(
-                                        Icons.check_circle,
-                                        color: Colors.green,
-                                        size: 30.0,
-                                      ),
-                                    )
-                                  : Center();
-                            },
-                          )
-                      ],
-                    ),
-                  );
-                },
-              ),
-            );
-          }),
+                          if (controller.isLoading == false)
+                            GetBuilder<GalleryController>(
+                              builder: (cont) {
+                                return controller.selectedAssets
+                                        .contains(folder)
+                                    ? Positioned(
+                                        top: 10,
+                                        right: 10,
+                                        child: Icon(
+                                          Icons.check_circle,
+                                          color: Colors.green,
+                                          size: 30.0,
+                                        ),
+                                      )
+                                    : Center();
+                              },
+                            )
+                        ],
+                      ),
+                    );
+                  },
+                );
+              }),
+        ),
+      ),
     );
   }
 }

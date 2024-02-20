@@ -28,6 +28,15 @@ final iv = encryption.IV.fromLength(16);
 var encrypter = encryption.Encrypter(encryption.AES(key));
 // open a box
 var passwordbox = Hive.box<PasswordModel>(logininfo.get('userid'));
+Box<PasswordModel> foldersPasswordBox(String folderKey) {
+  if (!Hive.isBoxOpen('$folderKey;${logininfo.get('userid')}')) {
+    Hive.openBox<PasswordModel>('$folderKey;${logininfo.get('userid')}');
+  }
+  return Hive.box<PasswordModel>('$folderKey;${logininfo.get('userid')}');
+}
+
+// var folderspasswordbox =
+// Hive.box<PasswordModel>('folderpasswordsdata${logininfo.get('userid')}');
 var logininfo = Hive.box('logininfo');
 var foldersbox = Hive.box('folders${logininfo.get('userid')}');
 var foldersdatabox = Hive.box('foldersdata${logininfo.get('userid')}');

@@ -12,6 +12,7 @@ import 'package:passman/constants.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:photo_manager/photo_manager.dart';
+import '../../records/models/password_model.dart';
 import '../../res/components/custom_snackbar.dart';
 import '../../res/components/loading_page.dart';
 import 'package:encrypt/encrypt.dart' as encryption;
@@ -20,7 +21,7 @@ import 'dart:developer' as dev;
 class MediaController extends GetxController {
   int selectedRadio = 0;
   List pickedfiles = [];
-
+  List box = [];
   List<String> videoExtensions = [
     "mp4",
     "mkv",
@@ -32,6 +33,24 @@ class MediaController extends GetxController {
     // ... (add more extensions as needed)
   ];
 
+  List<String> imageExtensions = [
+    'jpg',
+    'jpeg',
+    'png',
+    'gif',
+    'webp',
+    'bmp',
+    'wbmp',
+    'ico',
+    'jpe',
+    'jfif',
+    'tiff',
+    'tif',
+    'svg',
+    'svgz',
+    // Add more extensions if needed
+  ];
+
   @override
   void onInit() {
     super.onInit();
@@ -41,6 +60,36 @@ class MediaController extends GetxController {
       print('updated data');
     });
     // passwordbox.listenable();
+  }
+
+  Future getPasswords(String folderKey) async {
+    box.clear();
+    Map<dynamic, PasswordModel> passbox = foldersPasswordBox(folderKey).toMap();
+    foldersPasswordBox(folderKey).listenable().addListener(() {
+      update();
+      print('updated data');
+    });
+    passbox.forEach((key, value) {
+      box.add({
+        'key': key.toString(),
+        'value': value,
+        'title': value.title.toString(),
+        'isfolder': false,
+      });
+    });
+    print(box);
+    update();
+    return box;
+  }
+
+  Future getData(String folderKey) async {
+    if (foldersdatabox.containsKey(folderKey)) {
+      pickedfiles = await foldersdatabox.get(folderKey);
+      update(['availableFilesCount']);
+    } else {
+      pickedfiles = [];
+    }
+    return pickedfiles;
   }
 
   String generateHiveKey() {
@@ -73,6 +122,14 @@ class MediaController extends GetxController {
     return base64Decode(base64String);
   }
 
+  bool isImage(String extension) {
+    if (imageExtensions.contains(extension)) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   IconData fileIconDecider(String extension) {
     if (extension.toLowerCase() == 'pdf') {
       return FontAwesomeIcons.filePdf;
@@ -93,52 +150,81 @@ class MediaController extends GetxController {
     final status = await Permission.manageExternalStorage.status;
     try {
       if (status.isGranted) {
-        File(filePath).delete(recursive: true);
+        File(filePath).deleteSync(recursive: true);
       } else {
         await Permission.manageExternalStorage.request();
-        File(filePath).delete(recursive: true);
+        File(filePath).deleteSync(recursive: true);
       }
+      // update(['availableFilesCount']);
     } catch (e) {
       print('file deletion error: $e');
     }
   }
 
   Uint8List decryptFile(file) {
-    var decryptedFile =
-        encrypter.decryptBytes(encryption.Encrypted(file), iv: iv);
+    // var decryptedFile =
+    // encrypter.decryptBytes(encryption.Encrypted(file), iv: iv);
     // final bytes = Uint8List.fromList(decryptedFile.codeUnits);
     // print(bytes); // Convert to bytes directly
-    return Uint8List.fromList(decryptedFile);
+    return file;
+    // Uint8List.fromList(decryptedFile);
+  }
+
+  Future ExportFile(
+      Uint8List bytesData, String newPath, String folderKey, pickedFile) async {
+    // Get.dialog(LoadingPage());
+    try {
+      final file = File(newPath);
+
+      await file.writeAsBytes(bytesData);
+      // if (await exportedFile.exists()) {
+
+      // pickedfiles = foldersdatabox.get(folderKey);
+      pickedfiles.remove(pickedFile);
+      foldersdatabox.put(folderKey, pickedfiles);
+      pickedfiles = foldersdatabox.get(folderKey);
+      update(['availableFilesCount']);
+      // Get.back();
+      // Get.back();
+      styledsnackbar(
+          txt: 'Exported To Phone Storage Successfully.', icon: Icons.check);
+      // controller.update();
+    } catch (e) {
+      // Get.back();
+      print(e);
+      styledsnackbar(txt: 'Error occured.$e', icon: Icons.error);
+    }
+    // }
   }
 
   Future uploadFileToVault({
     required String folderKey,
     required List<AssetEntity> selectedFiles,
   }) async {
-    Get.dialog(LoadingPage());
+    // Get.dialog(LoadingPage());
     try {
       for (var file in selectedFiles) {
         var entityFile = await file.file;
         var entityFileBytes = await entityFile!.readAsBytes();
-        var encryptedEntityFile =
-            await encrypter.encryptBytes(entityFileBytes, iv: iv);
-        print('encrypted image: $encryptedEntityFile');
+        // var encryptedEntityFile =
+        // await encrypter.encryptBytes(entityFileBytes, iv: iv);
+        // print('encrypted image: $encryptedEntityFile');
 
         pickedfiles.add({
           'size': await entityFile.length(),
           'type': file.title!.split('.')[1].toLowerCase(),
-          'data': encryptedEntityFile.bytes,
+          'data': entityFileBytes,
           'name': file.title,
           'absolutePath': entityFile.absolute.path
         });
-        print(pickedfiles);
+        // print(pickedfiles);
         await foldersdatabox.put(folderKey, pickedfiles);
         deleteFile(entityFile.absolute.path);
       }
-      Get.back();
+      // Get.back();
     } catch (e) {
       print(e);
-      Get.back();
+      // Get.back();
       styledsnackbar(txt: 'Error occured> $e', icon: Icons.error);
     }
   }
