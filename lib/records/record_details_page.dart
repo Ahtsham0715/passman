@@ -143,9 +143,10 @@ class _RecordDetailsState extends State<RecordDetails>
                   btnOkOnPress: () async {
                     try {
                       if (widget.folderKey.isNotEmpty) {
-                        MediaController cont = Get.find();
+                        MediaController cont = MediaController();
                         foldersPasswordBox(widget.folderKey)
                             .delete(widget.passwordKey);
+                        await cont.getPasswords(widget.folderKey);
                         cont.update();
                       } else {
                         await passwordbox.delete(widget.passwordKey);

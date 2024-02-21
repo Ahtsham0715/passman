@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:passman/constants.dart';
 import 'package:passman/firebase_options.dart';
 import 'package:passman/records/models/password_model.g.dart';
 import 'package:path_provider/path_provider.dart';
@@ -36,6 +37,7 @@ void main() async {
   Hive.registerAdapter(PasswordModelAdapter());
   // await Hive.openBox<PasswordModel>('my_data');
   await Hive.openBox('logininfo');
+
   Logger.root.level = Level.ALL;
   PrintAppender().attachToLogger(Logger.root);
   _logger.info('Initialized logger.');

@@ -21,7 +21,7 @@ android:maxSdkVersion="33"
         android:label="passMan"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon"
-        
+        android:enableOnBackInvokedCallback="true"
         android:requestLegacyExternalStorage="true">
         <activity
             android:name=".MainActivity"

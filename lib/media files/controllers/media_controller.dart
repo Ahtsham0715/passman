@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:file_picker/file_picker.dart';
+
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
@@ -15,8 +16,6 @@ import 'package:photo_manager/photo_manager.dart';
 import '../../records/models/password_model.dart';
 import '../../res/components/custom_snackbar.dart';
 import '../../res/components/loading_page.dart';
-import 'package:encrypt/encrypt.dart' as encryption;
-import 'dart:developer' as dev;
 
 class MediaController extends GetxController {
   int selectedRadio = 0;
@@ -64,11 +63,15 @@ class MediaController extends GetxController {
 
   Future getPasswords(String folderKey) async {
     box.clear();
-    Map<dynamic, PasswordModel> passbox = foldersPasswordBox(folderKey).toMap();
-    foldersPasswordBox(folderKey).listenable().addListener(() {
-      update();
-      print('updated data');
-    });
+    Box<PasswordModel> fpassbox =
+        await Hive.openBox<PasswordModel>('$folderKey;$uid');
+    if (!allPasswordFolderBoxes.values.contains('$folderKey;$uid')) {
+      allPasswordFolderBoxes.put(
+          allPasswordFolderBoxes.keys.length + 1, '$folderKey;$uid');
+    }
+    print(allPasswordFolderBoxes.toMap());
+    Map<dynamic, PasswordModel> passbox = fpassbox.toMap();
+    // update();
     passbox.forEach((key, value) {
       box.add({
         'key': key.toString(),
@@ -79,6 +82,7 @@ class MediaController extends GetxController {
     });
     print(box);
     update();
+
     return box;
   }
 

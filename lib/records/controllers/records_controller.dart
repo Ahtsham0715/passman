@@ -101,12 +101,18 @@ class RecordsController extends GetxController {
     Map<String, Map> passwordBoxModified = {};
     // print(passwordBoxMap);
     print(passwordBoxMap.length);
+    List allFolderPasswordBoxesKey = allPasswordFolderBoxes.values.toList();
     // Get the current timestamp
     // final now = DateTime.now();
     // final timestamp = Timestamp.fromDate(now).millisecondsSinceEpoch;
     // print(timestamp);
     passwordBoxMap.forEach((key, value) {
       passwordBoxModified[key.toString()] = value.toJson();
+    });
+    allFolderPasswordBoxesKey.forEach((key) {
+      if (Hive.box(key).isNotEmpty) {
+        print(Hive.box(key).toMap());
+      }
     });
     // print(passwordBoxModified);
     print(passwordBoxModified.length);

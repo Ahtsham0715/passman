@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:passman/media%20files/controllers/media_controller.dart';
 import 'package:passman/records/models/password_model.dart';
 import 'package:encrypt/encrypt.dart' as encryption;
 
@@ -28,11 +29,25 @@ final iv = encryption.IV.fromLength(16);
 var encrypter = encryption.Encrypter(encryption.AES(key));
 // open a box
 var passwordbox = Hive.box<PasswordModel>(logininfo.get('userid'));
+var allPasswordFolderBoxes =
+    Hive.box('passwordFolderBoxes${logininfo.get('userid')}');
 Box<PasswordModel> foldersPasswordBox(String folderKey) {
-  if (!Hive.isBoxOpen('$folderKey;${logininfo.get('userid')}')) {
-    Hive.openBox<PasswordModel>('$folderKey;${logininfo.get('userid')}');
+  print('folderKey: $folderKey');
+  // if (!Hive.isBoxOpen('$folderKey;$uid')) {
+  if (!allPasswordFolderBoxes.values.contains('$folderKey;$uid')) {
+    allPasswordFolderBoxes.put(
+        allPasswordFolderBoxes.keys.length + 1, '$folderKey;$uid');
   }
-  return Hive.box<PasswordModel>('$folderKey;${logininfo.get('userid')}');
+  print(allPasswordFolderBoxes.toMap());
+  Hive.openBox<PasswordModel>('$folderKey;$uid');
+  MediaController cont = Get.find();
+  cont.update();
+  // }
+  // else{
+
+  // }
+
+  return Hive.box<PasswordModel>('$folderKey;$uid');
 }
 
 // var folderspasswordbox =

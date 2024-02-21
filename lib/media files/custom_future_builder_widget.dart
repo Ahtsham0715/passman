@@ -22,6 +22,7 @@ class FutureBuilderGridView extends StatelessWidget {
           final data = snapshot.data!;
           return itemBuilder;
         } else if (snapshot.hasError) {
+          print(snapshot.error);
           return Center(
             child: Text(
               'Error: ${snapshot.error}',

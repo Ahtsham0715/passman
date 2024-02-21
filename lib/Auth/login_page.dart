@@ -53,7 +53,13 @@ class _LoginPageState extends State<LoginPage> {
       }
     });
     Future.delayed(Duration(seconds: 1), () {
-      controller.authenticateWithBiometrics();
+      if (controller.isbiometricavailable.value &&
+          logininfo.get('bio_auth') != null &&
+          logininfo.get('bio_auth') &&
+          logininfo.get('email') != null &&
+          logininfo.get('password') != null) {
+        controller.authenticateWithBiometrics();
+      }
     });
 
     // controller.checkBiometrics();

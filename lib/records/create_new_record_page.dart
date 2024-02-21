@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:passman/constants.dart';
+import 'package:passman/media%20files/controllers/media_controller.dart';
 import 'package:passman/records/controllers/new_record_controller.dart';
 import 'package:passman/records/models/password_model.dart';
 import 'package:passman/res/components/custom_formfield.dart';
