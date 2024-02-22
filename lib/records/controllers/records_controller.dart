@@ -70,10 +70,27 @@ class RecordsController extends GetxController {
         .then((DocumentSnapshot doc) {
       // for (var doc in data.docs) {
       cloudData = doc.data() as Map;
-      cloudData.forEach((key, value) {
-        if (!passwordbox.containsKey(key)) {
-          modelData[key] =
-              PasswordModel.fromJson(value as Map<String, dynamic>);
+      cloudData.forEach((key, value) async {
+        if (value['folderKey'].toString().isNotEmpty) {
+          if (!foldersbox.containsKey(value['folderKey'])) {
+            foldersbox.put(key, {
+              'name': value['folderName'],
+              'type': 'Passwords',
+            });
+          }
+          Box<PasswordModel> fpBox =
+              Hive.isBoxOpen('${value['folderKey']};$uid')
+                  ? Hive.box('${value['folderKey']};$uid')
+                  : await Hive.openBox('${value['folderKey']};$uid');
+          if (!fpBox.containsKey(key)) {
+            fpBox.put(
+                key, PasswordModel.fromJson(value as Map<String, dynamic>));
+          }
+        } else {
+          if (!passwordbox.containsKey(key)) {
+            modelData[key] =
+                PasswordModel.fromJson(value as Map<String, dynamic>);
+          }
         }
       });
       Get.back();
@@ -101,7 +118,13 @@ class RecordsController extends GetxController {
     Map<String, Map> passwordBoxModified = {};
     // print(passwordBoxMap);
     print(passwordBoxMap.length);
-    List allFolderPasswordBoxesKey = allPasswordFolderBoxes.values.toList();
+    List allFolderPasswordBoxesKey = [];
+    if (!Hive.isBoxOpen('passwordFolderBoxes${logininfo.get('userid')}')) {
+      await Hive.openBox('passwordFolderBoxes${logininfo.get('userid')}');
+      allFolderPasswordBoxesKey = allPasswordFolderBoxes.values.toList();
+    } else {
+      allFolderPasswordBoxesKey = allPasswordFolderBoxes.values.toList();
+    }
     // Get the current timestamp
     // final now = DateTime.now();
     // final timestamp = Timestamp.fromDate(now).millisecondsSinceEpoch;
@@ -109,13 +132,23 @@ class RecordsController extends GetxController {
     passwordBoxMap.forEach((key, value) {
       passwordBoxModified[key.toString()] = value.toJson();
     });
-    allFolderPasswordBoxesKey.forEach((key) {
-      if (Hive.box(key).isNotEmpty) {
-        print(Hive.box(key).toMap());
+    allFolderPasswordBoxesKey.forEach((key) async {
+      if (!Hive.isBoxOpen(key)) {
+        await Hive.openBox<PasswordModel>(key);
+      }
+      if (Hive.box<PasswordModel>(key).isNotEmpty) {
+        print(Hive.box<PasswordModel>(key).toMap());
+        Map<dynamic, PasswordModel> thisBoxMap =
+            Hive.box<PasswordModel>(key).toMap();
+        thisBoxMap.forEach((key, value) {
+          passwordBoxModified[key.toString()] = value.toJson();
+        });
       }
     });
+    // Get.back(); //todo
     // print(passwordBoxModified);
     print(passwordBoxModified.length);
+    print(passwordBoxModified);
     firestore
         .collection('backups')
         .doc(uid)

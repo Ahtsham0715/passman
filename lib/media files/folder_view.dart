@@ -222,535 +222,541 @@ class FolderView extends GetView<MediaController> {
           itemBuilder: GetBuilder<MediaController>(
               // assignId: true,
               // id: 'folder_view_builder',
-              init: MediaController(),
+              // init: MediaController(),
               builder: (controller) {
-                // print(foldersdatabox.get(folderKey));
-                // print('view updated');
-                return (folderType == 'Passwords'
-                        ? controller.box.isEmpty
-                        : controller.pickedfiles.isEmpty)
-                    ? Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(
-                            MdiIcons.flaskEmptyOutline,
-                            size: 50.0,
-                            color: Colors.white,
-                          ),
-                          CustomText(
-                              title: 'No Data Available',
-                              fontcolor: Colors.white,
-                              fontweight: FontWeight.w600,
-                              fontsize: 40.0),
-                        ],
-                      )
-                    : folderType == 'Passwords'
-                        ? ListView.builder(
-                            itemCount: controller.box.length,
-                            itemBuilder: (context, index) {
-                              dynamic data;
+            // print(foldersdatabox.get(folderKey));
+            // print('view updated');
+            return (folderType == 'Passwords'
+                    ? controller.box.isEmpty
+                    : controller.pickedfiles.isEmpty)
+                ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(
+                        MdiIcons.flaskEmptyOutline,
+                        size: 50.0,
+                        color: Colors.white,
+                      ),
+                      CustomText(
+                          title: 'No Data Available',
+                          fontcolor: Colors.white,
+                          fontweight: FontWeight.w600,
+                          fontsize: 40.0),
+                    ],
+                  )
+                : folderType == 'Passwords'
+                    ? ListView.builder(
+                        itemCount: controller.box.length,
+                        itemBuilder: (context, index) {
+                          dynamic data;
 
-                              data = controller.box[index];
-                              return ListTile(
-                                // onLongPress: () {},
-                                onTap: () async {
-                                  !logininfo.get('is_biometric_available') ||
-                                          !logininfo.get('bio_auth')
-                                      ? showDialog(
-                                          context: context,
-                                          builder: (context) =>
-                                              MasterPasswordDialog(),
-                                        ).then((value) async {
-                                          if (value != null) {
-                                            if (value ==
-                                                encrypter.decrypt(
-                                                    encryption.Encrypted.from64(
-                                                        logininfo
-                                                            .get('password')),
-                                                    iv: iv)) {
-                                              Get.to(
-                                                () => RecordDetails(
-                                                  folderKey: this.folderKey,
-                                                  password: data['value'],
-                                                  // passwordIndex:
-                                                  //     index == 0 ? index : index - 1,
-                                                  passwordKey: data['key'],
-                                                  // controller.box
-                                                  //     .keyAt(index == 0
-                                                  //         ? index
-                                                  //         : index - 1)
-                                                  //     .toString(),
-                                                  img: websites.containsKey(
-                                                          data['value']!
-                                                              .title
-                                                              .toString())
-                                                      ? 'assets/icons/${data['value'].title.toString().toLowerCase()}.svg'
-                                                      : '',
-                                                ),
-                                              );
-                                            } else {
-                                              styledsnackbar(
-                                                  txt:
-                                                      'Incorrect master password',
-                                                  icon: Icons.error_outlined);
-                                            }
-                                          }
-                                        })
-                                      : await recordscontroller
-                                          .authenticateWithBiometrics()
-                                          .then((value) async {
-                                          if (recordscontroller
-                                              .isauthenticated.value) {
-                                            Get.to(
-                                              () => RecordDetails(
-                                                folderKey: this.folderKey,
-                                                password: data['value'],
-                                                // passwordIndex:
-                                                //     index == 0 ? index : index - 1,
-                                                passwordKey: data['key'],
-                                                // controller.box
-                                                //     .keyAt(index == 0
-                                                //         ? index
-                                                //         : index - 1)
-                                                //     .toString(),
-                                                img: websites.containsKey(
-                                                        data['value']!
-                                                            .title
-                                                            .toString())
-                                                    ? 'assets/icons/${data['value'].title.toString().toLowerCase()}.svg'
-                                                    : '',
-                                              ),
-                                            );
-                                          }
-                                        });
-                                },
-                                dense: true,
-                                leading: websites.containsKey(
-                                        data['value']!.title.toString())
-                                    ? SizedBox(
-                                        height: 40,
-                                        width: 40,
-                                        child: SvgPicture.asset(
-                                          'assets/icons/${data['value'].title.toString().toLowerCase()}.svg',
-                                          placeholderBuilder: (context) {
-                                            return Icon(
-                                              FontAwesomeIcons.unlockKeyhole,
-                                              color: Colors.white,
-                                              size: 30.0,
-                                            );
-                                          },
-                                        ))
-                                    : Icon(
-                                        FontAwesomeIcons.unlockKeyhole,
-                                        color: Colors.white,
-                                        size: 30.0,
-                                      ),
-                                title: CustomText(
-                                    title: data['value'].title.toString(),
-                                    fontcolor: Colors.white,
-                                    fontweight: FontWeight.w500,
-                                    fontsize: 23.0),
-                                subtitle: CustomText(
-                                    title: encrypter.decrypt(
-                                        encryption.Encrypted.from64(
-                                            data['value'].login.toString()),
-                                        iv: iv),
-                                    fontcolor: Colors.white,
-                                    fontweight: FontWeight.w500,
-                                    fontsize: 20.0),
-                                trailing: InkWell(
-                                  onTap: () async {
-                                    !logininfo.get('is_biometric_available') ||
-                                            !logininfo.get('bio_auth')
-                                        ? showDialog(
-                                            context: context,
-                                            builder: (context) =>
-                                                MasterPasswordDialog(),
-                                          ).then((value) async {
-                                            if (value != null) {
-                                              if (value ==
-                                                  encrypter.decrypt(
-                                                      encryption.Encrypted
-                                                          .from64(logininfo
-                                                              .get('password')),
-                                                      iv: iv)) {
-                                                await Clipboard.setData(
-                                                    ClipboardData(
-                                                  text: encrypter.decrypt(
-                                                      encryption.Encrypted
-                                                          .from64(data['value']
-                                                              .password
-                                                              .toString()),
-                                                      iv: iv),
-                                                ));
-                                                styledsnackbar(
-                                                    txt: 'Copied to clipboard',
-                                                    icon: Icons.copy_rounded);
-                                              } else {
-                                                styledsnackbar(
-                                                    txt:
-                                                        'Incorrect master password',
-                                                    icon: Icons.error_outlined);
-                                              }
-                                            }
-                                          })
-                                        : await recordscontroller
-                                            .authenticateWithBiometrics()
-                                            .then((value) async {
-                                            if (recordscontroller
-                                                .isauthenticated.value) {
-                                              await Clipboard.setData(
-                                                  ClipboardData(
-                                                text: encrypter.decrypt(
-                                                    encryption.Encrypted.from64(
-                                                        data['value']
-                                                            .password
-                                                            .toString()),
-                                                    iv: iv),
-                                              ));
-                                              styledsnackbar(
-                                                  txt: 'Copied to clipboard',
-                                                  icon: Icons.copy_rounded);
-                                            }
-                                          });
-                                  },
-                                  child: const Icon(
-                                    Icons.copy,
-                                    color: Colors.white,
-                                    size: 25.0,
-                                  ),
-                                ),
-                              );
+                          data = controller.box[index];
+                          return ListTile(
+                            // onLongPress: () {},
+                            onTap: () async {
+                              !logininfo.get('is_biometric_available') ||
+                                      !logininfo.get('bio_auth')
+                                  ? showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          MasterPasswordDialog(),
+                                    ).then((value) async {
+                                      if (value != null) {
+                                        if (value ==
+                                            encrypter.decrypt(
+                                                encryption.Encrypted.from64(
+                                                    logininfo.get('password')),
+                                                iv: iv)) {
+                                          Get.to(
+                                            () => RecordDetails(
+                                              folderKey: this.folderKey,
+                                              password: data['value'],
+                                              // passwordIndex:
+                                              //     index == 0 ? index : index - 1,
+                                              passwordKey: data['key'],
+                                              // controller.box
+                                              //     .keyAt(index == 0
+                                              //         ? index
+                                              //         : index - 1)
+                                              //     .toString(),
+                                              img: websites.containsKey(
+                                                      data['value']!
+                                                          .title
+                                                          .toString())
+                                                  ? 'assets/icons/${data['value'].title.toString().toLowerCase()}.svg'
+                                                  : '',
+                                            ),
+                                          );
+                                        } else {
+                                          styledsnackbar(
+                                              txt: 'Incorrect master password',
+                                              icon: Icons.error_outlined);
+                                        }
+                                      }
+                                    })
+                                  : await recordscontroller
+                                      .authenticateWithBiometrics()
+                                      .then((value) async {
+                                      if (recordscontroller
+                                          .isauthenticated.value) {
+                                        Get.to(
+                                          () => RecordDetails(
+                                            folderKey: this.folderKey,
+                                            password: data['value'],
+                                            // passwordIndex:
+                                            //     index == 0 ? index : index - 1,
+                                            passwordKey: data['key'],
+                                            // controller.box
+                                            //     .keyAt(index == 0
+                                            //         ? index
+                                            //         : index - 1)
+                                            //     .toString(),
+                                            img: websites.containsKey(
+                                                    data['value']!
+                                                        .title
+                                                        .toString())
+                                                ? 'assets/icons/${data['value'].title.toString().toLowerCase()}.svg'
+                                                : '',
+                                          ),
+                                        );
+                                      }
+                                    });
                             },
-                          )
-                        : GridView.builder(
-                            itemCount: controller.pickedfiles.length,
-                            gridDelegate:
-                                SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 5,
-                              mainAxisSpacing: 5,
+                            dense: true,
+                            leading: websites.containsKey(
+                                    data['value']!.title.toString())
+                                ? SizedBox(
+                                    height: 40,
+                                    width: 40,
+                                    child: SvgPicture.asset(
+                                      'assets/icons/${data['value'].title.toString().toLowerCase()}.svg',
+                                      placeholderBuilder: (context) {
+                                        return Icon(
+                                          FontAwesomeIcons.unlockKeyhole,
+                                          color: Colors.white,
+                                          size: 30.0,
+                                        );
+                                      },
+                                    ))
+                                : Icon(
+                                    FontAwesomeIcons.unlockKeyhole,
+                                    color: Colors.white,
+                                    size: 30.0,
+                                  ),
+                            title: CustomText(
+                                title: data['value'].title.toString(),
+                                fontcolor: Colors.white,
+                                fontweight: FontWeight.w500,
+                                fontsize: 23.0),
+                            subtitle: CustomText(
+                                title: encrypter.decrypt(
+                                    encryption.Encrypted.from64(
+                                        data['value'].login.toString()),
+                                    iv: iv),
+                                fontcolor: Colors.white,
+                                fontweight: FontWeight.w500,
+                                fontsize: 20.0),
+                            trailing: InkWell(
+                              onTap: () async {
+                                !logininfo.get('is_biometric_available') ||
+                                        !logininfo.get('bio_auth')
+                                    ? showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            MasterPasswordDialog(),
+                                      ).then((value) async {
+                                        if (value != null) {
+                                          if (value ==
+                                              encrypter.decrypt(
+                                                  encryption.Encrypted.from64(
+                                                      logininfo
+                                                          .get('password')),
+                                                  iv: iv)) {
+                                            await Clipboard.setData(
+                                                ClipboardData(
+                                              text: encrypter.decrypt(
+                                                  encryption.Encrypted.from64(
+                                                      data['value']
+                                                          .password
+                                                          .toString()),
+                                                  iv: iv),
+                                            ));
+                                            styledsnackbar(
+                                                txt: 'Copied to clipboard',
+                                                icon: Icons.copy_rounded);
+                                          } else {
+                                            styledsnackbar(
+                                                txt:
+                                                    'Incorrect master password',
+                                                icon: Icons.error_outlined);
+                                          }
+                                        }
+                                      })
+                                    : await recordscontroller
+                                        .authenticateWithBiometrics()
+                                        .then((value) async {
+                                        if (recordscontroller
+                                            .isauthenticated.value) {
+                                          await Clipboard.setData(ClipboardData(
+                                            text: encrypter.decrypt(
+                                                encryption.Encrypted.from64(
+                                                    data['value']
+                                                        .password
+                                                        .toString()),
+                                                iv: iv),
+                                          ));
+                                          styledsnackbar(
+                                              txt: 'Copied to clipboard',
+                                              icon: Icons.copy_rounded);
+                                        }
+                                      });
+                              },
+                              child: const Icon(
+                                Icons.copy,
+                                color: Colors.white,
+                                size: 25.0,
+                              ),
                             ),
-                            itemBuilder: (context, index) {
-                              // final folder = controller.availableFolders[index];
-                              // final isSelected = controller.selectedAssets.contains(folder);
-                              print('building... ');
-                              return InkWell(
-                                onTap: !controller.isImage(controller
+                          );
+                        },
+                      )
+                    : GridView.builder(
+                        itemCount: controller.pickedfiles.length,
+                        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          crossAxisSpacing: 5,
+                          mainAxisSpacing: 5,
+                        ),
+                        itemBuilder: (context, index) {
+                          // final folder = controller.availableFolders[index];
+                          // final isSelected = controller.selectedAssets.contains(folder);
+                          print('building... ');
+                          return InkWell(
+                            onTap: !controller.isImage(controller
+                                    .pickedfiles[index]['type']
+                                    .toString()
+                                    .toLowerCase())
+                                ? () async {
+                                    OpenFilex.open(
+                                        controller.pickedfiles[index]['data']);
+                                  }
+                                : () {
+                                    Get.to(
+                                      () => FullScreenImagePage(
+                                        imageUrl: controller.decryptFile(
+                                            controller.pickedfiles[index]
+                                                ['data']),
+                                        memoryImage: true,
+                                      ),
+                                    );
+                                  },
+                            child: Container(
+                              width: 200,
+                              height: 250,
+                              margin: EdgeInsets.all(5.0),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                image: controller.isImage(controller
                                         .pickedfiles[index]['type']
                                         .toString()
                                         .toLowerCase())
-                                    ? () async {
-                                        OpenFilex.open(controller
-                                            .pickedfiles[index]['data']);
-                                      }
-                                    : () {
-                                        Get.to(
-                                          () => FullScreenImagePage(
-                                            imageUrl: controller.decryptFile(
-                                                controller.pickedfiles[index]
-                                                    ['data']),
-                                            memoryImage: true,
-                                          ),
-                                        );
-                                      },
-                                child: Container(
-                                  width: 200,
-                                  height: 250,
-                                  margin: EdgeInsets.all(5.0),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    image: controller.isImage(controller
-                                            .pickedfiles[index]['type']
-                                            .toString()
-                                            .toLowerCase())
-                                        ? DecorationImage(
-                                            image: MemoryImage(
-                                              controller.decryptFile(controller
-                                                  .pickedfiles[index]['data']),
-                                            ),
-                                            // AssetEntityImageProvider(
-                                            //   controller
-                                            //       .foldersThumbnail[folder.id.toString()],
-                                            //   isOriginal: true,
-                                            // ),
+                                    ? DecorationImage(
+                                        image: MemoryImage(
+                                          controller.decryptFile(controller
+                                              .pickedfiles[index]['data']),
+                                        ),
+                                        // AssetEntityImageProvider(
+                                        //   controller
+                                        //       .foldersThumbnail[folder.id.toString()],
+                                        //   isOriginal: true,
+                                        // ),
 
-                                            fit: BoxFit.fill)
-                                        : null,
-                                    color: Colors.black45,
-                                  ),
-                                  child:
-                                      !controller.isImage(controller
-                                              .pickedfiles[index]['type']
-                                              .toString()
-                                              .toLowerCase())
-                                          ? Column(
-                                              // mainAxisSize: MainAxisSize.max,
-                                              // mainAxisAlignment:
-                                              //     MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                // SizedBox(
-                                                //   height: 40,
-                                                // ),
-                                                Expanded(
-                                                  flex: 4,
-                                                  child: Center(
-                                                    child: Icon(
-                                                      mediacontroller
-                                                          .fileIconDecider(controller
+                                        fit: BoxFit.fill)
+                                    : null,
+                                color: Colors.black45,
+                              ),
+                              child:
+                                  !controller.isImage(controller
+                                          .pickedfiles[index]['type']
+                                          .toString()
+                                          .toLowerCase())
+                                      ? Column(
+                                          // mainAxisSize: MainAxisSize.max,
+                                          // mainAxisAlignment:
+                                          //     MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            // SizedBox(
+                                            //   height: 40,
+                                            // ),
+                                            Expanded(
+                                              flex: 4,
+                                              child: Center(
+                                                child: Icon(
+                                                  mediacontroller
+                                                      .fileIconDecider(
+                                                          controller
                                                                   .pickedfiles[
                                                               index]['type']),
-                                                      color: Colors.white,
-                                                      size: 35,
-                                                    ),
-                                                  ),
+                                                  color: Colors.white,
+                                                  size: 35,
                                                 ),
-                                                Expanded(
-                                                  flex: 1,
-                                                  // alignment: Alignment.bottomCenter,
-                                                  // backgroundColor: Colors.white,
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Expanded(
-                                                        flex: 6,
-                                                        child: Text(
-                                                          '${controller.pickedfiles[index]['name']}',
-                                                          maxLines: 1,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          style: TextStyle(
-                                                              fontSize: 15.0,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              color:
-                                                                  Colors.white,
-                                                              fontFamily:
-                                                                  'majalla'),
-                                                        ),
-                                                      ),
-                                                      Expanded(
-                                                        flex: 2,
-                                                        child:
-                                                            CustomPopMenuButton(
-                                                                children: [
-                                                              CustomPopMenuItemModel(
-                                                                  title:
-                                                                      'Export To Phone',
-                                                                  onSelected:
-                                                                      () async {
-                                                                    controller.ExportFile(
-                                                                        controller.decryptFile(controller.pickedfiles[index]
-                                                                            [
-                                                                            'data']),
-                                                                        controller.pickedfiles[index]
-                                                                            [
-                                                                            'absolutePath'],
-                                                                        folderKey,
-                                                                        controller
-                                                                            .pickedfiles[index]);
-                                                                  }),
-                                                              CustomPopMenuItemModel(
-                                                                  title:
-                                                                      'Delete',
-                                                                  onSelected:
-                                                                      () {
-                                                                    AwesomeDialog(
-                                                                      context:
-                                                                          context,
-                                                                      animType:
-                                                                          AnimType
-                                                                              .topSlide,
-                                                                      dialogType:
-                                                                          DialogType
-                                                                              .question,
-                                                                      title:
-                                                                          'Are you sure?',
-                                                                      desc:
-                                                                          'Do you want to delete this image?',
-                                                                      btnOkOnPress:
-                                                                          () async {
-                                                                        // Get.dialog(LoadingPage());
-                                                                        try {
-                                                                          mediacontroller.pickedfiles =
-                                                                              foldersdatabox.get(folderKey);
-                                                                          mediacontroller
-                                                                              .pickedfiles
-                                                                              .remove(controller.pickedfiles[index]);
-                                                                          foldersdatabox.put(
-                                                                              folderKey,
-                                                                              mediacontroller.pickedfiles);
-                                                                          mediacontroller.pickedfiles =
-                                                                              foldersdatabox.get(folderKey);
-
-                                                                          // Get.back();
-                                                                          // Get.back();
-                                                                          styledsnackbar(
-                                                                              txt: 'Deleted Successfully.',
-                                                                              icon: Icons.check);
-                                                                          // controller.update();
-                                                                        } catch (e) {
-                                                                          // Get.back();
-                                                                          styledsnackbar(
-                                                                              txt: 'Error occured.$e',
-                                                                              icon: Icons.error);
-                                                                        }
-                                                                      },
-                                                                      btnCancelOnPress:
-                                                                          () {
-                                                                        // Get.back();
-                                                                      },
-                                                                    )..show();
-                                                                  }),
-                                                            ]),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            )
-                                          : Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.end,
-                                              children: [
-                                                Container(
-                                                  width: 200,
-                                                  height: 45,
-                                                  padding: EdgeInsets.only(
-                                                      bottom: 10),
-                                                  decoration: BoxDecoration(
-                                                    color: Colors.blueGrey,
-                                                    borderRadius:
-                                                        BorderRadius.only(
-                                                      bottomLeft:
-                                                          Radius.circular(10.0),
-                                                      bottomRight:
-                                                          Radius.circular(10.0),
-                                                    ),
-                                                  ),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Expanded(
-                                                        flex: 6,
-                                                        child: Text(
-                                                          '${controller.pickedfiles[index]['name']}',
-                                                          maxLines: 1,
-                                                          overflow: TextOverflow
-                                                              .ellipsis,
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                          style: TextStyle(
-                                                              fontSize: 15.0,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .w500,
-                                                              color:
-                                                                  Colors.white,
-                                                              fontFamily:
-                                                                  'majalla'),
-                                                        ),
-                                                      ),
-                                                      Expanded(
-                                                        flex: 2,
-                                                        child:
-                                                            CustomPopMenuButton(
-                                                                children: [
-                                                              CustomPopMenuItemModel(
-                                                                  title:
-                                                                      'Export To Phone',
-                                                                  onSelected:
-                                                                      () async {
-                                                                    controller.ExportFile(
-                                                                        controller.decryptFile(controller.pickedfiles[index]
-                                                                            [
-                                                                            'data']),
-                                                                        controller.pickedfiles[index]
-                                                                            [
-                                                                            'absolutePath'],
-                                                                        folderKey,
-                                                                        controller
-                                                                            .pickedfiles[index]);
-                                                                  }),
-                                                              CustomPopMenuItemModel(
-                                                                  title:
-                                                                      'Delete',
-                                                                  onSelected:
-                                                                      () {
-                                                                    AwesomeDialog(
-                                                                      context:
-                                                                          context,
-                                                                      animType:
-                                                                          AnimType
-                                                                              .topSlide,
-                                                                      dialogType:
-                                                                          DialogType
-                                                                              .question,
-                                                                      title:
-                                                                          'Are you sure?',
-                                                                      desc:
-                                                                          'Do you want to delete this file?',
-                                                                      btnOkOnPress:
-                                                                          () async {
-                                                                        // Get.dialog(LoadingPage());
-                                                                        try {
-                                                                          mediacontroller.pickedfiles =
-                                                                              foldersdatabox.get(folderKey);
-                                                                          mediacontroller
-                                                                              .pickedfiles
-                                                                              .remove(controller.pickedfiles[index]);
-                                                                          foldersdatabox.put(
-                                                                              folderKey,
-                                                                              mediacontroller.pickedfiles);
-                                                                          mediacontroller.pickedfiles =
-                                                                              foldersdatabox.get(folderKey);
-
-                                                                          // Get.back();
-                                                                          // Get.back();
-                                                                          styledsnackbar(
-                                                                              txt: 'Deleted Successfully.',
-                                                                              icon: Icons.check);
-                                                                          controller
-                                                                              .update([
-                                                                            'availableFilesCount'
-                                                                          ]);
-                                                                          // controller.update();
-                                                                        } catch (e) {
-                                                                          // Get.back();
-                                                                          styledsnackbar(
-                                                                              txt: 'Error occured.$e',
-                                                                              icon: Icons.error);
-                                                                        }
-                                                                      },
-                                                                      btnCancelOnPress:
-                                                                          () {
-                                                                        // Get.back();
-                                                                      },
-                                                                    )..show();
-                                                                  }),
-                                                            ]),
-                                                      )
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
+                                              ),
                                             ),
-                                ),
-                              );
-                            },
+                                            Expanded(
+                                              flex: 1,
+                                              // alignment: Alignment.bottomCenter,
+                                              // backgroundColor: Colors.white,
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Expanded(
+                                                    flex: 6,
+                                                    child: Text(
+                                                      '${controller.pickedfiles[index]['name']}',
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      style: TextStyle(
+                                                          fontSize: 15.0,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          color: Colors.white,
+                                                          fontFamily:
+                                                              'majalla'),
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    flex: 2,
+                                                    child: CustomPopMenuButton(
+                                                        children: [
+                                                          CustomPopMenuItemModel(
+                                                              title:
+                                                                  'Export To Phone',
+                                                              onSelected:
+                                                                  () async {
+                                                                controller.ExportFile(
+                                                                    controller.decryptFile(
+                                                                        controller.pickedfiles[index]
+                                                                            [
+                                                                            'data']),
+                                                                    controller.pickedfiles[
+                                                                            index]
+                                                                        [
+                                                                        'absolutePath'],
+                                                                    folderKey,
+                                                                    controller
+                                                                            .pickedfiles[
+                                                                        index]);
+                                                              }),
+                                                          CustomPopMenuItemModel(
+                                                              title: 'Delete',
+                                                              onSelected: () {
+                                                                AwesomeDialog(
+                                                                  context:
+                                                                      context,
+                                                                  animType: AnimType
+                                                                      .topSlide,
+                                                                  dialogType:
+                                                                      DialogType
+                                                                          .question,
+                                                                  title:
+                                                                      'Are you sure?',
+                                                                  desc:
+                                                                      'Do you want to delete this image?',
+                                                                  btnOkOnPress:
+                                                                      () async {
+                                                                    // Get.dialog(LoadingPage());
+                                                                    try {
+                                                                      mediacontroller
+                                                                              .pickedfiles =
+                                                                          foldersdatabox
+                                                                              .get(folderKey);
+                                                                      mediacontroller
+                                                                          .pickedfiles
+                                                                          .remove(
+                                                                              controller.pickedfiles[index]);
+                                                                      foldersdatabox.put(
+                                                                          folderKey,
+                                                                          mediacontroller
+                                                                              .pickedfiles);
+                                                                      mediacontroller
+                                                                              .pickedfiles =
+                                                                          foldersdatabox
+                                                                              .get(folderKey);
+
+                                                                      // Get.back();
+                                                                      // Get.back();
+                                                                      styledsnackbar(
+                                                                          txt:
+                                                                              'Deleted Successfully.',
+                                                                          icon:
+                                                                              Icons.check);
+                                                                      // controller.update();
+                                                                    } catch (e) {
+                                                                      // Get.back();
+                                                                      styledsnackbar(
+                                                                          txt:
+                                                                              'Error occured.$e',
+                                                                          icon:
+                                                                              Icons.error);
+                                                                    }
+                                                                  },
+                                                                  btnCancelOnPress:
+                                                                      () {
+                                                                    // Get.back();
+                                                                  },
+                                                                )..show();
+                                                              }),
+                                                        ]),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        )
+                                      : Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            Container(
+                                              width: 200,
+                                              height: 45,
+                                              padding:
+                                                  EdgeInsets.only(bottom: 10),
+                                              decoration: BoxDecoration(
+                                                color: Colors.blueGrey,
+                                                borderRadius: BorderRadius.only(
+                                                  bottomLeft:
+                                                      Radius.circular(10.0),
+                                                  bottomRight:
+                                                      Radius.circular(10.0),
+                                                ),
+                                              ),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                    CrossAxisAlignment.center,
+                                                children: [
+                                                  Expanded(
+                                                    flex: 6,
+                                                    child: Text(
+                                                      '${controller.pickedfiles[index]['name']}',
+                                                      maxLines: 1,
+                                                      overflow:
+                                                          TextOverflow.ellipsis,
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: TextStyle(
+                                                          fontSize: 15.0,
+                                                          fontWeight:
+                                                              FontWeight.w500,
+                                                          color: Colors.white,
+                                                          fontFamily:
+                                                              'majalla'),
+                                                    ),
+                                                  ),
+                                                  Expanded(
+                                                    flex: 2,
+                                                    child: CustomPopMenuButton(
+                                                        children: [
+                                                          CustomPopMenuItemModel(
+                                                              title:
+                                                                  'Export To Phone',
+                                                              onSelected:
+                                                                  () async {
+                                                                controller.ExportFile(
+                                                                    controller.decryptFile(
+                                                                        controller.pickedfiles[index]
+                                                                            [
+                                                                            'data']),
+                                                                    controller.pickedfiles[
+                                                                            index]
+                                                                        [
+                                                                        'absolutePath'],
+                                                                    folderKey,
+                                                                    controller
+                                                                            .pickedfiles[
+                                                                        index]);
+                                                              }),
+                                                          CustomPopMenuItemModel(
+                                                              title: 'Delete',
+                                                              onSelected: () {
+                                                                AwesomeDialog(
+                                                                  context:
+                                                                      context,
+                                                                  animType: AnimType
+                                                                      .topSlide,
+                                                                  dialogType:
+                                                                      DialogType
+                                                                          .question,
+                                                                  title:
+                                                                      'Are you sure?',
+                                                                  desc:
+                                                                      'Do you want to delete this file?',
+                                                                  btnOkOnPress:
+                                                                      () async {
+                                                                    // Get.dialog(LoadingPage());
+                                                                    try {
+                                                                      mediacontroller
+                                                                              .pickedfiles =
+                                                                          foldersdatabox
+                                                                              .get(folderKey);
+                                                                      mediacontroller
+                                                                          .pickedfiles
+                                                                          .remove(
+                                                                              controller.pickedfiles[index]);
+                                                                      foldersdatabox.put(
+                                                                          folderKey,
+                                                                          mediacontroller
+                                                                              .pickedfiles);
+                                                                      mediacontroller
+                                                                              .pickedfiles =
+                                                                          foldersdatabox
+                                                                              .get(folderKey);
+
+                                                                      // Get.back();
+                                                                      // Get.back();
+                                                                      styledsnackbar(
+                                                                          txt:
+                                                                              'Deleted Successfully.',
+                                                                          icon:
+                                                                              Icons.check);
+                                                                      controller
+                                                                          .update([
+                                                                        'availableFilesCount'
+                                                                      ]);
+                                                                      // controller.update();
+                                                                    } catch (e) {
+                                                                      // Get.back();
+                                                                      styledsnackbar(
+                                                                          txt:
+                                                                              'Error occured.$e',
+                                                                          icon:
+                                                                              Icons.error);
+                                                                    }
+                                                                  },
+                                                                  btnCancelOnPress:
+                                                                      () {
+                                                                    // Get.back();
+                                                                  },
+                                                                )..show();
+                                                              }),
+                                                        ]),
+                                                  )
+                                                ],
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                            ),
                           );
-              }),
+                        },
+                      );
+          }),
         ),
       ),
     );

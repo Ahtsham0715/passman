@@ -46,6 +46,7 @@ class _RecordDetailsState extends State<RecordDetails>
   void initState() {
     super.initState();
     print(widget.passwordKey);
+    print(widget.password.toJson());
     _animationController =
         AnimationController(vsync: this, duration: Duration(seconds: 1));
     _animation = Tween<double>(begin: 0, end: 1).animate(_animationController);
@@ -143,11 +144,13 @@ class _RecordDetailsState extends State<RecordDetails>
                   btnOkOnPress: () async {
                     try {
                       if (widget.folderKey.isNotEmpty) {
-                        MediaController cont = MediaController();
                         foldersPasswordBox(widget.folderKey)
                             .delete(widget.passwordKey);
-                        await cont.getPasswords(widget.folderKey);
-                        cont.update();
+                        await Get.find<MediaController>()
+                            .getPasswords(widget.folderKey);
+                        Get.find<MediaController>().update();
+                        Get.find<MediaController>()
+                            .update(['availableFilesCount']);
                       } else {
                         await passwordbox.delete(widget.passwordKey);
                       }

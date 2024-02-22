@@ -10,16 +10,19 @@ PasswordModel? passwordModelFromJson(String str) =>
 String passwordModelToJson(PasswordModel? data) => json.encode(data!.toJson());
 
 class PasswordModel {
-  PasswordModel({
-    required this.title,
-    required this.login,
-    required this.password,
-    required this.website,
-    required this.notes,
-    required this.length,
-  });
+  PasswordModel(
+      {required this.title,
+      required this.login,
+      required this.password,
+      required this.website,
+      required this.notes,
+      required this.length,
+      this.folderKey = '',
+      this.folderName = ''});
 
   String? title;
+  String folderKey;
+  String folderName;
   String? login;
   String? password;
   String? website;
@@ -28,6 +31,8 @@ class PasswordModel {
 
   factory PasswordModel.fromJson(Map<String, dynamic> json) => PasswordModel(
         title: json["title"],
+        folderKey: json["folderKey"],
+        folderName: json["folderName"],
         login: json["login"],
         password: json["password"],
         website: json["website"],
@@ -37,6 +42,8 @@ class PasswordModel {
 
   Map<String, dynamic> toJson() => {
         "title": title,
+        "folderKey": folderKey,
+        "folderName": folderName,
         "login": login,
         "password": password,
         "website": website,

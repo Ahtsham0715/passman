@@ -112,21 +112,27 @@ class _CreateRecordState extends State<CreateRecord>
                       encrypter.encrypt(_login.text.toString().trim(), iv: iv);
                   var passwordencrypt =
                       encrypter.encrypt(_password.text.toString(), iv: iv);
+                  Box<PasswordModel> passwordBox;
+                  String folderName = '';
+                  if (widget.folderKey.isNotEmpty) {
+                    passwordBox = foldersPasswordBox(widget.folderKey);
+                    folderName = foldersbox.get(widget.folderKey)['name'];
+                  } else {
+                    passwordBox = passwordbox;
+                  }
                   PasswordModel passworddata = PasswordModel(
                     title: _title.text.toString(),
+                    folderKey: widget.folderKey,
+                    folderName: folderName,
                     login: loginencrypt.base64,
                     password: passwordencrypt.base64,
                     website: _websiteaddress.text.toString(),
                     notes: _notes.text.toString(),
                     length: _password.text.length,
                   );
+                  print(passworddata.toJson());
                   String randomKey = recordcontroller.generateHiveKey();
-                  Box<PasswordModel> passwordBox;
-                  if (widget.folderKey.isNotEmpty) {
-                    passwordBox = foldersPasswordBox(widget.folderKey);
-                  } else {
-                    passwordBox = passwordbox;
-                  }
+
                   if (passwordBox.containsKey(randomKey)) {
                     randomKey = recordcontroller.generateHiveKey();
                   }

@@ -63,8 +63,9 @@ class MediaController extends GetxController {
 
   Future getPasswords(String folderKey) async {
     box.clear();
-    Box<PasswordModel> fpassbox =
-        await Hive.openBox<PasswordModel>('$folderKey;$uid');
+    Box<PasswordModel> fpassbox = Hive.isBoxOpen('$folderKey;$uid')
+        ? Hive.box('$folderKey;$uid')
+        : await Hive.openBox<PasswordModel>('$folderKey;$uid');
     if (!allPasswordFolderBoxes.values.contains('$folderKey;$uid')) {
       allPasswordFolderBoxes.put(
           allPasswordFolderBoxes.keys.length + 1, '$folderKey;$uid');
@@ -82,6 +83,7 @@ class MediaController extends GetxController {
     });
     print(box);
     update();
+    update(['availableFilesCount']);
 
     return box;
   }
