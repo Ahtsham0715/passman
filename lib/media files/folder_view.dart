@@ -1,12 +1,9 @@
-import 'dart:io';
 import 'package:awesome_dialog/awesome_dialog.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:passman/constants.dart';
@@ -41,6 +38,7 @@ class FolderView extends GetView<MediaController> {
   Widget build(BuildContext context) {
     final MediaController mediacontroller = MediaController();
     final RecordsController recordscontroller = RecordsController();
+    print(folderKey);
     // mediacontroller
     //     .foldersPasswordBox(this.folderKey)
     //     .listenable()

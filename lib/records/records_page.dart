@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -7,6 +9,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:passman/Auth/controllers/user_data_controller.dart';
@@ -21,13 +24,18 @@ import 'package:passman/res/components/awesome_custom_dialog.dart';
 import 'package:passman/res/components/custom_text.dart';
 import 'package:encrypt/encrypt.dart' as encryption;
 import 'package:passman/res/components/new_folder.dart';
+import 'package:restart_app/restart_app.dart';
+import 'package:shorebird_code_push/shorebird_code_push.dart';
 import '../constants.dart';
 import '../media files/controllers/media_controller.dart';
 import '../media files/folder_view.dart';
 import '../res/components/custom_formfield.dart';
 import '../res/components/custom_snackbar.dart';
 import '../res/components/loading_page.dart';
+
 import '../res/components/master_password_dialog.dart';
+
+final _shorebirdCodePush = ShorebirdCodePush();
 
 class PasswordsPage extends StatefulWidget {
   const PasswordsPage({super.key});
@@ -41,12 +49,21 @@ class _PasswordsPageState extends State<PasswordsPage> {
 
   final searchController = TextEditingController();
 
+  final _isShorebirdAvailable = _shorebirdCodePush.isShorebirdAvailable();
+  int? _currentPatchVersion;
+  // bool _isCheckingForUpdate = false;
   // ValueNotifier<bool> isScrolling = ValueNotifier(true);
   @override
   void initState() {
     super.initState();
 
     Get.put(UserDataController());
+    _shorebirdCodePush.currentPatchNumber().then((currentPatchVersion) {
+      if (!mounted) return;
+      setState(() {
+        _currentPatchVersion = currentPatchVersion;
+      });
+    });
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (user == null || user.isAnonymous) {
         print('User is currently signed out!');
@@ -57,6 +74,143 @@ class _PasswordsPageState extends State<PasswordsPage> {
         print('User is signed in!');
       }
     });
+    print('is shorebird available: $_isShorebirdAvailable');
+    if (_isShorebirdAvailable) {
+      _checkForUpdate();
+    }
+  }
+
+  Future<void> _checkForUpdate({bool showSnackbar = false}) async {
+    // setState(() {
+    //   _isCheckingForUpdate = true;
+    // });
+
+    // Ask the Shorebird servers if there is a new patch available.
+    final isUpdateAvailable =
+        await _shorebirdCodePush.isNewPatchAvailableForDownload();
+
+    if (!mounted) return;
+
+    // setState(() {
+    //   _isCheckingForUpdate = false;
+    // });
+
+    if (isUpdateAvailable) {
+      // _showUpdateAvailableBanner();
+      _downloadUpdate();
+    } else {
+      print('no update available');
+      if (showSnackbar) {
+        styledsnackbar(txt: 'No update available', icon: Icons.update);
+      }
+    }
+  }
+
+  // void _showDownloadingBanner() {
+  //   ScaffoldMessenger.of(context).showMaterialBanner(
+  //       // const MaterialBanner(
+  //       //   content: CustomText(title: 'Downloading...', fontcolor: Colors.white),
+  //       //   backgroundColor: Colors.transparent,
+  //       //   actions: [
+  //       //     SizedBox(
+  //       //       height: 14,
+  //       //       width: 14,
+  //       //       child: CircularProgressIndicator(
+  //       //         strokeWidth: 2,
+  //       //       ),
+  //       //     ),
+  //       //   ],
+  //       // ),
+
+  //       customMaterialBanner(
+  //     title: 'Downloading... ',
+  //   ));
+  // }
+
+  // void _showUpdateAvailableBanner() {
+  //   ScaffoldMessenger.of(context).showMaterialBanner(customMaterialBanner(
+  //     title: 'Update available',
+  //     actions: [
+  //       TextButton(
+  //         onPressed: () async {
+  //           ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+  //           await _downloadUpdate();
+
+  //           if (!mounted) return;
+  //           ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+  //         },
+  //         child: CustomText(
+  //           title: 'Download',
+  //           fontsize: 18,
+  //           fontcolor: Colors.blue,
+  //         ),
+  //       ),
+  //     ],
+  //   )
+  //       // MaterialBanner(
+  //       //   content: const Text('Update available'),
+  //       //   actions: [
+  //       //     TextButton(
+  //       //       onPressed: () async {
+  //       //         ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+  //       //         await _downloadUpdate();
+
+  //       //         if (!mounted) return;
+  //       //         ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+  //       //       },
+  //       //       child: const Text('Download'),
+  //       //     ),
+  //       //   ],
+  //       // ),
+  //       );
+  // }
+
+  // void _showRestartBanner() {
+  //   ScaffoldMessenger.of(context).showMaterialBanner(customMaterialBanner(
+  //     title: 'A new patch is ready!',
+  //     actions: [
+  //       TextButton(
+  //         // Restart the app for the new patch to take effect.
+  //         onPressed: () {
+  //           ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+  //           Restart.restartApp();
+  //         },
+
+  //         child: CustomText(
+  //           title: 'Restart app',
+  //           fontsize: 18,
+  //           fontcolor: Colors.blue,
+  //         ),
+  //       ),
+  //     ],
+  //   )
+  //       // const MaterialBanner(
+  //       //   content: Text('A new patch is ready!'),
+  //       //   actions: [
+  //       //     TextButton(
+  //       //       // Restart the app for the new patch to take effect.
+  //       //       onPressed: Restart.restartApp,
+  //       //       child: Text('Restart app'),
+  //       //     ),
+  //       //   ],
+  //       // ),
+  //       );
+  // }
+
+  Future<void> _downloadUpdate() async {
+    // _showDownloadingBanner();
+
+    await Future.wait([
+      _shorebirdCodePush.downloadUpdateIfAvailable(),
+
+      // Add an artificial delay so the banner has enough time to animate in.
+      Future<void>.delayed(const Duration(milliseconds: 250)),
+    ]);
+
+    if (!mounted) return;
+    Restart.restartApp();
+    // ScaffoldMessenger.of(context).hideCurrentMaterialBanner();
+    // _showRestartBanner();
   }
 
   @override
@@ -64,6 +218,9 @@ class _PasswordsPageState extends State<PasswordsPage> {
     // final UserDataController userdata = UserDataController();
     final RecordsController recordscontroller = Get.put(RecordsController());
     final MediaController folderscontroller = Get.put(MediaController());
+    final heading = _currentPatchVersion != null
+        ? '$_currentPatchVersion'
+        : 'No patch installed';
     return PopScope(
       canPop: false,
       onPopInvoked: (val) {
@@ -622,6 +779,87 @@ class _PasswordsPageState extends State<PasswordsPage> {
                             },
                           ),
                           CustomDivider(),
+                          customDrawerTile(
+                            title: 'Password Strength Checker',
+                            leading: Icons.emoji_emotions,
+                            onpressed: () async {
+                              // Get.to(
+                              //   () => PreferencesPage(),
+                              // );
+                              Future<Uint8List> readImageBytes(
+                                  String assetPath) async {
+                                final data = await rootBundle.load(assetPath);
+                                return data.buffer.asUint8List();
+                              }
+
+                              try {
+                                final model = GenerativeModel(
+                                  model: 'gemini-1.0-pro-vision-latest',
+                                  apiKey:
+                                      'AIzaSyDTqizbF24ymCA-x2Im_njQ6ObtXdO1oAI',
+                                );
+                                // final password = '38DhwyD*/+#D4';
+                                final prompt =
+                                    // 'Determine Strength of this password: $password. Strength should be in a single word and also rate this password from 0 to 10. give a color code in HEX format according to password stength and rating .if password is week or easy to crack than generate a stronger password';
+                                    '''list all food items with calories and quantity of each item you seeing in image.
+                                    quantity should be accurate accoring to the image
+                                    Every item should be listed as:
+                                    {item name,quantity in the image,calories in the quantity(that is in the image)}
+                                    ''';
+                                print('Prompt: $prompt');
+
+                                final content = [
+                                  // Content.text(prompt)
+                                  Content.multi([
+                                    TextPart(prompt),
+                                    // The only accepted mime types are image/*.
+                                    DataPart('image/jpeg',
+                                        await readImageBytes('assets/img.jpg')),
+                                    // DataPart(
+                                    //     'image/jpeg',
+                                    //     await readImageBytes(
+                                    //         'assets/privacy.jpg')),
+                                  ])
+                                ];
+                                // final tokenCount = await model.countTokens(content);
+                                // print('Token count: ${tokenCount.totalTokens}');
+
+                                final response =
+                                    await model.generateContent(content);
+                                //  for (final response in responses) {
+                                //   print(response.text);
+                                //   stdout.write(response.text);
+                                // }
+                                // stdout.writeln();
+                                print(response.text);
+                                // final prompt = 'Generate a strong password';
+                                // final content = [Content.text(prompt)];
+                                // final response =
+                                //     await model.generateContent(content);
+
+                                // print(response.text);
+                                print('process ended');
+                              } catch (e) {
+                                print(e);
+                              }
+                            },
+                          ),
+                          CustomDivider(),
+                          customDrawerTile(
+                            title: 'Check For Update',
+                            leading: Icons.update_sharp,
+                            onpressed: () {
+                              if (_isShorebirdAvailable) {
+                                _checkForUpdate(showSnackbar: true);
+                              }
+                              // ScaffoldMessenger.of(context)
+                              //     .hideCurrentMaterialBanner();
+                              // ScaffoldMessenger.of(context).showMaterialBanner(
+                              //     customMaterialBanner(
+                              //         title: 'Downloading... '));
+                            },
+                          ),
+                          CustomDivider(),
                           // customDrawerTile(
                           //   title: 'Hide Gallery',
                           //   leading: Icons.browse_gallery,
@@ -682,6 +920,32 @@ class _PasswordsPageState extends State<PasswordsPage> {
           // backgroundColor: Colors.white.withOpacity(0.9),
         ),
       ),
+    );
+  }
+
+  MaterialBanner customMaterialBanner({
+    required String title,
+    List<Widget>? actions,
+  }) {
+    return MaterialBanner(
+      content: CustomText(
+        title: title,
+        fontcolor: Colors.black,
+        fontsize: 20,
+      ),
+      backgroundColor: Colors.white,
+      dividerColor: Colors.black,
+      actions: actions ??
+          [
+            SizedBox(
+              height: 14,
+              width: 14,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.black,
+              ),
+            ),
+          ],
     );
   }
 }

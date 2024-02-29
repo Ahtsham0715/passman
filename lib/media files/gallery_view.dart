@@ -1,11 +1,9 @@
-import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:passman/constants.dart';
 import 'package:passman/media%20files/custom_future_builder_widget.dart';
 import 'package:passman/res/components/folder_assets_page.dart';
-import 'package:skeletonizer/skeletonizer.dart';
 
 import 'controllers/gallery_controller.dart';
 

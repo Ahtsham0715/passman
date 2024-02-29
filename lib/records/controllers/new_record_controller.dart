@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/state_manager.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:passman/records/models/progressbarmodel.dart';
 
 class NewRecordController extends GetxController {

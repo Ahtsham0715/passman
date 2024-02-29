@@ -52,7 +52,7 @@ class _LoginPageState extends State<LoginPage> {
         print('User is signed in!');
       }
     });
-    Future.delayed(Duration(seconds: 1), () {
+    Future.delayed(Duration(seconds: 0), () {
       if (controller.isbiometricavailable.value &&
           logininfo.get('bio_auth') != null &&
           logininfo.get('bio_auth') &&

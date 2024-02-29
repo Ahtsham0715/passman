@@ -100,6 +100,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:photo_view/photo_view.dart';
 
 class FullScreenImagePage extends StatelessWidget {
@@ -110,20 +111,27 @@ class FullScreenImagePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child:
-// fileImage == null || fileImage == false ?
-//     PhotoView(
-//       imageProvider:  AssetImage(imageUrl.toString()),
+    return Scaffold(
+      appBar: AppBar(
+        automaticallyImplyLeading: true,
+        backgroundColor: Colors.black,
+        elevation: 0.0,
+      ),
+      body: Container(
+        child:
+            // fileImage == null || fileImage == false ?
+            //     PhotoView(
+            //       imageProvider:  AssetImage(imageUrl.toString()),
 
-//     ):
-          memoryImage
-              ? PhotoView(
-                  imageProvider: MemoryImage(imageUrl),
-                )
-              : PhotoView(
-                  imageProvider: FileImage(File(imageUrl)),
-                ),
+            //     ):
+            memoryImage
+                ? PhotoView(
+                    imageProvider: MemoryImage(imageUrl),
+                  )
+                : PhotoView(
+                    imageProvider: FileImage(File(imageUrl)),
+                  ),
+      ),
     );
   }
 }

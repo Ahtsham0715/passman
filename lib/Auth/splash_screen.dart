@@ -1,13 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:hive/hive.dart';
 import 'package:passman/Auth/login_page.dart';
 import 'package:passman/Auth/onbaording_screen.dart';
 import 'package:passman/constants.dart';
-import 'package:passman/records/records_page.dart';
 
-import '../records/models/password_model.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
