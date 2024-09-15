@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:passman/constants.dart';
+import 'package:passman/records/autofill.dart';
 import 'package:passman/records/controllers/records_controller.dart';
 import 'package:passman/records/controllers/settings_controller.dart';
 import 'package:passman/records/records_page.dart';
@@ -163,6 +164,16 @@ class PreferencesPage extends StatelessWidget {
                 },
               );
             }),
+            CustomDivider(),
+            customDrawerTile(
+              title: 'Enable Autofill',
+              leading: Icons.hdr_auto_outlined,
+              onpressed: () async {
+                Get.to(
+                  () => AutofillPage(),
+                );
+              },
+            ),
             CustomDivider(),
           ],
         ),

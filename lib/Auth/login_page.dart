@@ -181,6 +181,7 @@ class _LoginPageState extends State<LoginPage> {
                         pIcon: Icons.email_outlined,
                         piconcolor: Colors.grey,
                         textcolor: Colors.grey,
+                        semanticText: 'Email',
                         // autofocus: true,
                         focusnode: _emailfocusNode,
                         onsubmit: (val) {
@@ -224,6 +225,7 @@ class _LoginPageState extends State<LoginPage> {
                         pIcon: Icons.lock_outline_rounded,
                         piconcolor: Colors.grey,
                         textcolor: Colors.grey,
+                        semanticText: 'Password',
                         focusnode: _passwordfocusNode,
                         onsubmit: (val) {
                           _passwordfocusNode.unfocus();

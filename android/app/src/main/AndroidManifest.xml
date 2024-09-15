@@ -1,6 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 xmlns:tools="http://schemas.android.com/tools"
-    package="com.example.passman">
+    package="com.pydevs.passman">
     <uses-permission android:name="android.permission.USE_BIOMETRIC"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -60,7 +60,13 @@ android:maxSdkVersion="33"
                 android:name="design.codeux.autofill_service.unlock_label"
                 android:value="Autofill with Passman" />
         </service>
-
+<service android:name="slayer.accessibility.service.flutter_accessibility_service.AccessibilityListener"
+                android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE" android:exported="false">
+      <intent-filter>
+        <action android:name="android.accessibilityservice.AccessibilityService" />
+      </intent-filter>
+      <meta-data android:name="android.accessibilityservice" android:resource="@xml/accessibilityservice" />
+    </service>
         <!-- Don't delete the meta-data below.
              This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
         <meta-data

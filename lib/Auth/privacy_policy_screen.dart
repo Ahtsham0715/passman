@@ -33,9 +33,7 @@ class _TermsAndPrivacyPolicyPageState extends State<TermsAndPrivacyPolicyPage>
         title: Text(
           'Terms and Privacy Policy',
           style: TextStyle(
-            fontSize: 25.0,
-            fontFamily: 'majalla',
-          ),
+              fontSize: 25.0, fontFamily: 'majalla', color: Colors.white),
         ),
         flexibleSpace: Container(
           decoration: BoxDecoration(
@@ -51,10 +49,9 @@ class _TermsAndPrivacyPolicyPageState extends State<TermsAndPrivacyPolicyPage>
         ),
         bottom: TabBar(
           controller: _tabController,
+          unselectedLabelColor: Colors.black,
           labelStyle: TextStyle(
-            fontSize: 25.0,
-            fontFamily: 'majalla',
-          ),
+              fontSize: 25.0, fontFamily: 'majalla', color: Colors.white),
           tabs: [
             Tab(text: 'Terms'),
             Tab(text: 'Privacy Policy'),
@@ -112,7 +109,7 @@ class _TermsAndPrivacyPolicyPageState extends State<TermsAndPrivacyPolicyPage>
               ),
               SizedBox(height: 8),
               Text(
-                'If you have any questions about these terms, please contact us at info@passwordmanager.com.',
+                'If you have any questions about these terms, please contact us at shami.pydevs@gmail.com',
               ),
             ],
           ),
@@ -140,7 +137,7 @@ class _TermsAndPrivacyPolicyPageState extends State<TermsAndPrivacyPolicyPage>
               ),
               SizedBox(height: 8),
               Text(
-                'This privacy policy applies to the password manager app and explains how we collect, use, and share information about you when you use our app.',
+                'This privacy policy applies to the Passman app and explains how we collect, use, and share information about you when you use our app.',
               ),
               SizedBox(height: 16),
               Text(
@@ -153,7 +150,7 @@ class _TermsAndPrivacyPolicyPageState extends State<TermsAndPrivacyPolicyPage>
               ),
               SizedBox(height: 8),
               Text(
-                'We also collect information about your use of the app, such as your activity history and the devices you use to access the app.',
+                'We may also collect information about your use of the app, such as your activity history and the devices you use to access the app.',
               ),
               SizedBox(height: 16),
               Text(
@@ -202,7 +199,7 @@ class _TermsAndPrivacyPolicyPageState extends State<TermsAndPrivacyPolicyPage>
               ),
               SizedBox(height: 8),
               Text(
-                'If you have any questions about this privacy policy, please contact us at info@passwordmanager.com.',
+                'If you have any questions about this privacy policy, please contact us at shami.pydevs@gmail.com',
               ),
             ],
           ),

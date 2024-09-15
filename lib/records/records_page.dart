@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,7 +8,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:google_generative_ai/google_generative_ai.dart';
+// import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:passman/Auth/controllers/user_data_controller.dart';
@@ -779,72 +778,72 @@ class _PasswordsPageState extends State<PasswordsPage> {
                             },
                           ),
                           CustomDivider(),
-                          customDrawerTile(
-                            title: 'Password Strength Checker',
-                            leading: Icons.emoji_emotions,
-                            onpressed: () async {
-                              // Get.to(
-                              //   () => PreferencesPage(),
-                              // );
-                              Future<Uint8List> readImageBytes(
-                                  String assetPath) async {
-                                final data = await rootBundle.load(assetPath);
-                                return data.buffer.asUint8List();
-                              }
+                          // customDrawerTile(
+                          //   title: 'Password Strength Checker',
+                          //   leading: Icons.emoji_emotions,
+                          //   onpressed: () async {
+                          //     // Get.to(
+                          //     //   () => PreferencesPage(),
+                          //     // );
+                          //     Future<Uint8List> readImageBytes(
+                          //         String assetPath) async {
+                          //       final data = await rootBundle.load(assetPath);
+                          //       return data.buffer.asUint8List();
+                          //     }
 
-                              try {
-                                final model = GenerativeModel(
-                                  model: 'gemini-1.0-pro-vision-latest',
-                                  apiKey:
-                                      'AIzaSyDTqizbF24ymCA-x2Im_njQ6ObtXdO1oAI',
-                                );
-                                // final password = '38DhwyD*/+#D4';
-                                final prompt =
-                                    // 'Determine Strength of this password: $password. Strength should be in a single word and also rate this password from 0 to 10. give a color code in HEX format according to password stength and rating .if password is week or easy to crack than generate a stronger password';
-                                    '''list all food items with calories and quantity of each item you seeing in image.
-                                    quantity should be accurate accoring to the image
-                                    Every item should be listed as:
-                                    {item name,quantity in the image,calories in the quantity(that is in the image)}
-                                    ''';
-                                print('Prompt: $prompt');
+                          //     try {
+                          //       final model = GenerativeModel(
+                          //         model: 'gemini-1.0-pro-vision-latest',
+                          //         apiKey:
+                          //             'AIzaSyDTqizbF24ymCA-x2Im_njQ6ObtXdO1oAI',
+                          //       );
+                          //       // final password = '38DhwyD*/+#D4';
+                          //       final prompt =
+                          //           // 'Determine Strength of this password: $password. Strength should be in a single word and also rate this password from 0 to 10. give a color code in HEX format according to password stength and rating .if password is week or easy to crack than generate a stronger password';
+                          //           '''list all food items with calories and quantity of each item you seeing in image.
+                          //           quantity should be accurate accoring to the image
+                          //           Every item should be listed as:
+                          //           {item name,quantity in the image,calories in the quantity(that is in the image)}
+                          //           ''';
+                          //       print('Prompt: $prompt');
 
-                                final content = [
-                                  // Content.text(prompt)
-                                  Content.multi([
-                                    TextPart(prompt),
-                                    // The only accepted mime types are image/*.
-                                    DataPart('image/jpeg',
-                                        await readImageBytes('assets/img.jpg')),
-                                    // DataPart(
-                                    //     'image/jpeg',
-                                    //     await readImageBytes(
-                                    //         'assets/privacy.jpg')),
-                                  ])
-                                ];
-                                // final tokenCount = await model.countTokens(content);
-                                // print('Token count: ${tokenCount.totalTokens}');
+                          //       final content = [
+                          //         // Content.text(prompt)
+                          //         Content.multi([
+                          //           TextPart(prompt),
+                          //           // The only accepted mime types are image/*.
+                          //           DataPart('image/jpeg',
+                          //               await readImageBytes('assets/img.jpg')),
+                          //           // DataPart(
+                          //           //     'image/jpeg',
+                          //           //     await readImageBytes(
+                          //           //         'assets/privacy.jpg')),
+                          //         ])
+                          //       ];
+                          //       // final tokenCount = await model.countTokens(content);
+                          //       // print('Token count: ${tokenCount.totalTokens}');
 
-                                final response =
-                                    await model.generateContent(content);
-                                //  for (final response in responses) {
-                                //   print(response.text);
-                                //   stdout.write(response.text);
-                                // }
-                                // stdout.writeln();
-                                print(response.text);
-                                // final prompt = 'Generate a strong password';
-                                // final content = [Content.text(prompt)];
-                                // final response =
-                                //     await model.generateContent(content);
+                          //       final response =
+                          //           await model.generateContent(content);
+                          //       //  for (final response in responses) {
+                          //       //   print(response.text);
+                          //       //   stdout.write(response.text);
+                          //       // }
+                          //       // stdout.writeln();
+                          //       print(response.text);
+                          //       // final prompt = 'Generate a strong password';
+                          //       // final content = [Content.text(prompt)];
+                          //       // final response =
+                          //       //     await model.generateContent(content);
 
-                                // print(response.text);
-                                print('process ended');
-                              } catch (e) {
-                                print(e);
-                              }
-                            },
-                          ),
-                          CustomDivider(),
+                          //       // print(response.text);
+                          //       print('process ended');
+                          //     } catch (e) {
+                          //       print(e);
+                          //     }
+                          //   },
+                          // ),
+                          // CustomDivider(),
                           customDrawerTile(
                             title: 'Check For Update',
                             leading: Icons.update_sharp,

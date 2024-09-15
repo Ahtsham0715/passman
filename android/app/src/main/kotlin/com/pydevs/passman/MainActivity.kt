@@ -1,4 +1,4 @@
-package com.example.passman
+package com.pydevs.passman
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugins.GeneratedPluginRegistrant

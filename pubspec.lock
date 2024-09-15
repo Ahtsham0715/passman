@@ -49,6 +49,15 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
+  autofill_service:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: master
+      resolved-ref: "6242d28873368579827731479f0e1c664fca073a"
+      url: "https://github.com/authpass/autofill_service.git"
+    source: git
+    version: "0.1.1"
   awesome_dialog:
     dependency: "direct main"
     description:
@@ -89,6 +98,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
+  change_app_package_name:
+    dependency: "direct dev"
+    description:
+      name: change_app_package_name
+      sha256: f9ebaf68a4b5a68c581492579bb68273c523ef325fbf9ce2f1b57fb136ad023b
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   characters:
     dependency: transitive
     description:
@@ -310,6 +327,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_accessibility_service:
+    dependency: "direct main"
+    description:
+      name: flutter_accessibility_service
+      sha256: "28957a4b7219afc64710486faa67702851a5070e9d717697f82b08938c0ab449"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.2.4"
   flutter_bounceable:
     dependency: "direct main"
     description:
@@ -384,14 +409,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.6.6"
-  google_generative_ai:
-    dependency: "direct main"
-    description:
-      name: google_generative_ai
-      sha256: b2d3f7277a85e3e6be4c4392c59e73ea211b5b6c8bb21c24c71fd411a2d1822e
-      url: "https://pub.dev"
-    source: hosted
-    version: "0.2.2"
   graphs:
     dependency: transitive
     description:
